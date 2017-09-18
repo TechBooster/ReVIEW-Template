@@ -202,6 +202,10 @@
 \newcommand{\reviewcolophon}[0]{\clearpage}
 \newcommand{\reviewappendix}[0]{\appendix}
 
+\renewenvironment{quote}{%
+  \begin{shaded}\small\setlength{\baselineskip}{1.3zw}}{%
+  \end{shaded}\par\vspace*{0.5zw}}
+
 \makeatletter
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
@@ -322,8 +326,8 @@
 
 \vspace*{\fill}
 
-{\noindent\reviewtitlefont\Large <%= @config.name_of("booktitle") %>} \\
-\rule[8pt]{14cm}{1pt} \\
+{\noindent\reviewtitlefont\large <%= @config.name_of("booktitle") %>} \\
+\rule[8pt]{10cm}{1pt} \\
 {\noindent
 <%= @config["pubhistory"].to_s.gsub(/\n/){"\n\n\\noindent\n"} %>
 }
@@ -332,7 +336,7 @@
 <%= @okuduke %>
 \end{tabular}
 　\\
-\rule[0pt]{14cm}{1pt} \\
+\rule[0pt]{10cm}{1pt} \\
 <%= @config.names_of("rights").join('\\' + '\\') %> \\
 <%-   end -%>
 <%- end -%>

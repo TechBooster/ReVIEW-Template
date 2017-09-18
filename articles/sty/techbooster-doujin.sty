@@ -23,6 +23,7 @@
   \end{alltt}\end{shadedb}}
 
 %% from review-pdfmaker
+\usepackage{longtable}
 \usepackage{fancyhdr}
 \usepackage{ulem}
 \pagestyle{fancy}
@@ -65,20 +66,23 @@
 \fi%
 }
 
-\setlength{\paperheight}    {257 truemm}
-\setlength{\paperwidth}     {182 truemm}
-\setlength{\textheight}     {190 truemm}
-\setlength{\textwidth}      {130 truemm}
-\setlength{\marginparwidth} {15  truemm}
-\setlength{\marginparsep}   {2   truemm}
-\setlength{\oddsidemargin}  {26  truemm}
-\setlength{\evensidemargin} {26  truemm}
-\setlength{\topmargin}      {10  truemm}
-\setlength{\headsep}        {15  truemm}
+\setlength{\paperheight}    {210 truemm}
+\setlength{\paperwidth}     {148 truemm}
+\setlength{\textheight}     {173 truemm}
+\setlength{\textwidth}      {113 truemm}
+\setlength{\marginparwidth} {0   truemm}
+\setlength{\marginparsep}   {0   truemm}
+\setlength{\oddsidemargin}  {15  truemm}
+\setlength{\evensidemargin} {15  truemm}
+\setlength{\topmargin}      {5   truemm}
+\setlength{\headsep}        {5   truemm}
 \setlength{\headheight}     {5   truemm}
+\setlength{\footskip}       {10  truemm}
 \setlength{\hoffset}{-1in}
 \setlength{\voffset}{-1in}
 \renewcommand{\baselinestretch}{0.96}
+
+\setlength{\headwidth}{\textwidth}
 
 \usepackage{fancyvrb}
 \VerbatimFootnotes
@@ -152,7 +156,3 @@
 \renewcommand{\reviewcolumnhead}[2]{%
 {\noindent\large\sffamily #2}
 \vspace{\baselineskip}}
-
-%%シングルクォート対応
-\usepackage{upquote,textcomp}
-\xspcode`'=0
