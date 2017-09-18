@@ -6,14 +6,14 @@
   "main": "Gruntfile.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TechBooster/C92-Android.git"
+    "url": "git+https://github.com/TechBooster/ReVIEW-Template.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TechBooster/C92-Android/issues"
+    "url": "https://github.com/TechBooster/ReVIEW-Template/issues"
   },
-  "homepage": "https://github.com/TechBooster/C92-Android#readme",
+  "homepage": "https://github.com/TechBooster/ReVIEW-Template#readme",
   "engines": {
     "node": ">=6.0.0"
   },
