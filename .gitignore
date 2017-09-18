@@ -1,0 +1,5 @@
+node_modules
+Gemfile.lock
+*.pdf
+
+articles/*.html

@@ -1,0 +1,80 @@
+# https://gist.github.com/inao/f55e8232e150aee918b9
+# from WEB+DB PRESS
+# 対応は不完全(途中で飽きた) 一部手心を加えている
+version: 1
+
+imports:
+  # 気合で移行した気持ちになった
+  - ../prh-rules/media/techbooster.yml
+
+rules:
+  - expected: asm.js
+    pattern:  ams.js
+  - expected: 本章
+    pattern:  本記事
+  - expected: Angular 2
+    pattern:  Angular2
+  - expected: Web Components
+    pattern:  WebComponents
+  - expected: Custom Elements
+    pattern:  CustomElements
+  - expected: Shadow DOM
+    pattern:  ShadowDOM
+  - expected: Houdini
+    pattern:  houdini
+  - expected: Incremental DOM
+    pattern:  IncrementalDOM
+  - expected: ECMAScript
+    pattern:  EcmaScript
+  - expected: いわ
+    pattern:  言わ
+    prh: 呼ぶ、で代替するか漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: のよう
+    pattern:  の様
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: まったく
+    pattern:  全く
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: さきほど
+    pattern:  先程
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: あるいは
+    pattern:  或いは
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: はじめて
+    pattern:  初めて
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: どういうとき
+    pattern:  どういう時
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: いくつか
+    pattern:  幾つか
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: 下げ
+    pattern:  さげ
+    prh: ひらがなで書かず、漢字で「下げ」と読みやすくなります。
+  - expected: すべて
+    pattern:  総て
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: もらう
+    pattern:  貰う
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: もらい
+    pattern:  貰い
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: いったん
+    pattern:  一旦
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります。
+  - expected: こと
+    pattern:  /(記|大|仕|返|無|食|見|議)?事(?!情|件|前|後|例|実|体|態|項|務|象)/
+    regexpMustEmpty: $1
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+    specs:
+      - from: ある事
+        to:   あること
+      - from: 記事
+        to:   記事
+      - from: 事件
+        to:   事件
+      - from: 事象
+        to:   事象

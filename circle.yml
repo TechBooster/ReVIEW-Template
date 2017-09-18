@@ -1,0 +1,9 @@
+machine:
+  timezone:
+    Asia/Tokyo
+  node:
+    version: 6
+
+dependencies:
+  pre:
+    - npm run global

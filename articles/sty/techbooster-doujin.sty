@@ -1,0 +1,158 @@
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable}
+\renewenvironment{shaded}{
+ \vspace{\baselineskip}
+ \begin{tcolorbox}[breakable, enhanced jigsaw, colback=black!10!white, colframe=black!30!white]}
+ {\end{tcolorbox}}
+\renewenvironment{shadedb}{
+ \vspace{\baselineskip}
+ \begin{tcolorbox}[breakable, enhanced jigsaw, colback=black!80!white, colframe=black, colupper=white, sharp corners, rounded corners=southeast]}
+ {\end{tcolorbox}}
+
+%% サンプルコードを更に小さく
+\renewenvironment{reviewemlist}{%
+  \medskip\footnotesize\begin{shaded}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \end{alltt}\end{shaded}}
+
+\renewenvironment{reviewlist}{%
+  \begin{shaded}\footnotesize\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \end{alltt}\end{shaded}\par\vspace*{0.5zw}}
+
+\renewenvironment{reviewcmd}{%
+  \color{white}\medskip\footnotesize\begin{shadedb}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \end{alltt}\end{shadedb}}
+
+%% from review-pdfmaker
+\usepackage{fancyhdr}
+\usepackage{ulem}
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyhead[LE]{\gtfamily\sffamily\bfseries\upshape \leftmark}
+\fancyhead[RO]{\gtfamily\sffamily\bfseries\upshape \rightmark}
+\cfoot{\thepage}
+
+\renewcommand{\sectionmark}[1]{\markright{\thesection~#1}{}}
+\renewcommand{\chaptermark}[1]{%
+  \if@mainmatter
+    \markboth{\prechaptername\ \thechapter\ \postchaptername~#1}{}
+  \else
+    \markboth{#1}{#1}
+  \fi}
+\renewcommand{\headfont}{\gtfamily\sffamily\bfseries}
+
+\fancypagestyle{plainhead}{%
+\fancyhead{}
+\fancyfoot{} % clear all header and footer fields
+\fancyfoot[CE,CO]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+\hypersetup{colorlinks=false}
+%%Helveticaを使う
+\renewcommand{\sfdefault}{phv}
+
+\sloppy
+
+\cfoot{\thepage}
+
+\def\cleardoublepage{%
+\clearpage%
+\if@twoside%
+   \ifodd \c@page \else \hbox{}\thispagestyle{plainhead}\newpage%
+           \if@twocolumn\hbox{}\thispagestyle{plainhead}\newpage\fi%
+   \fi%
+\fi%
+}
+
+\setlength{\paperheight}    {257 truemm}
+\setlength{\paperwidth}     {182 truemm}
+\setlength{\textheight}     {190 truemm}
+\setlength{\textwidth}      {130 truemm}
+\setlength{\marginparwidth} {15  truemm}
+\setlength{\marginparsep}   {2   truemm}
+\setlength{\oddsidemargin}  {26  truemm}
+\setlength{\evensidemargin} {26  truemm}
+\setlength{\topmargin}      {10  truemm}
+\setlength{\headsep}        {15  truemm}
+\setlength{\headheight}     {5   truemm}
+\setlength{\hoffset}{-1in}
+\setlength{\voffset}{-1in}
+\renewcommand{\baselinestretch}{0.96}
+
+\usepackage{fancyvrb}
+\VerbatimFootnotes
+\usepackage{seqsplit}
+\let\textttorg=\texttt
+\def\texttt{\begingroup\obeyspaces\do@texttt}
+\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
+
+\newcommand{\captionsize}{\fontsize{9}{9}\selectfont}
+\newlength{\captionnumwidth}
+\setlength{\captionnumwidth}{6zw}
+\newlength{\captionwidth}
+\setlength{\captionwidth}{\textwidth}
+\addtolength{\captionwidth}{-\captionnumwidth}
+\def\captionhead{\sffamily{\color{black!30!white}{▲}}}
+\long\def\@makecaption#1#2{%
+  \addvspace\abovecaptionskip
+  \buildcaption{!}{#1}{#2}
+  \vskip\belowcaptionskip
+}
+\long\def\buildcaption#1#2#3{%
+  \sbox\@tempboxa{\captionsize\sffamily #3}%
+  \ifdim \wd\@tempboxa <\captionwidth%
+    \def\capline{\captionsize\captionhead #2%
+                  \hskip1zw\relax\usebox{\@tempboxa}\mbox{}\relax}
+    \ifx#1!\relax\centerline{\capline}\else\noindent\capline\fi
+  \else
+    \noindent%
+    \parbox[t]{\captionnumwidth}{%
+      {\captionsize\captionhead #2%
+        \hskip1zw}}%
+    \parbox[t]{\captionwidth}{\captionsize\sffamily #3}
+  \fi
+}
+
+\long\def\listcaption#1:#2\relax{\buildcaption{}{#1}{#2}}
+
+\renewcommand{\reviewtablecaption}[1]{%
+  {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
+   \caption{#1}}}
+
+\renewcommand{\reviewlistcaption}[1]{%
+  {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
+   \medskip{\listcaption#1\relax}\vspace*{-1.3zw}}}
+
+\renewcommand{\reviewemlistcaption}[1]{%
+  {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
+   \medskip{\buildcaption{}{}{#1}\relax}\vspace*{-1.3zw}}}
+
+\renewcommand{\reviewcmdcaption}[1]{%
+  {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
+   \medskip{\listcaption#1\relax}\vspace*{-1.3zw}}}
+
+\renewcommand{\reviewindepimagecaption}[1]{%
+  \begin{center}#1\end{center}}
+
+\renewcommand{\reviewboxcaption}[1]{%
+  {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
+   \medskip{\captionsize\captionhead #1}\vspace*{-1.3zw}}}
+
+
+
+\renewenvironment{reviewcolumn}{%
+     \vspace{\baselineskip}
+     \begin{tcolorbox}[colback=white]
+   }{%
+      \end{tcolorbox}
+     \vspace{\baselineskip}
+}
+
+\renewcommand{\reviewcolumnhead}[2]{%
+{\noindent\large\sffamily #2}
+\vspace{\baselineskip}}
+
+%%シングルクォート対応
+\usepackage{upquote,textcomp}
+\xspcode`'=0
