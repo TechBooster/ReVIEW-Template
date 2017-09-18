@@ -3,9 +3,9 @@
 このリポジトリはRe:VIEW用の書籍テンプレートです。
 メンテナンスはTechBoosterが行っています。
 
- * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるリポジトリは**master**です
- * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるリポジトリは**Template-A5**です
- * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるリポジトリは**Template-ebook**です
+ * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるリポジトリは**master**です
+ * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるリポジトリは**Template-A5**です
+ * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるリポジトリは**Template-ebook**です
 
 
 ## このテンプレートのビルドの仕方は？
