@@ -279,12 +279,12 @@ epubmaker:
 
 # LaTeX用のスタイルファイル(styディレクトリ以下に置くこと)
 # tatsumacroは、電子書籍版の制作に利用する
-# texstyle: tatsumacro
-texstyle: techbooster-doujin
+texstyle: tatsumacro
+# texstyle: techbooster-doujin
 #
 # LaTeX用のdocumentclassを指定する
-# texdocumentclass: ["jsbook", "oneside,14pt,uplatex"]
-texdocumentclass: ["jsbook", "b5j,twoside,openany,uplatex"]
+texdocumentclass: ["jsbook", "oneside,14pt,uplatex"]
+# texdocumentclass: ["jsbook", "b5j,twoside,openany,uplatex"]
 # texdocumentclass: ["jsbook", "a5j,twoside,openany,uplatex,9pt"]
 #
 # LaTeX用のコマンドを指定する
