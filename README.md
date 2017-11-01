@@ -4,6 +4,12 @@
 
 ベースには、[TechBooster/ReVIEW\-Template: TechBoosterで利用しているRe:VIEWのテンプレート（B5/A5/電子書籍）](https://github.com/TechBooster/ReVIEW-Template) を使っています。
 
+## CI
+
+[![wercker status](https://app.wercker.com/status/7193689c89e58981853142a1e3d685b1/s/master "wercker status")](https://app.wercker.com/project/byKey/7193689c89e58981853142a1e3d685b1)
+
+リポジトリが更新されると自動でPDFが出力されます。
+
 ## このテンプレートのビルドの仕方は？
 
 細かい準備(TeX入れたり)は[『技術書をかこう！』](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)に準じます。

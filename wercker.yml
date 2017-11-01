@@ -9,6 +9,9 @@ build:
     - script:
       name: create pdf
       code: npm run pdf
+    # - script:
+    #   name: create epub
+    #   code: npm run epub
     - script:
       name: output artifacts
       code: cp articles/c93-onestop-techbook.* $WERCKER_REPORT_ARTIFACTS_DIR/
