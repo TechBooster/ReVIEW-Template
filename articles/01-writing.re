@@ -20,3 +20,20 @@
 
 ====[/column]
 
+//listnum[list-test][リストのテスト]{
+#@mapfile(sample/01-writing/hoge.re)
+= Re:View はこんな感じでかきますよー の章
+
+== ほげー
+
+ふがー@<code>{@}<fn>{fuga}
+//footnote[fuga][ふがー]
+
+ぴよー
+
+@<code>{#@#} コメント
+#@end
+//}
+
+#@# リストの中でもRe:Viewのインライン命令を解釈してしまうので要注意
+#@# #@ で始まる行に関しても、プリプロセッサの都合があるので、こんな感じに
