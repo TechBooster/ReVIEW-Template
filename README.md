@@ -1,18 +1,34 @@
-# Re:VIEW Template
+# ワンストップ！技術同人誌を書こう(仮)
 
-このリポジトリはRe:VIEW用の書籍テンプレートです。
-メンテナンスはTechBoosterが行っています。
+このリポジトリは[親方Project活動記録 C93合同誌：「ワンストップ！技術同人誌を書こう\(仮\)」　の企画要旨説明](http://oyakata2.blog104.fc2.com/blog-entry-13.html)な同人誌のものです。
 
- * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるリポジトリは**master**です
- * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるリポジトリは**Template-A5**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/e54618f2be9d4136888b180d8427f26041338870)
- * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるリポジトリは**Template-ebook**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/3acbd41fdce28fd3543be636332f4b2153bc9b6a)
-
+ベースには、[TechBooster/ReVIEW\-Template: TechBoosterで利用しているRe:VIEWのテンプレート（B5/A5/電子書籍）](https://github.com/TechBooster/ReVIEW-Template) を使っています。
 
 ## このテンプレートのビルドの仕方は？
 
 細かい準備(TeX入れたり)は[『技術書をかこう！』](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)に準じます。
 
 TeXの導入をしない場合でもHTML出力は可能です。Dockerコンテナでビルドすることもできます。
+
+### RubyやNode.jsをなんとかインストールして
+
+```sh
+$ npm run global
+$ npm install
+```
+
+を叩くとインストールが完了してたり、
+
+```sh
+$ npm run pdf
+```
+
+を叩くと、articles/c93-onestop-techbook.pdfが生成されます。
+
+(当方、既にRuby, Node.jsセッティング済みMacなので、他環境の人いろいろ教えてください！)
+(WindowsだとたぶんDockerコンテナ使うのが一番らくです。次点ではbash on Windows)
+
+-----
 
 ## Re:VIEWの使い方は？
 

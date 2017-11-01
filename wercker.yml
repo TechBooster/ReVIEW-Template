@@ -1,0 +1,14 @@
+box: vvakame/review
+
+build:
+  steps:
+    - bundle-install
+    - script:
+      name: install
+      code: npm install
+    - script:
+      name: create pdf
+      code: npm run pdf
+    - script:
+      name: output artifacts
+      code: cp articles/c93-onestop-techbook.* $WERCKER_REPORT_ARTIFACTS_DIR/

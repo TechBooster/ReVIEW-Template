@@ -1,19 +1,19 @@
 {
-  "name": "review-template",
+  "name": "c93-onestop-techbook",
   "version": "0.0.1",
   "private": true,
   "description": "",
   "main": "Gruntfile.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TechBooster/ReVIEW-Template.git"
+    "url": "git+https://github.com/onestop-techbook/c93-onestop-techbook.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TechBooster/ReVIEW-Template/issues"
+    "url": "https://github.com/onestop-techbook/c93-onestop-techbook/issues"
   },
-  "homepage": "https://github.com/TechBooster/ReVIEW-Template#readme",
+  "homepage": "",
   "engines": {
     "node": ">=6.0.0"
   },
