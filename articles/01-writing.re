@@ -1,6 +1,6 @@
 = この本の執筆環境について
 
-10/22に開催された技術書典3@<fn>{tbf03}のあとどうたらこうたら
+10/22に開催された技術書典3@<fn>{tbf03}のあと、このスクショにあるようなことを思いついたので実行してみる。
 //footnote[tbf03][@<href>{https://techbookfest.org/event/tbf03}]
 
 //indepimage[first-tweet]
