@@ -38,10 +38,14 @@ Githubは多人数でソースコードを同時開発するのにとても向�
 
 === Re:View
 
-Re:VIEW@<fn>{Re:VIEW}はkmuto@<fn>{kmuto}さん他40人以上の開発者が参加するオープンソースな組み版ソフトです。実際にいくつもの出版社が採用しているプロユースのソフトですが、技術系同人誌でもよく使われるなど、プロもアマチュアも使うとても便利なソフトです。
+Re:VIEW@<fn>{Re:VIEW}は現時点ではkmuto@<fn>{kmuto}さん他40人以上の開発者が参加するオープンソースな組み版ソフトです。実際にいくつもの出版社が採用しているプロユースのソフトですが、技術系同人誌でもよく使われるなど、プロもアマチュアも使うとても便利なソフトです。
 
 //footnote[Re:VIEW][@<href>{http://reviewml.org/}]
 //footnote[kmuto][@<href>{https://github.com/kmuto}]
+
+//quote{
+    Copyright © 2006-2016 Minero Aoki, Kenshi Muto, Masayoshi Takahashi, Masanori Kado.
+//}
 
 Re:VIEWでは、ASCIIで使われていた画期的な電子出版（Editor's Work Bench）の書式をベースにしつつ簡易化した記述方法で本を書きます。Markdownや他のWikiとは違う少し癖があるように感じられる記法ですが、組み版に特化していて必要十分な機能を持っています。
 
