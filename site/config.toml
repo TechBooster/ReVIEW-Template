@@ -1,0 +1,21 @@
+languageCode = "ja"
+title = "合同本(仮)"
+style = "default"
+hasCJKLanguage = true
+baseUrl = "https://onestop-techbook.github.io/c93-onestop-techbook/"
+
+[params]
+    logo = "img/logo.png"
+    about_us = "親方プロジェクト?"
+    copyright = "Copyright (c) 2017, Oyakata; all rights reserved."
+    date_format = "2006/01/02"
+
+[[params.menu]]
+    name = "趣旨"
+    url  = "/c93-onestop-techbook/purpose"
+    weight = 1
+
+[[params.menu]]
+    name = "Blog"
+    url  = "/c93-onestop-techbook/blog/"
+    weight = 2

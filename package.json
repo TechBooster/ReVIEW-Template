@@ -18,6 +18,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
+    "site": "cd site ; hugo --cleanDestinationDir",
     "global-bundler": "gem install bundler",
     "global": "npm run global-bundler",
     "postinstall": "bundle install",
