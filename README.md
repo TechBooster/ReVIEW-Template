@@ -61,13 +61,23 @@ C93に配布、「購入者がそれを参考にして4月開催の技術書典4
 
 [![wercker status](https://app.wercker.com/status/7193689c89e58981853142a1e3d685b1/s/master "wercker status")](https://app.wercker.com/project/byKey/7193689c89e58981853142a1e3d685b1)
 
-リポジトリが更新されると自動でPDFが出力されます。
+werckerを使っています。リポジトリが更新されると自動でPDFが出力されます。
+
+* https://app.wercker.com/onestop-techbook/c93-onestop-techbook/runs
 
 ## このテンプレートのビルドの仕方は？
 
 細かい準備(TeX入れたり)は[『技術書をかこう！』](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)に準じます。
 
-TeXの導入をしない場合でもHTML出力は可能です。Dockerコンテナでビルドすることもできます。
+### Dockerを使う方法
+
+Dockerを使うのが一番手軽です。
+
+```sh
+$ docker run --rm -v `pwd`:/work vvakame/review /bin/sh -c "cd /work/articles ; review-pdfmaker config.yml"
+```
+
+articles/c93-onestop-techbook.pdfが生成されます。
 
 ### RubyやNode.jsをなんとかインストールして
 
@@ -82,10 +92,7 @@ $ npm install
 $ npm run pdf
 ```
 
-を叩くと、articles/c93-onestop-techbook.pdfが生成されます。
-
-(当方、既にRuby, Node.jsセッティング済みMacなので、他環境の人いろいろ教えてください！)
-(WindowsだとたぶんDockerコンテナ使うのが一番らくです。次点ではbash on Windows)
+Dockerの時同様に、articles/c93-onestop-techbook.pdfが生成されます。
 
 -----
 
