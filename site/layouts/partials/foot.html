@@ -1,0 +1,24 @@
+            <div class="column is-3">
+            <aside class="box menu">
+            <p class="menu-label">
+                <a href="/c93-onestop-techbook/">合同本</a>
+            </p>
+            <ul class="menu-item">
+                {{ range .Site.Params.menu }}
+                <li><a class="nav-item" href="{{ .url }}">{{ .name }}</a></li>
+                {{ end }}
+            </ul>
+            </aside>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <div class="content has-text-centered">
+                    プロジェクト名
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>
