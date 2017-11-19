@@ -1,0 +1,12 @@
+{{ partial "head.html" . }}
+<div class="column">
+    <div class="content">
+        <ul id="list">
+            {{ range .Data.Pages }}
+                {{ .Render "li"}}
+            {{ end }}
+        </ul>
+    </div>
+</div>
+{{ partial "foot.html" . }}
+

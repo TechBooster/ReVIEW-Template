@@ -1,24 +1,106 @@
-# Re:VIEW Template
+# ワンストップ！技術同人誌を書こう(仮)
 
-このリポジトリはRe:VIEW用の書籍テンプレートです。
-メンテナンスはTechBoosterが行っています。
+## 概要説明
+このリポジトリは[親方Project活動記録 C93合同誌：「ワンストップ！技術同人誌を書こう\(仮\)」　の企画要旨説明](http://oyakata2.blog104.fc2.com/blog-entry-13.html)な同人誌のものです。
 
- * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるリポジトリは**master**です
- * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるリポジトリは**Template-A5**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/e54618f2be9d4136888b180d8427f26041338870)
- * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるリポジトリは**Template-ebook**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/3acbd41fdce28fd3543be636332f4b2153bc9b6a)
+参加いただける方は、[@oyakata2438](https://twitter.com/oyakata2438）までご連絡ください。
 
+## この本の最終目的
+技術書典およびコミケ、その他で、技術書(技術系同人誌)を書いてみたい人が、「これ一冊で」本を作ってイベントで配布するまでの基本的な流れが全て把握可能な、マニュアル的同人誌を作る。
+
+C93に配布、「購入者がそれを参考にして4月開催の技術書典4に参加する」なんてのがあるとステキですよね。
+
+というわけで、皆さんの同人活動におけるノウハウを教えてください。
+
+執筆方法は…Githubのブランチをforkして、各々コミットしてください。
+
+不明点があれば、issueかツイッターあたりで誰かに聞くと、誰かが答えてくれるかも。
+
+ここをこうした方がいい、とか、提案は大歓迎（よろしくお願いします・・・）
+
+## 執筆・配布スケジュール（逆算）
+12月中旬：原稿確定→入稿
+
+12月5日頃：個別原稿一次締め切り→クロスレビュー
+
+12月1日頃：もくじ確定
+
+11月1日　執筆者募集開始→目次は順次集約（執筆者が適宜追加）
+
+ベースには、[TechBooster/ReVIEW\-Template: TechBoosterで利用しているRe:VIEWのテンプレート（B5/A5/電子書籍）](https://github.com/TechBooster/ReVIEW-Template) を使っています。
+
+
+## 執筆にあたってのお願い
+ネタがかぶらないよう/かぶってもよいようにするため
+
+（1）早めに目次にコミットする（執筆者の皆様へのお願い）
+
+（2）かぶっても「うちはこうしている」という形で残す（コラム化する・別節にするなど）
+
+として、ボツにしなくてすむようにしたいです。
+
+もし既存の項目があって、あえて「うちはこうしている」と明示的にやりたい場合は、その旨表明いただければ、なんとかします。
+
+## 今のところの参加者（11/4）
+
+親方
+
+@erukitiさん
+
+せとあずさん
+
+もふもふさん
+
+なかひこくん
+
+病葉さん
+
+ゆきさん　（把握している限り&順不同）適宜追加します…
+
+## CI
+
+[![wercker status](https://app.wercker.com/status/7193689c89e58981853142a1e3d685b1/s/master "wercker status")](https://app.wercker.com/project/byKey/7193689c89e58981853142a1e3d685b1)
+
+werckerを使っています。リポジトリが更新されると自動でPDFが出力されます。
+
+* https://app.wercker.com/onestop-techbook/c93-onestop-techbook/runs
 
 ## このテンプレートのビルドの仕方は？
 
 細かい準備(TeX入れたり)は[『技術書をかこう！』](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)に準じます。
 
-TeXの導入をしない場合でもHTML出力は可能です。Dockerコンテナでビルドすることもできます。
+### Dockerを使う方法
+
+Dockerを使うのが一番手軽です。
+
+```sh
+$ docker run --rm -v `pwd`:/work vvakame/review /bin/sh -c "cd /work/articles ; review-pdfmaker config.yml"
+```
+
+articles/c93-onestop-techbook.pdfが生成されます。
+
+### RubyやNode.jsをなんとかインストールして
+
+```sh
+$ npm run global
+$ npm install
+```
+
+を叩くとインストールが完了してたり、
+
+```sh
+$ npm run pdf
+```
+
+Dockerの時同様に、articles/c93-onestop-techbook.pdfが生成されます。
+
+-----
 
 ## Re:VIEWの使い方は？
 
-[技術書をかこう！〜はじめてのRe:VIEW〜改訂版](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)
+[技術書をかこう！?はじめてのRe:VIEW?改訂版](https://github.com/TechBooster/C89-FirstStepReVIEW-v2)
 のリポジトリで解説しています。Re:VIEWに対応した執筆ノウハウ本です。
-Re:VIEWの使い方と制作にあたっての企画〜執筆〜編集〜告知〜会場頒布までのノウハウをギュッと詰めています。
+Re:VIEWの使い方と制作にあたっての企画?執筆?編集?告知?会場頒布までのノウハウをギュッと詰めています。
 
 https://techbooster.booth.pm/ でPDF版の販売予定があります
 
