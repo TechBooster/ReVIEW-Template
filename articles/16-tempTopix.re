@@ -27,7 +27,7 @@
 //footnote[AST-book][たとえば、@erukitiは技術書典3に出した本の表紙に @<href>{https://www.pexels.com/photo/nature-sky-clouds-field-9198/} の画像を使いました。]
 //footnote[CC][@<href>{https://creativecommons.org/}]
 
-====[column] クリエイティブコモンズ
+====[column] クリエイティブコモンズ : @erukiti
 
 エンジニアの方ならBSD、GPL、MITライセンスなどをご存じかもしれません。みんなが有名なライセンスを使えば、いちいち細かい規定をしたオリジナルのライセンスにまつわるトラブルから解放されるため、作者・ユーザーに大きな利点となっています。
 
