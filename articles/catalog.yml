@@ -1,56 +1,63 @@
 PREDEF:
+# 1.　この本の目的
   - preface.re
 
-# 1.　この本の目的
-
 CHAPS:
+# 3.　この本の執筆環境について
   - 01-writing.re
 
-# 3.　この本の執筆環境について
 
-  - 04-attendEvent.re
 # 4.　技術書オンリー+コミケ　参加のメリット
+  - 04-attendEvent.re
 
-  - 05-thinkScript.re
 # 5.　ネタ出し法
+  - 05-thinkScript.re
 
 # 6.　執筆環境について
-  - sec-image.re
-  - sec-nombre.re
+
 # 7.　印刷業者に頼むためのTips
 # 　・原稿出力に関して
+  - book-style.re
+  - sec-image.re
+  - sec-nombre.re
   - 07-howToOrder.re
+
 # 8.　当日までの準備
 # 　・持ち物リスト
 # 　・告知をしよう
   - prepare.re
+
 # 9.　当日朝、開場までの準備
+
 # 10.　開催中のTips
 # 　・イベント中のオペレーション体制
 # 　・ワンオペ時の回し方
+
 # 11.　イベント終わってからやること
+
 # 12.　次の締切を手に入れよう
+
 # 13.　委託しよう
   - 13-booth.re
 
-  - 14-Meetup.re
 # 14.　コミュニティに参加する
 # 　・もくもく会とか。
+  - 14-Meetup.re
 
-  - 15-aboutMoney.re
 # 15.　お金の話
 # 　・印刷費用と頒布価格、イベント収支
+  - 15-aboutMoney.re
 
-  - 16-tempTopix.re
 # 16.　どこに入れるか迷い中のネタ
 # 　・表紙調達法
+  - 16-tempTopix.re
 
 APPENDIX:
 
 # なにか付録があれば
 
 POSTDEF:
-  - contributors.re
-
 # 16.　あとがき
+
 # 17.　執筆者一覧
+  - contributors.re
