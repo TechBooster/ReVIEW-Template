@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: vvakame/review:2.4
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Setup
+          command: npm install
+      - save_cache:
+          key: npm-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Test
+          command: npm test
+      - run:
+          name: Build PDF
+          command: npm run pdf
+      - store_artifacts:
+          path: ./articles/ReVIEW-Template.pdf
+          destination: ReVIEW-Template.pdf
