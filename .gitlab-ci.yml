@@ -9,3 +9,6 @@ build-pdf:
       - articles/ReVIEW-Template.pdf
   tags:
     - docker
+
+# 文法はこちらを参照してください
+# https://docs.gitlab.com/ce/ci/yaml/README.html
