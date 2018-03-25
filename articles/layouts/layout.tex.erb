@@ -214,8 +214,14 @@
 }
 \makeatother
 
-<%- if @config["usepackage"] -%>
-<%= @config["usepackage"] %>
+<%- if @config["texstyle"] -%>
+<%-   [@config["texstyle"]].flatten.each do |x| -%>
+\usepackage{<%= x %>}
+<%-   end -%>
+<%- end -%>
+<%- if @config["makeindex"] -%>
+\usepackage{makeidx}
+\makeindex
 <%- end -%>
 
 \usepackage[T1]{fontenc}
