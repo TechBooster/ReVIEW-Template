@@ -3,9 +3,9 @@
 このリポジトリはRe:VIEW用の書籍テンプレートです。
 メンテナンスはTechBoosterが行っています。
 
- * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるリポジトリは**master**です
- * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるリポジトリは**Template-A5**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/e54618f2be9d4136888b180d8427f26041338870)
- * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるリポジトリは**Template-ebook**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/3acbd41fdce28fd3543be636332f4b2153bc9b6a)
+ * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf) 設定がわかるブランチは**master**です
+ * [A5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-A5.pdf) 設定がわかるブランチは**Template-A5**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/e54618f2be9d4136888b180d8427f26041338870)
+ * [電子書籍サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-ebook.pdf) 設定がわかるブランチは**Template-ebook**です。B5との[DIFF](https://github.com/TechBooster/ReVIEW-Template/commit/3acbd41fdce28fd3543be636332f4b2153bc9b6a)
 
 
 ## このテンプレートのビルドの仕方は？
