@@ -320,11 +320,11 @@ texstyle: ["reviewmacro"]
 # hiddenfolio=nikko-pcは日光企画向けのノドへの隠しノンブル配置
 #
 # B5の設定
-texdocumentclass: ["review-jsbook", "media=print,paper=b5,serial_pagination=true,hiddenfolio=nikko-pc"]
-# texdocumentclass: ["review-jsbook", "media=ebook,paper=b5,serial_pagination=true"]
+texdocumentclass: ["review-jsbook", "media=print,paper=b5,serial_pagination=true,hiddenfolio=nikko-pc,openany"]
+# texdocumentclass: ["review-jsbook", "media=ebook,paper=b5,serial_pagination=true,openany"]
 # A5の設定
-# texdocumentclass: ["review-jsbook", "media=print,paper=a5j,fontsize=9pt,serial_pagination=true,hiddenfolio=nikko-pc"]
-# texdocumentclass: ["review-jsbook", "media=ebook,paper=a5j,fontsize=9pt,serial_pagination=true"]
+# texdocumentclass: ["review-jsbook", "media=print,paper=a5j,fontsize=9pt,serial_pagination=true,hiddenfolio=nikko-pc,openany"]
+# texdocumentclass: ["review-jsbook", "media=ebook,paper=a5j,fontsize=9pt,serial_pagination=true,openany"]
 #
 # LaTeX用のコマンドを指定する
 # texcommand: "uplatex"

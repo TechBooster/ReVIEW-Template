@@ -1,6 +1,8 @@
 % review-base.sty, review-style.styの後のTechBooster固有の調整
 \makeatletter
 
+\renewcommand{\baselinestretch}{0.96}
+
 % 奥付の調整
 \let\tech@reviewcolophonpagecontorg\reviewcolophonpagecont
 \def\reviewcolophonpagecont{%
@@ -20,7 +22,7 @@
   \begin{tcolorbox}[breakable, enhanced jigsaw, colback=black!80!white, colframe=black, colupper=white, sharp corners, rounded corners=southeast]}
   {\end{tcolorbox}}
 
-%% サンプルコードを更に小さく
+%% サンプルコードをさらに小さく
 \renewenvironment{reviewemlist}{%
   \medskip\footnotesize\begin{shaded}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
   \end{alltt}\end{shaded}}
@@ -36,7 +38,6 @@
 \fancyhead{}
 \fancyhead[LE]{\gtfamily\sffamily\bfseries\upshape \leftmark}
 \fancyhead[RO]{\gtfamily\sffamily\bfseries\upshape \rightmark}
-\cfoot{\thepage}
 \renewcommand{\chaptermark}[1]{%
   \if@mainmatter
     \markboth{\prechaptername\ \thechapter\ \postchaptername~#1}{}
@@ -109,7 +110,7 @@
 
 \renewenvironment{reviewcolumn}{%
      \vspace{\baselineskip}
-     \begin{tcolorbox}[colback=white,breakable]
+     \begin{tcolorbox}[colback=white,breakable,enhanced jigsaw]
    }{%
       \end{tcolorbox}
      \vspace{\baselineskip}
@@ -123,6 +124,7 @@
 \usepackage{upquote}
 \xspcode`'=0
 
+% 見出し書体
 \renewcommand{\reviewtitlefont}{\gtfamily\sffamily\bfseries}
 
 \makeatother
