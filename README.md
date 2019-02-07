@@ -1,5 +1,7 @@
 # Re:VIEW Template
 
+TODO:この記述は3.0版で変わるので書き換え予定です。
+
 このリポジトリはRe:VIEW用の書籍テンプレートです。
 メンテナンスはTechBoosterが行っています。
 
