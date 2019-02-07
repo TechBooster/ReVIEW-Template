@@ -4,5 +4,7 @@
 
 #@# ダミー行
 //embed[latex]{
-\makelines{20}
+\makelines{25}
+\clearpage
+\makelines{35}
 //}

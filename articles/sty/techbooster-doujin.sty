@@ -1,15 +1,6 @@
 % review-base.sty, review-style.styの後のTechBooster固有の調整
 \makeatletter
 
-\renewcommand{\baselinestretch}{0.96}
-
-% 奥付の調整
-\let\tech@reviewcolophonpagecontorg\reviewcolophonpagecont
-\def\reviewcolophonpagecont{%
-\clearoddpage% 必ず偶数に
-\tech@reviewcolophonpagecontorg
-}
-
 % コード
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{breakable}
@@ -44,6 +35,15 @@
   \else
     \markboth{#1}{#1}
   \fi}
+\fancyfoot{}
+\cfoot{\thepage}
+
+\fancypagestyle{plainhead}{%
+  \fancyhead{}
+  \fancyfoot{}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}}
 
 \usepackage{fancyvrb}
 \VerbatimFootnotes
@@ -126,5 +126,81 @@
 
 % 見出し書体
 \renewcommand{\reviewtitlefont}{\gtfamily\sffamily\bfseries}
+
+% cleardoublepage, clearoddpage上書き
+\renewcommand\oneblankpage{\clearpage\thispagestyle{plainhead}%
+  \hbox{}\newpage\if@twocolumn\hbox{}\newpage\fi}
+
+\def\cleardoublepage{%
+\clearpage%
+\if@twoside%
+   \ifodd \c@page \else \hbox{}\thispagestyle{plainhead}\newpage%
+           \if@twocolumn\hbox{}\thispagestyle{plainhead}\newpage\fi%
+   \fi%
+\fi%
+}
+\def\clearoddpage{\clearpage\if@twoside\ifodd\c@page
+  \hbox{}\thispagestyle{plainhead}\newpage\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+
+% titlepageのページスタイル変更
+\ifdefined\review@titlepage
+  \ifthenelse{\isundefined{\review@titlefile}}{%
+    \def\reviewtitlepagecont{%
+       \begin{titlepage}
+       \thispagestyle{plainhead}% empty->plainhead
+       \begin{center}%
+       \mbox{} \vskip5zw
+       \reviewtitlefont%
+       {\Huge\review@booktitlename\par}%
+       \ifdefined\review@subtitlename
+         \vskip 1em%
+         {\Large\review@subtitlename\par}%
+       \fi
+       \vskip 15em%
+       {\huge
+       \lineskip .75em
+       \begin{tabular}[t]{p{\textwidth}}%
+       \centering\review@titlepageauthors
+       \end{tabular}\par}%
+       \vfill
+       {\large\review@date \review@intn@edition\hspace{2zw}\review@intn@publishedby\par}%
+       \vskip4zw\mbox{}
+       \end{center}%
+       \end{titlepage}\clearpage
+    }
+  }{%
+    \def\reviewtitlepagecont{\review@titlefile}
+  }
+\fi
+
+% 奥付は偶数開始に
+\renewcommand{\reviewcolophon}[0]{\clearoddpage}
+% 奥付のページスタイル変更
+\ifdefined\review@colophon
+  \ifthenelse{\isundefined{\review@colophonfile}}{%
+    \def\reviewcolophonpagecont{%
+\reviewcolophon
+\thispagestyle{plainhead}% empty->plainhead
+\vspace*{\fill}
+{\noindent\reviewtitlefont\Large\review@booktitlename}\\
+\ifdefined\review@subtitlename
+{\noindent\reviewtitlefont\large\review@subtitlename} \\
+\fi
+\rule[8pt]{\textwidth}{1pt} \\
+{\noindent\review@pubhistories}
+
+\begin{tabularx}{\dimexpr\textwidth-0.5em}{lX}
+\review@colophonnames
+\end{tabularx}
+　\\
+\rule[0pt]{\textwidth}{1pt} \\
+\ifdefined\review@rights
+\review@rights
+\fi
+    }%
+  }{%
+    \def\reviewcolophonpagecont{\review@colophonfile}
+  }
+\fi
 
 \makeatother
