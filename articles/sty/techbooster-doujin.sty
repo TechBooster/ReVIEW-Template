@@ -26,6 +26,7 @@
   \color{white}\medskip\footnotesize\begin{shadedb}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
   \end{alltt}\end{shadedb}}
 
+% ヘッダ・フッタの指定
 \fancyhead{}
 \fancyhead[LE]{\gtfamily\sffamily\bfseries\upshape \leftmark}
 \fancyhead[RO]{\gtfamily\sffamily\bfseries\upshape \rightmark}
@@ -127,9 +128,20 @@
 % 見出し書体
 \renewcommand{\reviewtitlefont}{\gtfamily\sffamily\bfseries}
 
-% cleardoublepage, clearoddpage上書き
-\renewcommand\oneblankpage{\clearpage\thispagestyle{plainhead}%
-  \hbox{}\newpage\if@twocolumn\hbox{}\newpage\fi}
+% 既存命令のemptyページスタイルをパッチでplainheadに変更
+\patchcmd{\includefullpagegraphics}{%
+{\thispagestyle{empty}\@includefullpagegraphics}
+}{%
+{\thispagestyle{plainhead}\@includefullpagegraphics}
+}
+{\message{succeeded to patch: includefullpagegraphics}}{\message{failed to patch: includefullpagegraphics}}
+
+\patchcmd{\oneblankpage}{%
+\thispagestyle{empty}%
+}{%
+\thispagestyle{plainhead}%
+}
+{\message{succeeded to patch: oneblankpage}}{\message{failed to patch: oneblankpage}}
 
 \def\cleardoublepage{%
 \clearpage%
@@ -142,64 +154,37 @@
 \def\clearoddpage{\clearpage\if@twoside\ifodd\c@page
   \hbox{}\thispagestyle{plainhead}\newpage\if@twocolumn\hbox{}\newpage\fi\fi\fi}
 
-% titlepageのページスタイル変更
 \ifdefined\review@titlepage
   \ifthenelse{\isundefined{\review@titlefile}}{%
-    \def\reviewtitlepagecont{%
-       \begin{titlepage}
-       \thispagestyle{plainhead}% empty->plainhead
-       \begin{center}%
-       \mbox{} \vskip5zw
-       \reviewtitlefont%
-       {\Huge\review@booktitlename\par}%
-       \ifdefined\review@subtitlename
-         \vskip 1em%
-         {\Large\review@subtitlename\par}%
-       \fi
-       \vskip 15em%
-       {\huge
-       \lineskip .75em
-       \begin{tabular}[t]{p{\textwidth}}%
-       \centering\review@titlepageauthors
-       \end{tabular}\par}%
-       \vfill
-       {\large\review@date \review@intn@edition\hspace{2zw}\review@intn@publishedby\par}%
-       \vskip4zw\mbox{}
-       \end{center}%
-       \end{titlepage}\clearpage
-    }
-  }{%
-    \def\reviewtitlepagecont{\review@titlefile}
+    \patchcmd{\reviewtitlepagecont}{%
+\thispagestyle{empty}%
+}{%
+\thispagestyle{plainhead}%
+}
+{\message{succeeded to patch: reviewtitlepagecont}}{\message{failed to patch: reviewtitlepagecont}}
   }
 \fi
 
-% 奥付は偶数開始に
+% 奥付を必ず偶数開始
 \renewcommand{\reviewcolophon}[0]{\clearoddpage}
-% 奥付のページスタイル変更
+
+\tracingpatches
 \ifdefined\review@colophon
   \ifthenelse{\isundefined{\review@colophonfile}}{%
-    \def\reviewcolophonpagecont{%
-\reviewcolophon
-\thispagestyle{plainhead}% empty->plainhead
-\vspace*{\fill}
-{\noindent\reviewtitlefont\Large\review@booktitlename}\\
-\ifdefined\review@subtitlename
-{\noindent\reviewtitlefont\large\review@subtitlename} \\
-\fi
-\rule[8pt]{\textwidth}{1pt} \\
-{\noindent\review@pubhistories}
+    \patchcmd{\reviewcolophonpagecont}{%
+\thispagestyle{empty}%
+}{%
+\thispagestyle{plainhead}%
+}
+{\message{succeeded to patch: reviewcolophonpagecont}}{\message{failed to patch: reviewcolophonpagecont}}
 
-\begin{tabularx}{\dimexpr\textwidth-0.5em}{lX}
-\review@colophonnames
-\end{tabularx}
-　\\
-\rule[0pt]{\textwidth}{1pt} \\
-\ifdefined\review@rights
-\review@rights
-\fi
-    }%
-  }{%
-    \def\reviewcolophonpagecont{\review@colophonfile}
+    \patchcmd{\reviewcolophonpagecont}{%日付後に1行アキ
+{\noindent\review@pubhistories}
+}{%
+{\noindent\review@pubhistories}
+\vspace{\Cvs}
+}
+{\message{succeeded to patch: reviewcolophonpagecont2}}{\message{failed to patch: reviewcolophonpagecont2}}
   }
 \fi
 
