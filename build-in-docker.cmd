@@ -1,0 +1,1 @@
+docker run -t --rm -v %~dp0:/book vvakame/review:2.4 /bin/bash -ci "cd /book && ./setup.sh && npm run pdf"

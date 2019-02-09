@@ -2,9 +2,15 @@ PREDEF:
   - preface.re
 
 CHAPS:
-  - article.re
+  - business_background.re
+  - scoring.re
+  - database_design.re
+  - nuxt.re
+  - python.re
+  - deploy.re
 
 APPENDIX:
+  - bi_visualize.re
 
 POSTDEF:
   - contributors.re
