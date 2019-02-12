@@ -8,10 +8,13 @@ const bookConfig = yaml.safeLoad(fs.readFileSync(`${articles}/config.yml`, "utf8
 
 const reviewPrefix = process.env["REVIEW_PREFIX"] || "bundle exec ";
 const reviewPostfix = process.env["REVIEW_POSTFIX"] || "";             // REVIEW_POSTFIX="-peg" npm run pdf とかするとPEGでビルドできるよ
+const reviewConfig = process.env["REVIEW_CONFIG_FILE"] || "config.yml"; // REVIEW_CONFIG_FILE="config-ebook.yml" npm run pdf のようにすると別のconfigでビルドできるよ
 const reviewPreproc = `${reviewPrefix}review-preproc${reviewPostfix}`;
 const reviewCompile = `${reviewPrefix}review-compile${reviewPostfix}`;
 const reviewPdfMaker = `${reviewPrefix}review-pdfmaker${reviewPostfix}`;
 const reviewEpubMaker = `${reviewPrefix}review-epubmaker${reviewPostfix}`;
+const reviewWebMaker = `${reviewPrefix}review-webmaker${reviewPostfix}`;
+const reviewTextMaker = `${reviewPrefix}review-textmaker${reviewPostfix}`;
 
 module.exports = grunt => {
 	grunt.initConfig({
@@ -24,7 +27,9 @@ module.exports = grunt => {
 					`${articles}/*.html`,
 					`${articles}/*.md`,
 					`${articles}/*.xml`,
-					`${articles}/*.txt`
+					`${articles}/*.txt`,
+					`${articles}/webroot`,
+					`${articles}/textroot`
 				]
 			}
 		},
@@ -36,14 +41,6 @@ module.exports = grunt => {
 					}
 				},
 				command: `${reviewPreproc} -r --tabwidth=2 *.re`
-			},
-			compile2text: {
-				options: {
-					execOptions: {
-						cwd: articles,
-					}
-				},
-				command: `${reviewCompile} --target=text`
 			},
 			compile2markdown: {
 				options: {
@@ -83,7 +80,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewPdfMaker} config.yml`
+				command: `${reviewPdfMaker} ${reviewConfig}`
 			},
 			compile2epub: {
 				options: {
@@ -91,7 +88,23 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewEpubMaker} config.yml`
+				command: `${reviewEpubMaker} ${reviewConfig}`
+			},
+			compile2web: {
+				options: {
+					execOptions: {
+						cwd: articles,
+					}
+				},
+				command: `${reviewWebMaker} ${reviewConfig}`
+			},
+			compile2text: {
+				options: {
+					execOptions: {
+						cwd: articles,
+					}
+				},
+				command: `${reviewTextMaker} ${reviewConfig}`
 			}
 		}
 	});
@@ -134,6 +147,11 @@ module.exports = grunt => {
 		"epub",
 		"原稿をコンパイルしてepubファイルにする",
 		generateTask("epub"));
+
+	grunt.registerTask(
+		"web",
+		"原稿をコンパイルしてWebページファイルにする",
+		generateTask("web"));
 
 	require('load-grunt-tasks')(grunt);
 };
