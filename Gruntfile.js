@@ -13,6 +13,8 @@ const reviewPreproc = `${reviewPrefix}review-preproc${reviewPostfix}`;
 const reviewCompile = `${reviewPrefix}review-compile${reviewPostfix}`;
 const reviewPdfMaker = `${reviewPrefix}review-pdfmaker${reviewPostfix}`;
 const reviewEpubMaker = `${reviewPrefix}review-epubmaker${reviewPostfix}`;
+const reviewWebMaker = `${reviewPrefix}review-webmaker${reviewPostfix}`;
+const reviewTextMaker = `${reviewPrefix}review-textmaker${reviewPostfix}`;
 
 module.exports = grunt => {
 	grunt.initConfig({
@@ -25,7 +27,8 @@ module.exports = grunt => {
 					`${articles}/*.html`,
 					`${articles}/*.md`,
 					`${articles}/*.xml`,
-					`${articles}/*.txt`
+					`${articles}/*.txt`,
+					`${articles}/webroot`
 				]
 			}
 		},
@@ -44,7 +47,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewCompile} --target=text`
+				command: `${reviewTextMaker} ${reviewConfig}`
 			},
 			compile2markdown: {
 				options: {
@@ -93,6 +96,14 @@ module.exports = grunt => {
 					}
 				},
 				command: `${reviewEpubMaker} ${reviewConfig}`
+			},
+			compile2web: {
+				options: {
+					execOptions: {
+						cwd: articles,
+					}
+				},
+				command: `${reviewWebMaker} ${reviewConfig}`
 			}
 		}
 	});
@@ -135,6 +146,11 @@ module.exports = grunt => {
 		"epub",
 		"原稿をコンパイルしてepubファイルにする",
 		generateTask("epub"));
+
+	grunt.registerTask(
+		"web",
+		"原稿をコンパイルしてWebページファイルにする",
+		generateTask("web"));
 
 	require('load-grunt-tasks')(grunt);
 };
