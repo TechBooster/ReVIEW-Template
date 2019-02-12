@@ -49,9 +49,10 @@
 \usepackage{fancyvrb}
 \VerbatimFootnotes
 \usepackage{seqsplit}
-\let\textttorg=\texttt
-\def\texttt{\begingroup\obeyspaces\do@texttt}
-\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
+% これは見出しに入ったときに目次がエラーになる
+%\let\textttorg=\texttt
+%\def\texttt{\begingroup\obeyspaces\do@texttt}
+%\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
 
 \renewcommand{\captionsize}{\fontsize{9}{9}\selectfont}
 \newlength{\captionnumwidth}
