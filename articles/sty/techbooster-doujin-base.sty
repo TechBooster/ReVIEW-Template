@@ -120,9 +120,10 @@
   {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
    \medskip{\captionsize\captionhead #1}\vspace*{-1.3zw}}}
 
-\renewenvironment{reviewcolumn}{%
+\renewenvironment{reviewcolumn}[1][]{%
      \vspace{\baselineskip}
      \begin{tcolorbox}[colback=white,breakable,enhanced jigsaw,before upper={\parindent1zw}]
+     \reviewcolumnhead{}{#1}
    }{%
       \end{tcolorbox}
      \vspace{\baselineskip}
