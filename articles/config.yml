@@ -97,7 +97,7 @@ urnid: urn:uid:https://github.com/TechBooster/ReVIEW-Template
 htmlext: html
 #
 # CSSファイル(配列で複数指定可、yamlファイルおよびRe:VIEWファイルを置いたディレクトリにあること)
-stylesheet: ["style.scss"]
+stylesheet: ["style.css"]
 
 # ePUBのバージョン (2か3)
 epubversion: 3
@@ -241,6 +241,7 @@ direction: "ltr"
 epubmaker:
   # HTMLファイルの拡張子
   htmlext: xhtml
+  stylesheet: ["style.css","epub_style.css"]
   #
   # 目次を要素の階層表現にしない。省略した場合(null)は階層化する。
   # 特に部扉が入るなどの理由で、構成によっては階層化目次でepubcheckに
