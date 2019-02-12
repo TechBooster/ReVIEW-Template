@@ -48,11 +48,17 @@
 
 \usepackage{fancyvrb}
 \VerbatimFootnotes
+
+% ttでの折り返しの許容
 \usepackage{seqsplit}
-% これは見出しに入ったときに目次がエラーになる
-%\let\textttorg=\texttt
-%\def\texttt{\begingroup\obeyspaces\do@texttt}
-%\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
+\let\textttorg=\texttt
+\def\texttt{\begingroup\obeyspaces\do@texttt}
+\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
+% 目次に入ると壊れるので評価をprotectする
+\renewcommand{\reviewtt}[1]{\protect\texttt{#1}}
+\renewcommand{\reviewcode}[1]{\protect\texttt{#1}}
+\renewcommand{\reviewtti}[1]{\protect\texttt{\textit{#1}}}
+\renewcommand{\reviewttb}[1]{\protect\texttt{\textbf{#1}}}
 
 \renewcommand{\captionsize}{\fontsize{9}{9}\selectfont}
 \newlength{\captionnumwidth}
