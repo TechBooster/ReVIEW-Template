@@ -251,6 +251,12 @@ Re:VIEW 3で変わったことの詳細については、以下を参照して�
 
 * [Re:VIEW 3からのLaTeX処理](https://review-knowledge-ja.readthedocs.io/ja/latest/latex/review3-latex.html)
 
+### Re:VIEW 2用のテンプレートの入手
+
+何らかの理由でどうしてもRe:VIEW 2系のTechBoosterテンプレートが必要なときには、以下のリリースページから「review-2.4」リリースアーカイブファイルを利用してください。
+
+* https://github.com/TechBooster/ReVIEW-Template/releases
+
 ## 権利
 
  * 設定ファイル、テンプレートなど制作環境（techbooster-doujin-base.styなど）はMITライセンスです
