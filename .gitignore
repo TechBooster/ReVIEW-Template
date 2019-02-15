@@ -1,5 +1,10 @@
-node_modules
+node_modules/
 Gemfile.lock
 *.pdf
 
+articles/*.pdf
+articles/*.epub
 articles/*.html
+articles/*.md
+articles/*.xml
+articles/*.txt
