@@ -25,7 +25,7 @@
     "md": "grunt markdown",
     "html": "grunt html",
     "test": "npm run html",
-    "lint": "textlint './articles/*.re'"
+    "lint": "textlint './articles/pages/*.re'"
   },
   "dependencies": {},
   "devDependencies": {
