@@ -17,7 +17,7 @@ jobs:
             - ./node_modules
       - run:
           name: TextLint
-          command: npm lint
+          command: npm run lint
       - run:
           name: Test
           command: npm test
