@@ -18,3 +18,5 @@ rules:
     pattern:  ShadowDOM
   - expected: Incremental DOM
     pattern:  IncrementalDOM
+  - expected: Nuxt
+  - excepted: Nuxt.js

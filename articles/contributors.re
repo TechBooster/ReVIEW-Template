@@ -9,3 +9,6 @@
   * Startup Leadership Program Tokyo「Presentation Day」 最優秀賞
   * Yahoo!JAPAN主催ハッカソン「HACKDAY 10thAniv.」 Tech賞
   * SOMPOホールディングス株式会社主催「第2期 DataScienceBOOTCAMP」優勝
+
+==== 高山 和幸 / @pco2699
+   1989年生まれ。ITを用いて怠けたいです。平日は、某資産運用スタートアップでJava書いてます。好きな言語は Java/TypeScript/Golang/Python。
