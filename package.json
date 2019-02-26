@@ -27,7 +27,6 @@
     "test": "npm run html",
     "lint": "textlint './articles/pages/*.re'"
   },
-  "dependencies": {},
   "devDependencies": {
     "grunt": "1.0.1",
     "grunt-cli": "1.2.0",
