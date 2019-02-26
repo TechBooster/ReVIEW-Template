@@ -1,6 +1,12 @@
 {
   "filters": {},
   "rules": {
-    "preset-ja-technical-writing": true
-  }
+    "preset-ja-technical-writing": true,
+    "prh": {
+      "rulePaths": ["./articles/prh.yml"]
+    }
+  },
+  "plugins": [
+    "review"
+  ]
 }
