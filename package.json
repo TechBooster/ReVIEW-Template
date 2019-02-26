@@ -1,6 +1,6 @@
 {
   "name": "review-template",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "",
   "main": "Gruntfile.js",
@@ -24,6 +24,9 @@
     "pdf": "grunt pdf",
     "md": "grunt markdown",
     "html": "grunt html",
+    "text": "grunt text",
+    "epub": "grunt epub",
+    "web": "grunt web",
     "test": "npm run html"
   },
   "dependencies": {},

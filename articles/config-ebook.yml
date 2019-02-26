@@ -1,0 +1,13 @@
+# 電子版用の上書き設定
+# 以下のいずれかのコマンドでPDFをビルドできる
+#  - REVIEW_CONFIG_FILE=config-ebook.yml rake pdf
+#  - review-pdfmaker config-ebook.yml
+#  - REVIEW_CONFIG_FILE=config-ebook.yml npm run pdf
+
+# 継承元設定
+inherit: ["config.yml"]
+
+# B5の設定(10pt 40文字×35行) - 電子版
+texdocumentclass: ["review-jsbook", "media=ebook,paper=b5,serial_pagination=true,openany,fontsize=10pt,baselineskip=15.4pt,line_length=40zw,number_of_lines=35,head_space=30mm,headsep=10mm,headheight=5mm,footskip=10mm"]
+# A5の設定(9pt 38文字×37行) - 電子版
+# texdocumentclass: ["review-jsbook", "media=ebook,paper=a5,serial_pagination=true,openany,fontsize=9pt,baselineskip=13pt,line_length=38zw,number_of_lines=37,head_space=15mm,headsep=3mm,headheight=5mm,footskip=10mm"]
