@@ -3,3 +3,4 @@ Gemfile.lock
 *.pdf
 
 articles/*.html
+articles/images/dist
