@@ -1,9 +1,13 @@
-rm -rf articles/images/dist/*
+
 for dir in `find articles/images/src/* -type d`; do
+    dist=${dir//src\//}
+    rm -rf $dist
+    mkdir $dist
     for file in `find ${dir} -type f`; do
-        dist=${dir//src/dist}
-        mkdir $dist
-        convert $file -type grayscale $dist/%d.png 
+        echo $file
+        dist_file=${file//src\//}
+
+        convert $file -type grayscale $dist_file 
     done
 done
 

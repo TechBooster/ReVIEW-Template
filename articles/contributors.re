@@ -5,4 +5,3 @@
 
 ==== 高山 和幸 / @pco2699
    1989年生まれ。ITを用いて怠けたいです。平日は、某資産運用スタートアップでJava書いてます。好きな言語は Java/TypeScript/Golang/Python。
->>>>>>> 1725584f8fa192d94fae7d58d8d517660ea63f30:articles/pages/contributors.re
