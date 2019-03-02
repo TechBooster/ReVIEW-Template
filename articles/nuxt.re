@@ -71,3 +71,31 @@ npx: installed 379 in 17.006s
 2019年2月27日現在、create-nuxt-appで作成したプロジェクトはTypeScriptに対応していません。
 著者の個人的な好みによりTypeScriptに置き換えて動かします。
 
+やることは以下の通りです。
+ * package.json
+ ** コマンド部分のnuxt -> nuxt-ts に書き換え
+ ** 不要なeslintパッケージを削除
+ * nuxt.config.js
+ ** 拡張子をjs -> tsに変更
+ ** Build Configulationのeslint-loaderをtslint-loaderに書き換える
+ ** Build Configulationの引数にany型を付与する
+ * tsconfig.json/tslint.jsonを作成する
+
+#@# 具体的なソースは貼っつけたほうが良さそう
+これらをやったら以下のコマンドで立ち上げてみましょう。
+
+//cmd{
+$ yarn run dev
+//}
+
+ブラウザを起動し、localhost:3000にアクセス！次のような画面が立ち上がったら、無事に起動できています！
+おめでとうございます！
+
+=== メインページの構成をVuetifyで作ろう
+
+=== ログインページをfirebaseと連携させて作ろう
+
+=== ヌルサクグラフを実装しよう
+
+
+

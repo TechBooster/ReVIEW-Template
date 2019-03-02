@@ -19,6 +19,9 @@ Githubとの連携が非常に簡単ですので、今回はこちらを利用�
 === Google Kubernetes Engine（GKE）
 実際に動かす環境として、Google Cloud Platformのサービスのひとつである「Google Kubernetes Engine」を用います。
 
+== 開発環境のDocker化
+== CircleCIの設定
+== GKEの設定
 == GKEのCluster作成
 //cmd{
 gcloud container clusters create nullsuck --num-nodes 2 --zone asia-northeast1-a
