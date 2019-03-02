@@ -763,8 +763,8 @@ rules:
     expected: もちろん
   - pattern: 勿体な
     expected: もったいな
-  - pattern: もっとも
-    expected: 最も
+  # - pattern: もっとも
+  #   expected: 最も
   - pattern: 尤も
     expected: もっとも
   - pattern: /貰([わいうえおっ])/
@@ -1095,7 +1095,7 @@ rules:
     expected: 汚$1
   - pattern: /果([さしすせそ])/
     expected: 果た$1
-  - pattern: /([^排人])他([^ァ-ヶ社者人方])/
+  - pattern: /([^排人利])他([^ァ-ヶ社者人方])/
     expected: $1ほか$2
   - pattern: 後ほど
     expected: のちほど
