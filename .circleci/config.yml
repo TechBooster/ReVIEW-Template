@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: vvakame/review:3.0
+      - image: vvakame/review:3.1
     steps:
       - checkout
       - restore_cache:
