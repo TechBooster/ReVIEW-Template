@@ -11,6 +11,8 @@ meta:
 version: 1
 imports:
   - ../languages/ja/typo.yml
+  - ../terms/android.yml
+  - ../terms/javascript.yml
   - ../terms/software.yml
   - ../terms/review.yml
   - ../terms/trademark.yml
@@ -75,8 +77,8 @@ rules:
   - expected: すべて
     pattern:  /(全て|総て)/
     prh: 漢字で書かず、ひらがなで書くと読みやすくなります
-  - expected: たとえば
-    pattern:  例えば
+  - expected: たとえ
+    pattern:  /(例えば|例え)/
     prh: 漢字で書かず、ひらがなで書くと読みやすくなります
   - expected: 他の
     pattern:  ほかの
@@ -91,7 +93,7 @@ rules:
     pattern:  綺麗
     prh: 漢字で書かず、ひらがなで書くと読みやすくなります
   - expected: こと
-    pattern:  /(記|大|仕|返|無|食|見|議)?事(?!情|件|前|後|象|例|実|体|態|項|務|業|柄)/
+    pattern:  /(記|大|仕|返|無|食|見|議|関心)?事(?!情|件|前|後|象|例|実|体|態|項|務|業|柄)/
     regexpMustEmpty: $1
     prh: 漢字で書かず、ひらがなで書くと読みやすくなります
     specs:
@@ -259,6 +261,53 @@ rules:
   - expected: すべて
     pattern:  全て
     prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: あえて
+    pattern:  敢えて
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: いくつ
+    pattern:  幾つ
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: 使$1
+    pattern:  /つか(う|って|った)/
+    prh: ひらがなで書かず、漢字で書くと読みやすくなります。
+  - expected: あとから
+    pattern:  後から
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: よく
+    pattern:  良く
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: みつけ
+    pattern:  見つけ
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: ある
+    pattern:  有る
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: ない
+    pattern:  無い
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: わかりづらい
+    pattern:  分かり辛い
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: やすい
+    pattern:  易い
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: すべて
+    pattern:  全て
+    prh: 漢字で書かず、ひらがなで書くと読みやすくなります
+  - expected: 移る
+    pattern:  うつる
+    prh: ひらがなで書かず、漢字で書くと読みやすくなります
+  - expected: 同じ
+    pattern:  おなじ
+    prh: ひらがなで書かず、漢字で書くと読みやすくなります
+  - expected: 続け
+    pattern:  つづけ
+    prh: ひらがなで書かず、漢字で書くと読みやすくなります
+  - expected: 選$1
+    pattern:  /えら(ぶ|んだ)/
+    prh: ひらがなで書かず、漢字で書くと読みやすくなります
+
+
   # footnoteの末尾は読点を使わない
   # タイトル見出しの末尾は読点を使わない
   # 表、コード見出しの末尾は読点を使わない
@@ -277,8 +326,33 @@ rules:
   - expected: ライブラリ
     pattern:  ラブライブ # C87でやらかした人がいましたね？
     prh: C87でざきさんがやらかした思い出
+  - expected: ユーザー
+    pattern:  /ユーザ(?!ー)/ # 末尾に長音記号がつかない「ユーザ」だけ拾う
+    prh: ユーザーでもユーザでもいいんだけどユーザーで統一してる
 
+  - expected: Wi-Fi
+    pattern:  WiFi
+  - expected: JSON
+    pattern:  Json    
+  - expected: JUnit 5
+    pattern:  JUnit5
+  - expected: JUnit 4
+    pattern:  JUnit4
+  - expected: 引数
+    pattern:  引き数
+  - expected: おおむね
+    pattern:  概ね
+  - expected: パラメータ
+    pattern:  パラメーター
+  - expected: 仕組み
+    pattern:  しくみ
+  - expected: そう
+    pattern:  沿う
+  - expected: そって
+    pattern:  沿って
+  #- expected: Firebase
+  #  pattern:  Firebas
   # その他
-  - expected: コード保管
-    pattern:  コード補完
+  - expected: コード補完
+    pattern:  コード保管
     prh: コード補完の間違いと思われます。
