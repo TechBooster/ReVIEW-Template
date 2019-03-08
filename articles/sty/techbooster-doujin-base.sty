@@ -177,9 +177,15 @@
   }
 \fi
 
-% jsbookのmainmatterの内部oddpage処理を\clearoddpage利用に
+% jsbookのmainmatterの内部oddpage処理を変更
 \renewcommand\mainmatter{%
-  \clearoddpage
+  \if@openleft
+    \cleardoublepage
+  \else\if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi\fi
   \@mainmattertrue
   \pagenumbering{arabic}}
 
