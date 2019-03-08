@@ -177,6 +177,12 @@
   }
 \fi
 
+% jsbookのmainmatterの内部oddpage処理を\clearoddpage利用に
+\renewcommand\mainmatter{%
+  \clearoddpage
+  \@mainmattertrue
+  \pagenumbering{arabic}}
+
 % 奥付を必ず偶数開始
 \renewcommand{\reviewcolophon}[0]{\clearoddpage}
 
