@@ -49,16 +49,30 @@
 \usepackage{fancyvrb}
 \VerbatimFootnotes
 
-% ttでの折り返しの許容
+% tt/codeでの折り返しの許容
+% [注意]
+% Re:VIEW 3.0〜Re:VIEW 3.1ではこの機能は期待どおりには動作しないこと、
+% またseqsplitをこのような用途に転用することは危険であること
+% から、\iffalseを使ってコメントアウトしています。
+% どうしても利用したいときには\iffalse→\iftrueと書き換えてください。
+% Re:VIEW 3.1では見出しやキャプション内で使ったときにスペース文字が
+% 欠落します。この対処については、以下のgistコードを参照してください。
+%   https://gist.github.com/kmuto/4446c219a12d1ac676dd95c9da4b9e65
+%
+% Re:VIEW 3.2ではconfig.ymlに「keepcodespace: true」を設定すること
+% で欠落せずに出力されます。
+\iffalse
 \usepackage{seqsplit}
 \let\textttorg=\texttt
 \def\texttt{\begingroup\obeyspaces\do@texttt}
 \def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
 % 目次に入る可能性があるのでRobust化しておく
-\DeclareRobustCommand{\reviewtt}[1]{\texttt{#1}}
-\DeclareRobustCommand{\reviewcode}[1]{\texttt{#1}}
-\DeclareRobustCommand{\reviewtti}[1]{\texttt{\textit{#1}}}
-\DeclareRobustCommand{\reviewttb}[1]{\texttt{\textbf{#1}}}
+% Re:VIEW 3.2以上では不要
+\DeclareRobustCommand{\reviewtt}{\texttt}
+\DeclareRobustCommand{\reviewcode}{\texttt}
+\DeclareRobustCommand{\reviewtti}[1]{\textit{\texttt{#1}}}
+\DeclareRobustCommand{\reviewttb}[1]{\textbf{\texttt{#1}}}
+\fi
 
 \renewcommand{\captionsize}{\fontsize{9}{9}\selectfont}
 \newlength{\captionnumwidth}
