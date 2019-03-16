@@ -8,7 +8,7 @@
 名称  説明
 -----------------------
 APIフレームワーク	responder
-ORM	　SQLAlchemy
+ORM	SQLAlchemy
 機械学習ライブラリ	scikit-learn
 //}
 
