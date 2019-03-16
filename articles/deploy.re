@@ -47,7 +47,7 @@ Dockerfileとは環境の構築手順をコードにして、毎回、同じ手�
  1. FROMで今回の環境に合うイメージを設定
  2. ディレクトリを作成（気にしない人は作成する必要なし）
  3. 環境に必要なライブラリを指定しているファイルのコピー
- 4. 必要な環境の
+ 4. 必要な環境のライブラリのインストール
 
 //list[dockerfile_nuxt][フロント側のDockerfile]{
 FROM node:10.14-alpine // 1. 今回の環境のイメージとしてNode.jsを指定
@@ -60,27 +60,28 @@ COPY ./yarn.lock ./
 
 COPY . .
 
-RUN yarn install && nuxt-ts build
+RUN yarn install && nuxt-ts build // 4. 必要な環境のライブラリのインストール
 CMD ["yarn", "run", "dev"]
 //}
 
 //list[dockerfile_python][バック側のDockerfile]{
-FROM python:3.6-alpine // 1.
+FROM python:3.6-alpine
 
-RUN mkdir /app && pip install pipenv
+RUN apk --no-cache --update-cache add gcc gfortran python python-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev && \
+    mkdir /app && \
+    pip install pipenv
 
 WORKDIR /app
 
-COPY ./Pipfile ./
-COPY ./Pipfile.lock ./
+COPY ./Pipfile ./Pipfile.lock ./
 
-RUN pipenv install
+RUN pipenv install --system
 
 COPY . .
 
 
 ENTRYPOINT ["pipenv", "run"]
-CMD ["production"]
+CMD ["prod"]
 //}
 
 === 2. docker-compose.ymlの作成
