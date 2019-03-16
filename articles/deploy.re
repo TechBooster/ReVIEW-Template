@@ -179,7 +179,7 @@ DB	Google Cloud SQL
 === 本番環境の構成
 本番環境の構成は次の通りです。
 
-//images[GKE_kousei][GKEの構成]
+//image[GKE_kousei][GKEの構成]
 
 IngressやPod、ServiceなどいろいろKubernetesの専門用語が並んでいますが、ざっくり次のような形で認識しておけばおｋです。
 //table[kubernetes][kubenetesの専門用語]{
