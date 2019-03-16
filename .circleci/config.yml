@@ -15,9 +15,9 @@ jobs:
           key: npm-cache-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
-      - run:
-          name: TextLint
-          command: npm run lint
+      # - run:
+      #     name: TextLint
+      #     command: npm run lint
       - run:
           name: Test
           command: npm test

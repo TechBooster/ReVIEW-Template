@@ -1,7 +1,7 @@
 = AIアプリをデプロイしよう
 では、今まで作ったアプリを本番にデプロイしてみましょう。
 
-== 今回の構成
+== 今回のデプロイ環境の構成
 今回は、次のような構成で動作環境を構築していきます。
 開発者がプッシュしただけで、本番環境までデプロイされるCD環境を作ることを目標にします。
 //image[figure1][今回の動作環境]
@@ -22,10 +22,15 @@ Kubernetesと名前がついていますが、今回はサクッと動かした�
 
 Dockerでサクッと動かすことに注力して説明していきます。
 
-== ローカル環境のDocker化
+== ローカル環境をDocker化しよう
 実際にデプロイを行う前に、まずはローカル環境でDockerで動かせるようにしましょう。
 今回は、説明の都合上、アプリ開発後に、Docker化してますが、実際は、開発の最初にDockerで動かせるようにしておくと
 他の人と一緒に開発する際に、環境差異などが出なくてお勧めです。
+
+今回は次の構成でDockerを構成します。
+//image[docker][今回のDockerの構成]
+appには@<chapref>{nuxt}で作成したNuxt.jsのモジュールを、apiには@<chapref>{python}を配置しています。
+DBにはMySQLを利用しています。
 
 Docker化するには、次の手順をそれぞれフロント（Nuxt.js側）とバック（Python API）で行います。
 
@@ -50,7 +55,7 @@ FROM node:10.14-alpine // 1. 今回の環境のイメージとしてNode.jsを�
 RUN mkdir /app // 2. ディレクトリを作成
 WORKDIR /app
 
-COPY ./package.json ./ // 3. 環境に必要な雷雨ラリを指定しているファイルをコピー
+COPY ./package.json ./ // 3. 環境に必要なライブラリを指定しているファイルをコピー
 COPY ./yarn.lock ./
 
 COPY . .
@@ -78,9 +83,23 @@ ENTRYPOINT ["pipenv", "run"]
 CMD ["production"]
 //}
 
+=== 2. docker-compose.ymlの作成
+次に、1.で作成したdockerファイルを立ち上げて連携できるようにdocker-compose
 
-== Kubernetes関連のファイル設定
-== CircleCIの設定
+
+=== 3. 立ち上げ動作確認
+
+== 本番環境をKubernetes・GKEで作成しよう
+
+=== 本番環境の構成
+=== Kubernetes関連のファイル設定
+=== GKE周りの設定
+=== ドメイン周りの設定
+
+== CircleCIで自動でデプロイされるようにしよう
+=== CircleCIの設定
+
+
 == GKEの設定
 == GKEのCluster作成
 //cmd{
