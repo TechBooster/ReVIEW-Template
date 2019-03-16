@@ -18,11 +18,83 @@ GitHubとの連携が非常に簡単ですので、今回はこちらを利用�
 
 === Google Kubernetes Engine（GKE）
 実際に動かす環境として、Google Cloud Platformのサービスのひとつである「Google Kubernetes Engine」を用います。
+Kubernetesと名前がついていますが、今回はサクッと動かしたいので、Kubernetesについてはあまりつっこみません。
 
-== 開発環境のDocker化
+Dockerでサクッと動かすことに注力して説明していきます。
+
+== ローカル環境のDocker化
+実際にデプロイを行う前に、まずはローカル環境でDockerで動かせるようにしましょう。
+今回は、説明の都合上、アプリ開発後に、Docker化してますが、実際は、開発の最初にDockerで動かせるようにしておくと
+他の人と一緒に開発する際に、環境差異などが出なくてお勧めです。
+
+Docker化するには、次の手順をそれぞれフロント（Nuxt.js側）とバック（Python API）で行います。
+
+ 1. Dockerfileの作成
+ 2. docker-compose.ymlの作成
+ 3. 立ち上げ・動作確認
+
+=== 1. Dockerfileの作成
+Dockerfileとは環境の構築手順をコードにして、毎回、同じ手順を踏まなくて済むようにするものです。
+こちらをフロントとバックそれぞれで作成していきます。
+
+基本的には、両方共同じような動作となっています。
+
+ 1. FROMで今回の環境に合うイメージを設定
+ 2. ディレクトリを作成（気にしない人は作成する必要なし）
+ 3. 環境に必要なライブラリを指定しているファイルのコピー
+ 4. 必要な環境の
+
+//list[dockerfile_nuxt][フロント側のDockerfile]{
+FROM node:10.14-alpine // 1. 今回の環境のイメージとしてNode.jsを指定
+
+RUN mkdir /app // 2. ディレクトリを作成
+WORKDIR /app
+
+COPY ./package.json ./ // 3. 環境に必要な雷雨ラリを指定しているファイルをコピー
+COPY ./yarn.lock ./
+
+COPY . .
+
+RUN yarn install && nuxt-ts build
+CMD ["yarn", "run", "dev"]
+//}
+
+//list[dockerfile_python][バック側のDockerfile]{
+FROM python:3.6-alpine // 1.
+
+RUN mkdir /app && pip install pipenv
+
+WORKDIR /app
+
+COPY ./Pipfile ./
+COPY ./Pipfile.lock ./
+
+RUN pipenv install
+
+COPY . .
+
+
+ENTRYPOINT ["pipenv", "run"]
+CMD ["production"]
+//}
+
+
+== Kubernetes関連のファイル設定
 == CircleCIの設定
 == GKEの設定
 == GKEのCluster作成
 //cmd{
 gcloud container clusters create nullsuck --num-nodes 2 --zone asia-northeast1-a
 //}
+
+//cmd{
+gcloud container clusters describe nullsuck --zone asia-northeast1-a
+//}
+
+https://medium.com/eureka-engineering/gke-circleci-2-0%E3%81%A7%E7%B6%99%E7%B6%9A%E7%9A%84%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4%E5%8F%AF%E8%83%BD%E3%81%AA%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E3%82%B7%E3%83%A5%E3%83%83%E3%81%A8%E4%BD%9C%E3%82%8B-fc42bef34761
+https://medium.com/@gorlemkun/gke%E3%81%ABhello%E3%81%A8%E3%81%A0%E3%81%91%E8%A8%80%E3%82%8F%E3%81%9B%E3%81%9F%E3%81%84-google-kubernetes-engine%E3%81%AB%E7%84%A1%E3%82%92%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4%E3%81%99%E3%82%8B-7c8feea1921c
+
+kubectl create secret generic cloudsql-instance-credentials --from-file=credentials.json=./nullsuck-02cac55f0d96.json
+kubectl create secret generic cloudsql-db-password --from-literal=password=fFKMx6I0pBwn9Gz1
+kubectl create secret generic cloudsql-db-username --from-literal=username=root
+gcloud beta compute ssl-certificates create nullsuck-cert --domains ai.pco2699.net
