@@ -1,17 +1,17 @@
 PREDEF:
-  - ./pages/preface.re
+  - preface.re
 
 CHAPS:
-  - ./pages/business_background.re
-  - ./pages/scoring.re
-  - ./pages/database_design.re
-  - ./pages/nuxt.re
-  - ./pages/python.re
-  - ./pages/deploy.re
-
-APPENDIX:
-  - ./pages/bi_visualize.re
+  - business_background.re
+  - scoring.re
+  - database_design.re
+  - nuxt.re
+  - python.re
+  - deploy.re
 
 POSTDEF:
-  - ./pages/afterword.re
-  - ./pages/contributors.re
+  - afterword.re
+  - contributors.re
+
+APPENDIX:
+  - bi_visualize.re
