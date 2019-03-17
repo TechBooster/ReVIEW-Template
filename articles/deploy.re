@@ -534,7 +534,7 @@ CircleCIでデプロイするために以下の3つの手順を踏みます。
 
 ==== CircleCIでデプロイするためのサービスアカウント設定
 CircleCIでデプロイするためにサービスアカウントを設定します。
-基本的な内容は @<chapref>{cloudsql} のサービスアカウント作成手順と同じですが
+基本的な内容は @<hd>{cloudsql} のサービスアカウント作成手順と同じですが
 権限を以下の様に設定します。
 
  * Kubernetes > Kubernetes Engine 開発者
@@ -548,7 +548,7 @@ CircleCIでデプロイするためにサービスアカウントを設定しま
 //image[circleci_env][CircleCIの環境変数設定]
 
 ==== Kubernetesの設定ymlを一部、書き換える
-@<chapref>{kuberntes}で設定したymlを、一部書き換えます。
+@<hd>{kubernetes}で設定したymlを、一部書き換えます。
 これは、Dockerのイメージを毎コミットごとに管理できるようにするためです。
 
 //emlist{
