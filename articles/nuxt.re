@@ -57,7 +57,10 @@ npx: installed 379 in 17.006s
 ? Project name NullSuck
 ? Project description My splendid Nuxt.js project
 ? Use a custom server framework none
-? Choose features to install Progressive Web App (PWA) Support, Linter / Formatter, Prettier, Axios
+? Choose features to install Progressive Web App (PWA) Support,
+                             Linter / Formatter,
+                             Prettier,
+                             Axios
 ? Use a custom UI framework vuetify
 ? Use a custom test framework none
 ? Choose rendering mode Universal
@@ -72,6 +75,7 @@ npx: installed 379 in 17.006s
 著者の個人的な好みによりTypeScriptに置き換えて動かします。
 
 やることは次のとおりです。
+
  * package.json
  ** コマンド部分のnuxt -> nuxt-ts に書き換え
  ** 不要なeslintパッケージを削除

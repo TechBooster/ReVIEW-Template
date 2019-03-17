@@ -100,7 +100,7 @@ MySQLのDockerは今回は、既存のイメージをそのまま利用するの
 docker-composeとは、開発時などのローカルで複数のDockerコンテナを一つのコマンドで立ち上げられるようにするものです。
 docker-composeファイルはプロジェクトの直下に作りましょう。
 
-//list[dockercompose][docker-composeの内容]{
+//list[dockercompose][docker-composeの内容][yml]{
 version: '3'
 services:
   app: # Nuxt.jsを動かすコンテナの動作定義
@@ -271,7 +271,7 @@ Service	nginxなどのリバースプロクシ的な役割を果たす
 Pod	コンテナのことを指す
 //}
 
-=== Kubernetes関連のファイル設定
+==={kubernetes} Kubernetes関連のファイル設定
 では、実際に、構成を元に、Kubernetes関連のファイルを作成していきましょう。
 Kubernetesは、@<code>{kubectl}というコマンドラインツールで、設定を行うことも可能です。
 しかし、同じ環境を作るのに、毎回コマンドを叩くのだと不便です。
@@ -296,7 +296,7 @@ k8s // k8sというフォルダにまとめて管理する
 deploymentは、Podの情報を含め、Podをどのくらい複製してつくるかや配置方法などを決めるファイルです。
 Podを作る際には、Pod毎にファイルを作ることも可能ですが、今回のような小さいアプリであればdeploymentファイルを作れば十分でしょう。
 
-//list[deployment_app][app-deployment.yml]{
+//list[deployment_app][app-deployment.yml][yml]{
 apiVersion: apps/v1
 kind: Deployment # deploymentを示す
 metadata:
@@ -323,7 +323,7 @@ spec:
 
 同様にapiもdeploymentファイルを作ります。
 
-//list[deployment_api][api-deployment.yml]{
+//list[deployment_api][api-deployment.yml][yml]{
 // 最初はappと同じなので、省略
       containers:
       - name: api
@@ -361,7 +361,7 @@ spec:
             mountPath: /etc/ssl/certs
           - name: cloudsql
             mountPath: /cloudsql
-      volumes: # Secretsを利用するためにボリュームを設定
+      volumes: # Secretを利用するためにボリュームを設定
         - name: cloudsql-instance-credentials
           secret:
             secretName: cloudsql-instance-credentials
@@ -373,14 +373,14 @@ spec:
 //}
 
 appファイルと異なる点は、Podが２つあり、一つはapi用、一つはCloud SQLへアクセスするProxy用を用意しています。
-また、Cloud SQLにアクセスするために必要なCredentialsやユーザ名・パスワード名は、すべてGKEのSeacretsを通して
+また、Cloud SQLにアクセスするために必要なCredentialsやユーザ名・パスワード名は、すべてGKEのSecretを通して
 取得するようにしています。
 
-GKEのSeacretsは後ほど、設定します。
+GKEのSecretは後ほど、設定します。
 
 
 次に、serviceファイルを作ります。
-//list[service_app][app-service.yml]{
+//list[service_app][app-service.yml][yml]{
 apiVersion: v1
 kind: Service # Serviceを指定
 metadata:
@@ -400,7 +400,7 @@ spec:
 これも同様にapiも作成してください。
 
 最後に、ingressを作成します。
-//list[ingress_app][app-ingress.yml]{
+//list[ingress_app][app-ingress.yml][yml]{
 apiVersion: extensions/v1beta1
 kind: Ingress # Inrgressを指定
 metadata:
@@ -415,7 +415,7 @@ spec:
 
 これでKubernetes関連のファイルが全て作成できました。
 
-=== Cloud SQLの設定・Credientialsの設定
+==={cloudsql} Cloud SQLの設定・Credientialsの設定
 次に、Cloud SQLを作っていきます。こちらもGoogle Cloud SDKで作成していきます。@<fn>{cloud_sql}
 
 以下のコマンドでCloud SQLのインスタンスを作成します。
@@ -462,7 +462,7 @@ GKEからProxyで接続するためには、第二世代のインスタンスを
   kubectl create secret generic cloudsql-db-username --from-literal=username=root
 //}
 
-これで、Cloud SQL
+これで、Cloud SQLにつなげる準備ができました。
 
 === GKE周りの設定
 実際に、GKEでKubernetesのClusterを作成してみましょう。
@@ -502,13 +502,132 @@ Kubernetesが操作できる環境にします。
   kubectl apply -f app-ingress.yaml
 //}
 
+これで以下のコマンド叩いてIPアドレスを確認しましょう
 
+//cmd{
+  kubectl get ingress
+//}
 
+IPアドレスにアクセスしてみて、問題なくページが表示されていれば
+無事にデプロイが完了しています！
 
 === ドメイン周りの設定
+#@# 書けたら書く
 
 == CircleCIで自動でデプロイされるようにしよう
-=== CircleCIの設定
+最後に、今までの手順をすべて、CircleCIに設定して
+Githubのmasterブランチが更新されたら、自動的にデプロイが更新されるようにしましょう。
+
+CircleCIとGithubの連携はCircleCIから行います。(今回は省略)
+そしてレポジトリの直下に以下のような形でディレクトリ、ymlファイルを作成します。
+//list[circleci_dir][CircleCIのディレクトリ]{
+NullSuck-AI/.circleci
+└── config.yml
+//}
+
+=== CircleCIを設定する手順
+CircleCIでデプロイするために以下の3つの手順を踏みます。
+
+ 1. CircleCIでデプロイするためのGCPのサービスアカウントの設定
+ 2. Kubernetesの設定ymlを一部、書き換える
+ 3. config.ymlを作成する
+
+==== CircleCIでデプロイするためのサービスアカウント設定
+CircleCIでデプロイするためにサービスアカウントを設定します。
+基本的な内容は @<chapref>{cloudsql} のサービスアカウント作成手順と同じですが
+権限を以下の様に設定します。
+
+ * Kubernetes > Kubernetes Engine 開発者
+ * Storage > Storage 管理者
+
+上記は、GKEおよびGCRを使えるようにするためです。
+
+そして、取得してきたjsonファイルの中身を次のような形で
+環境変数としてCircleCIに設定します。
+
+//image[circleci_env][CircleCIの環境変数設定]
+
+==== Kubernetesの設定ymlを一部、書き換える
+@<chapref>{kuberntes}で設定したymlを、一部書き換えます。
+これは、Dockerのイメージを毎コミットごとに管理できるようにするためです。
+
+//emlist{
+  asia.gcr.io/nullsuck/api:${CIRCLECI_SHA1}
+  ↓
+  asia.gcr.io/${PROJECT_NAME}/api:${CIRCLECI_SHA1}
+//}
+
+==== config.ymlを作成する
+config.ymlを作成していきます。
+config.ymlは簡単に言うとpushされた後に動かしてほしいコマンドを書いておくものです。
+ここに先程、手動で設定したGCRやGKEの設定手順をすべて、まとめて書いていきます。
+
+次が実際のconfig.ymlファイルです。
+
+//list[configyml][config.yml][yml]{
+version: 2
+jobs:
+  deploy_to_prod:
+    working_directory: /app
+    environment: # プロジェクト名などの環境変数を
+      - PROJECT_NAME: "nullsuck"
+      - GOOGLE_PROJECT_ID: "nullsuck"
+      - GOOGLE_COMPUTE_ZONE: "asia-northeast1-a"
+      - GOOGLE_CLUSTER_NAME: "nullsuck"
+    docker:
+      - image: google/cloud-sdk:237.0.0 # googleのCloudSDKのイメージを利用
+    steps:
+      - checkout
+      - run:
+          name: Setup Google Cloud SDK
+          command : |
+            apt-get install -qq -y gettext # あとで利用するenvsubstコマンドのため導入
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
+      - setup_remote_docker
+      - run:
+          name: Docker build and push
+          command: |
+            docker build \
+              -t ${PROJECT_NAME}/app ./client/.
+            docker tag ${PROJECT_NAME}/app asia.gcr.io/${PROJECT_NAME}/app:${CIRCLE_SHA1}
+            docker build \
+              -t ${PROJECT_NAME}/api ./server/.
+            docker tag ${PROJECT_NAME}/api asia.gcr.io/${PROJECT_NAME}/api:${CIRCLE_SHA1}
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
+            docker push asia.gcr.io/${PROJECT_NAME}/api:${CIRCLE_SHA1}
+            docker push asia.gcr.io/${PROJECT_NAME}/app:${CIRCLE_SHA1}
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            bash ./concat.sh
+            envsubst < ./k8s.yml > ./patched_k8s.yml
+            kubectl apply -f ./patched_k8s.yml
+
+workflows:
+  version: 2
+  deploy_prod:
+    jobs:
+      - deploy_to_prod:
+          filters:
+            branches:
+              only: master
+//}
+
+基本的には、今までやってきた手順をすべて、コマンドとして起こしたものです。
+本ymlファイルで追加で行っていることとしては次の通りです。
+
+ * Kubernetesの設定ファイルをすべて一つのファイルにまとめている
+ * 前の手順で設定した環境変数に変換するため @<code>{envsbst} でymlファイルの変換を行っている。
+
+このファイルを実際にコミットして、CircleCIが動くことを確認できれば、デプロイの作業はすべて完了です！
+お疲れ様でした。
+
+これでヌルサクAIアプリがネットに公開されました。
+
 
 //footnote[gcp_account][GCPを初回登録される方は、無料枠があるので、請求先アカウントを利用せずに無料で使えるかもしれないです。]
 //footnote[gcloud_zone][Google Cloud SDKの初期化時（@<code>{gcloud init}実行時）にDefault Zoneを指定していれば省略することができます。]
