@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js" 
   },
   "repository": {
     "type": "git",

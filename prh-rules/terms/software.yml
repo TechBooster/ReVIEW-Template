@@ -10,3 +10,7 @@ rules:
   - expected: Web
   - expected: superset
     pattern:  super set
+  - expected: Kubernetes
+    pattern:
+      - Kuberntes
+      - Kubenetes

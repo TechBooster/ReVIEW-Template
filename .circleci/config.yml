@@ -5,6 +5,12 @@ jobs:
       - image: vvakame/review:2.4
     steps:
       - checkout
+      - run:
+          name: Install Dependencies
+          command: apt-get install -y imagemagick
+      - run:
+          name: grayscale modules
+          command: bash ./img2grayscale.sh
       - restore_cache:
           keys:
             - npm-cache-{{ checksum "package-lock.json" }}
