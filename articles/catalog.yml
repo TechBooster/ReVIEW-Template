@@ -3,6 +3,7 @@ PREDEF:
 
 CHAPS:
   - business_background.re
+  - aiproject.re
   - scoring.re
   - database_design.re
   - nuxt.re
