@@ -2,7 +2,6 @@ PREDEF:
   - preface.re
 
 CHAPS:
-  - business_background.re
   - aiproject.re
   - scoring.re
   - database_design.re
