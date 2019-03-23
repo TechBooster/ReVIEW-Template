@@ -69,6 +69,7 @@
 
 == カウント・集計
 === ディレクトリ整理
+//image[analytics01][ディレクトリ構造]
 
 
 ターミナルでjupyter notebookを起動しましょう。
