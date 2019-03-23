@@ -32,18 +32,18 @@ responderは2018年10月に公開された、新しいフレームワークで�
 == プロジェクトの構成
 //emlist[project_python]{
 server/
-├── api.py
-├── db_config.py
+├── api.py // 起動する
+├── db_config.py // DB設定など
 ├── Dockerfile
 ├── env
-├── handlers.py
+├── handlers.py // ハンドラー
 ├── __init__.py
-├── models.py
+├── models.py // モデル
 ├── nullsuckAi_model.sav // 機械学習のモデル
-├── Pipfile
+├── Pipfile 
 ├── Pipfile.lock
 ├── services.py
-├── settings.py
+├── settings.py // dotenvの読み込み
 └── wine_attributes.csv
 
 1 directory, 12 files
@@ -81,13 +81,15 @@ Pythonは、他のJava, C#, Goなどの言語と違い、フォルダごとに�
 
 なにかPythonでアプリなどを作る際は、このpipenvを利用することを強くお勧めします。@<fn>{pipenv}
 
-
 === 各モジュールの責務
 #@# もしかしたら削ってもいいかも
 それぞれ、modelとhandlerとservicesは次の通りの依存関係になっています。
-
+//image[service_responsibity][各モジュールの債務]
 
 == DBモデルを実装しよう
+では、DBのモデルをPythonで実装しましょう。
+今回は、次のようなテーブル構成で実装を行います。
+
 == コントローラを実装しよう
 == 機械学習のモデルを組み込もう
 
