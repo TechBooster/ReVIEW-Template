@@ -1,14 +1,15 @@
 ={nuxt} NuxtでAIアプリのフロントを作ろう
 それでは、今まで@hidefknに設計してもらったAIアプリを実際に実装していきましょう。
 
-今回のサンプルアプリケーションはすべて次のGitHubリポジトリにあります。
+今回のサンプルアプリケーションのコードはすべて @<href>{https://github.com/pco2699/NullSuck-AI} で見れます。
 本文の説明と合わせて参照いただけると理解が進みます。
-#@# Githubリンクを入れる
+
+また、本アプリは @<href>{https://ai.pco2699.net} にデプロイされているので
+興味がある方はアクセスしていじってみてください。
 
 == 今回作るアプリ
 今回は、次のような構成でアプリを実装していきます。
-#@# アプリの構成図を入れる
-#@# アプリの構成の説明
+//image[project_stack][アプリの概観図]
 
 本アプリは主に、フロントをNuxt.jsというフロントエンドフレームワークを用いて
 実装していきます。
@@ -258,7 +259,7 @@ https://ai.pco2699.net/ -> index.vue
 この節は、まずVueの単一ファイルコンポーネントの基本構成について説明しつつ
 次のような基礎構成をつくることを目標にします。
 
-//image[first_layout][今回の目標]
+//image[first_layout][今回の目標][scale=0.6]
 
 今回は、@<tt>{layouts/default.vue}をいじっていきます。
 
@@ -299,13 +300,141 @@ Vuetifyは決められたコンポーネントを組み合わせていくこと�
 どのようなコンポーネントがあるかはVuetifyの公式ホームページ（@<href>{https://vuetifyjs.com}）にあるので、参照してみてください。
 
 今回は次の図に従って、コンポーネントを記載していきます。
-#@# Githubリンクを入れる
+//image[first_vuetify][Vuetifyを用いた画面の構成]
 
+実際にコーディングすると次の形となります。
+//list[vuetify][default.vue][html]{
+<v-app>
+  <v-toolbar
+    app
+    color="primary"
+    class="white--text"
+  >
+    <v-toolbar-side-icon class="white--text"/>
+    <v-toolbar-title v-text="title" />
+  </v-toolbar>
+  <v-content>
+    <v-container>
+      <nuxt/>
+    </v-container>
+  </v-content>
+  <v-footer
+    app
+  >
+    <span>&copy; Norwegian Geek 2019</span>
+  </v-footer>
+</v-app>
+//{
+
+toolbarの色を@<tt>{primary}で指定しています。
+このprimaryの色は@<tt>{plugins/vuetify.js}に記載されている色を変更することで
+変えることができます。
+
+//list[primary_color][Vuetifyの色指定]{
+Vue.use(Vuetify, {
+  theme: {
+    @<tt>{primary: colors.red.darken4},
+    accent: colors.grey.darken3,
+    (略)
+  }
+})
+//}
+
+テキストの色も @<tt>{class="white--text"}などのクラスを付与することで、色を白くできたりと
+とにかくCSSを書かなくてもさまざまな装飾、レスポンシブ対応を行うことができます。
 
 == 診断画面をつくろう
+次に、ワインの項目を入力する診断画面を作ってみましょう。
+診断画面は次に示すような画面です。
+
+//image[question_screen][診断画面]
+
+診断画面は質問数の分だけカードが並んでいます。
+今回は合計で11コの質問があるので、11コカードが並んでいる形です。
+
+これを普通にHTMLなどで書くとコピペの嵐となっていますが
+Nuxt.js/Vue.jsだとプログラマブルに、冗長なく書けるのが嬉しいところです。
+
+こういった繰り返しの部品は「コンポーネント」として作成します。
+この節では、診断画面のカードをつくることでコンポーネントの作り方を学びます。
+
 === 診断項目カードをつくろう
+診断項目カードなどのコンポーネントを作るには、@<tt>{components}フォルダの下に
+vueファイルを作ります。
 
+ディレクトリ @<tt>{components}の下に@<tt>{FormCard.vue} という名前でファイルを作りましょう。
 
+FormCardも先程と同様に既にあるVuetifyのUIコンポーネントを組み合わせてつくることができます。
+
+//list[][]{
+<template>
+  <v-card class="ma-2 pa-1">
+    <div class="subheading">
+      Heading
+    </div>
+    <div class="caption">
+      1/11
+    </div>
+    <v-slider
+      class="px-5 pt-5 pb-3"
+      thumb-label="always"
+      height="3"
+      hide-details
+    ></v-slider>
+  </v-card>
+</template>
+
+<script lang="ts">
+import Vue from 'vue'
+
+export default class FormCard extends Vue {}
+</script>
+//}
+
+ソースコードと画面の紐づけは次のような形となっています。
+v-cardのclassに紐付いている@<code>{ma-2 pa-1}は、マージンとパディングの指定を表しています。
+マージンやパディングもVuetifyを使うとclassで書いてしまうことができます。
+
+=== 診断カードをたくさん出せるようにしよう
+先程の診断カードを実際にページに出してみましょう。
+ページに出すには、ディレクトリ @<tt>{pages}にある@<tt>{index.vue}に@<tt>{formcard.vue}を
+インポートすることで、表示することができます。
+
+実際に、インポートしてみましょう。
+//list[index_vue][index.vue]{
+<template>
+  <v-layout column>
+    (省略)
+    <!-- HTMLタグの形式で埋め込める！ -->
+    <!-- v-forでこのタグを繰り返し出力できる -->
+    <form-card v-for="i in 11" :key="`${i}`"/>
+    <v-btn @click="submit">診断結果を表示する</v-btn>
+  </v-layout>
+</template>
+<script lang="ts">
+  // importでさきほどのFormCard.vueを取り込み
+  import FormCard from '~/components/Form/FormCard.vue'
+  import Component from 'nuxt-class-component'
+
+  // デコレータ内で、このコンポーネントを
+  // 使うことを宣言
+  @Component({
+    components: {
+      FormCard
+    }})
+  export default class Index extends Vue { }
+</script>
+//}
+
+上記の通り書くことで、診断カードを11コ表示させることができます！
+注意点は下のとおりです。
+
+ * この書き方はTypeScipt/ES6のクラスベースになっています。
+   他の本やページなどでは、別の書き方をしてるかもしれませんが
+   それでももちろん動きます。
+ * JS/TSの世界ではFormCardとキャメルケースですが
+   HTMLのタグになると、form-cardとスネークケースになるので
+   気をつけてください。
 
 
 == ヌルサクグラフを実装しよう
@@ -326,10 +455,230 @@ JavaScript用やフロントエンド用のグラフフレームワークはい�
  * 基本、有料ではあるが、ロゴを表示すれば無料で利用可
  * グラフの見た目がヌルサク
 
- 早速、
+今回、使うグラフは、このページ()から持ってきます。
+
+#@# ページの図を入れる
+このグラフをFormCardと同じ要領でコンポーネント化してみましょう。ファイル名は@<code>{ResultChart.vue}としましょう。
+グラフをコンポーネント化するには、amChartsにあるTypeScript/ES2015と書かれたコードをほぼそのまま使うことができます。
+
+該当のコードを、次の通りそのままはっつけてしまいましょう。
+
+//list[Result_chart][ResultChart.vue]{
+  <template>
+  <div>
+    <div id="chartdiv"></div>
+  </div>
+</template>
+
+<script lang="js">
+  import Vue from 'vue'
+  // import文をamChartsから持ってくる！
+  import Component  from 'nuxt-class-component'
+  import * as am4core from "@amcharts/amcharts4/core"
+  (省略)
+
+  am4core.useTheme(am4themes_animated);
+  am4core.useTheme(am4themes_themes_dataviz);
+
+  @Component
+  export default class ResultChart extends Vue {
+    result = 0
+
+    mounted () {
+      // import文以降をはっつけてしまう！
+
+      // Create chart instance
+      let chart = am4core.create("chartdiv", am4charts.RadarChart);
+      const data = []
+      const wineAttr = this.$store.getters.GET_WINE_ATTR
+      for (let i in 12){
+        data.push({category: i, value: i});
+      }
+
+      chart.data = data;
+      chart.radius = am4core.percent(100);
+      (省略)
+    }
+  }
+</script>
+//}
+
+@<tt>{mounted}はコンポーネントが生成されたタイミングの中でもDOMが生成されたあとに走る処理です。
+このタイミングで、amChartsのコードを走らせると、グラフが簡単に作成！、といった要領です。
+
+今回のコンポーネントだけ、例外的にTypeScriptではなくJavaScriptで書いています。@<fb>{why_hs}
+
+これでヌルサクグラフが完成です！
 
 == APIに投げるためにVuexを実装しよう
+今までのコンポーネントは見た目はそれっぽいですが、実際のデータが注入されていません。
+そこで、実際のデータを注入しましょう。
 
+今回は、Vuexを用いてデータを注入します。
+
+表示に関するデータを、コンポーネントごとに管理するとめんどくさいよねー、それなら、一つの場所にまとめてしまおう！
+というのがVuexの考え方だと思っています。
+
+この一つの場所、というのがStoreおよびStateと呼ばれる場所になります。
+
+=== Stateを定義しよう
+では、Stateを実際に定義してみましょう。
+Stateは、先ほど、説明したディレクトリの@<tt>{store}の配下にファイルをつくることで
+Nuxt.jsがよしなに、コンポーネントへの注入などをやってくれます。
+
+早速、@<tt>{store}の配下に、@<tt>{index.ts}を作ってみましょう。
+
+実際に作った、index.tsのstateは次の通りです。
+
+//list[indexts][index.ts][typescipt]{
+
+// 入力値のワインの属性値などを保持する
+// WineAttributeのインターフェース
+export interface WineAttribute {
+  id: number
+  japanese_title: string
+  english_title: string
+  value: number
+  step: number
+  max_value: number
+  min_value: number
+}
+
+
+// Stateのインターフェース
+export interface State {
+  title: string
+  wine_attributes: WineAttribute[]
+  result: Result
+}
+
+// フォームから入力した
+// 値のインターフェース
+export interface InputValue {
+  id: number
+  value: number
+}
+
+// 実際のState
+const s = (): State => {
+  return {
+    title: '',
+    wine_attributes: [],
+    result: { value: 0, comment: '' }
+  }
+}
+
+export s as state
+//}
+
+Stateは先程も言った通り、アプリ中すべてのコンポーネントから使われるデータなので
+いろいろなデータを持つ必要があります。
+
+@<b>{どんな値がはいってくるべきか}をTypeScriptのinterfaceで定義しているのが前半部です。
+interfaceとは、型に近い概念で、どんな値が入ってくるべきかを定義できるものです。
+JavaScriptだとintaerfaceが使えないため、stateにどんな値が入ってくるかわからないのですが
+TypeScriptinterfaceで事前に定義しておくことができます。
+
+これがNuxt.jsでTypeScriptを利用する一番のメリットではないか、と個人的に思っています。
+
+=== stateを変更するMutations, 取得するGetters
+stateは、すべてのコンポーネントから取得できるので、ほいほい色んな値を入れられてしまうと困ってしまいます。
+
+そのため、stateをいじれるやつを決めておくようにしよう！ということで以下の２つの概念が登場します。
+
+ * Stateを変更するMutations
+ * Stateを取得するGetters
+
+各コンポーネントはstateを直接変更するのではなく
+stateを変更したいときはMutations、取得したい場合はGettersをコンポーネントから呼び出します。
+
+実際の定義はこのようになっています。
+
+//list[mut_get][Mutations/Getters][typescript]{
+const mutations: MutationTree<State> = {
+  // ワインの属性値をセットするMutationの関数
+  SET_WINE_ATTR: (state, wineAttributes: WineAttribute[]) => {
+    state.wine_attributes = wineAttributes
+  },
+  // 入力値をセットするMutation
+  SET_WINE_VALUE: (state, payload: { id: number; value: number }) => {
+    state.wine_attributes[payload.id - 1].value = payload.value
+  },
+}
+
+const getters: GetterTree<State, any> = {
+  // ワインの属性値を取得するGetters
+  GET_WINE_ATTR: (state): WineAttribute[] => {
+    return state.wine_attributes
+  },
+}
+//}
+
+=== APIにアクセスするActions
+
+APIにアクセスしてなにか、値を取得したい！という場合はActionsを使います。
+Actionsは非同期前提で、ActionsからMutationsを呼んで、stateを更新します。
+
+今回、「アルコール濃度」などのワインの属性値はAPI側に持っているため
+これをActionsで呼び出して取得しています。
+
+//list[actions][Mutations/Getters][typescript]{
+const actions: ActionTree<State, any> = {
+  ワインの属性値を予めAPIから取得するAction関数
+  async nuxtServerInit(store: ActionContext<State, any>) {
+    const res = await (this as any).$axios.$get('/api/wine_attributes')
+      if (res.wine_attributes) {
+        store.commit('SET_WINE_ATTR', res.wine_attributes)
+      }
+    }
+  }
+}
+//}
+
+nuxtServerInitという名前でActionsを定義しておくと
+事前にサーバ側でAPIからデータを取得しておいて、画面に描画しておいてくれます。
+
+
+=== コンポーネントにVuexを組み込もう
+今まで説明してきたVuexの関数を実際にコンポーネントに組み込んでみましょう。
+
+さきほど、つくった診断画面にワインの属性値を設定してみます。
+
+//list[vue_corp][コンポーネントにVuexを組み込む]{
+<template>
+  <v-layout column>
+    // form-cardを書き換える
+    // これでワインの属性値を取得してform-cardに
+    // 設定できる
+    <form-card v-for="wineAttr in wineAttributes" 
+               :key="`${wineAttr.id}`"
+               :wine-attr="wineAttr"
+               :total="wineAttributes.length"
+               />
+    <v-btn @click="submit">診断結果を表示する</v-btn>
+  </v-layout>
+</template>
+
+<script lang="ts">
+  import Vue from 'vue'
+  // nuxt-class-componentというライブラリで
+  // デコレータでVuexの関数を持ってこれる
+  import Component, {Action, Getter, Mutation} from 'nuxt-class-component'
+  @Component({
+  components: {
+    FormCard
+  }})
+  export default class Index extends Vue {
+    // この形式で宣言するとGettersを呼び出し、ワインの属性値を
+    // が設定できる
+    @Getter('GET_WINE_ATTR') wineAttributes: WineAttribute[]
+    (省略)
+  }
+//}
+
+Vuexの関数をコンポーネントに組み込むことで、アプリにデータを注入し
+アプリの形が出来上がっていきます。
 
 //footnote[webpack][もちろん、パフォーマンスチューニングや本格的なパッケージングを行う場合は、Nuxt.jsでもwebpackの知識は必要になります。]
 //footnote[tslint][TypeScriptのlintは、eslintというJS用のlinterをts用にコンバージトしたものか、ts用のtslintを利用、２つの方法があります。]
+//footnote[why_hs][TypeScriptだと型のエラーで、コンパイルが通らなかったため]

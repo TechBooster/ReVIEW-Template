@@ -86,13 +86,224 @@ Pythonは、他のJava, C#, Goなどの言語と違い、フォルダごとに�
 それぞれ、modelとhandlerとservicesは次の通りの依存関係になっています。
 //image[service_responsibity][各モジュールの債務]
 
-== DBモデルを実装しよう
-では、DBのモデルをPythonで実装しましょう。
-今回は、次のようなテーブル構成で実装を行います。
+== 簡単なAPIをつくってreponderで動かしてみよう
+本格的な実装に入る前に、まずは簡単なAPIを作って動かすことで
+responderとpipenvの使い方に慣れていきましょう。
 
-== コントローラを実装しよう
+=== pipenvのインストール
+まずはプロジェクトを作成するためにpipenvをインストールしましょう。
+Python自体は3.6以上が導入されている前提で進めます。
+
+Pythonが入っていれば、pipenvをインストールするのは簡単です。
+
+//cmd{
+    pip install pipenv
+//}
+
+これでpipenvが入ります。
+
+=== pipenvでプロジェクトを作ろう
+pipenvでプロジェクトを作るのも極めて簡単です。
+
+//cmd{
+# プロジェクトの作成
+$ mkdir responder_test && cd responder_test
+$ pipenv install
+
+Creating a virtualenv for this project…
+Pipfile: C:\dev\responder_test\Pipfile
+Using c:\python36\python.exe (3.6.3) to create virtualenv…
+[    ] Creating virtual environment...Already using interpreter c:\python36\python.exe
+(...省略)
+Locking [packages] dependencies…
+Updated Pipfile.lock (ca72e7)!
+Installing dependencies from Pipfile.lock (ca72e7)…
+  ================================ 0/0 - 00:00:00
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+//}
+
+これでPipfileとPipfile.lockが出来上がります。
+このファイルはJavaScriptで言うところのpackage.jsonとpackage-lock.jsonにあたります。
+
+ここにresponderを追加してみましょう。
+
+//cmd{
+$ pipenv install responder
+
+Installing responder…
+(略)
+Installing dependencies from Pipfile.lock (e3aa62)…
+  ================================ 36/36 - 00:00:12
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+//}
+
+これでresponderが追加されます。合わせてPipfileとPipfile.lockも更新されています。
+
+=== 簡単なAPIをつくってみよう
+GETリクエストすると、キーとバリューがhelloを書かれたjsonを返すエンドポイントをつくります。
+次の通りapi.pyをプロジェクトに作ってみましょう。
+
+//listnum[first_api][api.py][python]{
+import responder
+api = responder.API()
+
+@api.route("/hello")
+def hello(req, resp):
+    resp.media = {"hello": "hello"}
+
+if __name__ == '__main__':
+    api.run()
+//}
+
+@<code>{@api.route("/hello")}のデコレータでルーティングの定義をします。
+そして、関数の中で、@<code>{resp.media}にオブジェクトを入れることで、JSONを返すことができます。
+
+flaskと違って、関数の中でreturnを書かなくて良いというのが特徴です。（falcon譲り）
+
+このapp.pyを動かすには、Pipenvで作られた仮想環境で動かす必要があります。
+Pipenv作られた仮想環境で動かすためには、以下の２つのやり方があります。
+
+ 1. @<code>{pipenv shell}で仮想環境のコンソールを立ち上げて@<code>{python} コマンドを叩く 
+ 2. @<code>{Pipfile} のscriptsにコマンドを書いて @<code>{pipenv run [コマンド定義名]}で動かす
+
+今回は1.の方法で動かしてみましょう。
+
+//cmd{//
+$ pipenv shell
+Launching subshell in virtual environment…
+
+$ python api.py
+INFO: Started server process [21140]
+INFO: Waiting for application startup.
+INFO: Uvicorn running on http://127.0.0.1:5042 (Press CTRL+C to quit)
+//}
+
+実際にcurlコマンドを叩いて確認してみましょう
+
+//cmd{
+$ curl localhost:5042/hello                         
+{"hello": "hello"}⏎
+//}
+
+無事にHelloと帰ってきてたら無事に動いています！
+
+
+== ハンドラーを実装しよう
+では、プロジェクトに戻ってハンドラーを実装してみましょう。
+今回つくるAPIは極めてシンプルにエンドポイントは２つだけにします。
+
+//image[handler][エンドポイント設計]
+
+このルーティングを実際に作っていきましょう。
+
+=== ルーティングを定義しよう
+まずは、ルーティングを定義します。
+ルーティングは@<code>{api.py}に以下の通り定義します。
+//list[routing_python][ルーティング][python]{
+from handlers import WineAttributeResource, PredictionResource
+
+models.main()
+api = responder.API(
+    cors=True,
+    allowed_hosts=["*"],
+)
+
+api.add_route('/api/wine_attributes', WineAttributeResource)
+api.add_route('/api/predict', PredictionResource)
+//}
+
+@<code>{api.add_route}でルートを定義することができます。　第二引数には、関数かクラスを定義して
+該当のルーティングに対応する処理を指定することができます。
+
+=== ハンドラーを実装しよう
+今回は、クラスベースでハンドラーを実装してみます。
+ハンドラーは次のような形で実装できます、
+
+//list[handler_python][ハンドラーの実装][python]{
+class WineAttributeResource:
+    def on_get(self, req, resp):
+        wine_attributes = WineAttributeService.get_all()
+        resp.media = {
+            "status": True,
+            "wine_attributes": wine_attributes
+        }
+
+class PredictionResource:
+    async def on_post(self, req, resp):
+        data = await req.media()
+        res = PredictionService.predict(data)
+        resp.media = {
+            "status": True,
+            "result": res
+        }
+//}
+
+クラスに@<code>{on_get}や@<code>{on_post}のメソッドを定義することで
+それぞれのエンドポイントのGETリクエストやPOSTリクエストについての挙動を記載することができます。
+
+やっていることはシンプルで、リクエストのデータをもとにビジネスロジックであるServiceにデータを投げたりしています。
+
 == 機械学習のモデルを組み込もう
+それではいよいよ機械学習のモデルをAPIに組み込んでみましょう。
+といってもやることはシンプルでうｓ。
+前章で@hidefkn氏に作ってもらったsavファイルをAPIに置いてPOSTデータを食わせます。
 
+=== 機械学習に必要なライブラリをインストールする
+まずAPIにも機械学習に必要なscikit-learnやpandas、numpyを導入しましょう。
+これもpipenvを利用すれば簡単に導入できます。
+
+//cmd{
+$ pipenv install scikit-learn pandas numpy
+//}
+
+ちなみにpipenvの唯一の問題なのですが、こういった機械学習系の重めのライブラリを導入すると
+@<b>{ゴリゴリに時間がかかります。（半日ほど）}
+気長に待つか待てない方は、別の方法で導入しましょう。
+
+=== モデルを読み込むServiceを作成する
+では、実際にモデルを組み込んでみましょう。
+モデルの組み込み、計算はServiceにて行います。
+
+//list[service_python][モデルの組み込みを行っているservice.py][python]{
+from models import WineAttribute, WineAttributeSchema, Prediction
+import pickle
+from pandas import DataFrame
+
+class PredictionService:
+    # pickleで同じフォルダにおいてあるsavファイルを読み込み
+    model = pickle.load(open('nullsuckAi_model.sav', mode='rb'))
+
+    @staticmethod
+    def predict(data):
+        # data(POSTされてきたデータ)を元のモデル作成時と同じpandasのdataframe型に変換する
+        df = DataFrame.from_dict(PredictionService.convert_dict(data), orient='columns')
+        # 上記で指定したmodelファイルを呼び出し
+        predict = PredictionService.model.predict([df['value']])
+        # numpyの型で帰ってくるのをfloatに変換
+        return float(predict[0])
+
+    # POSTデータの辞書型を変換する
+    @staticmethod
+    def convert_dict(data):
+        converted = {'id': [], 'value': []}
+        for k in data:
+            converted['id'].append(k['id'])
+            converted['value'].append(k['value'])
+
+        return converted
+//}
+
+ここでもやっていることは非常にシンプルです。
+主に以下のことをやっています。
+
+ * pickleで保存されているモデルを呼び出し
+ * POSTデータをpandasのデータフレームの形式に変換してpickleから復元したモデルで予測
+
+#@# == DBモデルを実装しよう
+#@# では、DBのモデルをPythonで実装しましょう。
+#@# 今回は、次のようなテーブル構成で実装を行います。
 
 //footnote[falcon][クラスベースでハンドラーを定義できるのはfalcon譲り。flaskはファンクションベースでしか定義できない。]
 //footnote[package][実際にJavaみたいに分けてみましたが、いろいろ大変でした。。。]
