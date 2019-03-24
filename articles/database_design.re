@@ -505,7 +505,7 @@ AorBorCのように、3つ以上に分けることによって解決する問題
   from sklearn import linear_model
 
   # データセット読み込み
-  
+
 
 //}
 
