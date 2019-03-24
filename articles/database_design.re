@@ -499,6 +499,12 @@ AorBorCのように、3つ以上に分けることによって解決する問題
 === モデリング環境の準備
 
 //list[modeling01][ライブラリのインポート][python]{
+  import numpy as np
+  import pandas as pd
+  import matplotlib.pyplot as plt
+  from sklearn import linear_model
+
+  # データセット読み込み
   
 
 //}
