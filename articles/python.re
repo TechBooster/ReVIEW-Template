@@ -51,7 +51,7 @@ server/
 
 Pythonは、他のJava, C#, Goなどの言語と異なりフォルダごとにパッケージを分けず、一ファイルにクラスをまとめて書くのがスタンダードです。@<fn>{package}
 
-//list[python_dir][Pythonのプロジェクト構成とほか言語の比較]{
+//list[python_dir][Pythonのプロジェクト構成と他言語の比較]{
 # JavaやGoの場合
 ./
 ├── app.java
@@ -174,7 +174,7 @@ Pipenv作られた仮想環境で動かすためには、次の２つのやり�
 $ pipenv shell
 Launching subshell in virtual environment…
 
-$ Python api.py
+$ python api.py
 INFO: Started server process [21140]
 INFO: Waiting for application startup.
 INFO: Uvicorn running on http://127.0.0.1:5042 （Press CTRL+C to quit）
@@ -260,13 +260,13 @@ $ pipenv install scikit-learn pandas numpy
 
 ちなみにpipenvの唯一の問題なのですが、こういった機械学習系の重めのライブラリを導入すると
 @<b>{ゴリゴリに時間がかかります。（半日ほど）}
-気長に待つか待ていない方は、別の方法で導入しましょう。
+気長に待つか待てない方は、別の方法で導入しましょう。
 
 === モデルを読み込むServiceを作成する
 では、実際にモデルを組み込んでみましょう。
 モデルの組込み計算はServiceにて行います。
 
-//list[service_python][モデルの組込み行っているservice.py][python]{
+//list[service_python][モデルの組込みを行っているservice.py][python]{
 from models import WineAttribute, WineAttributeSchema, Prediction
 import pickle
 from pandas import DataFrame
