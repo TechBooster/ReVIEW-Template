@@ -257,6 +257,16 @@ Re:VIEW 3で変わったことの詳細については、以下を参照して�
 
 * https://github.com/TechBooster/ReVIEW-Template/releases
 
+### EPUB/Web出力用CSSファイルの編集方法
+
+articles/ディレクトリ以下の各種*.scssファイルを編集し、
+
+```
+./rebuild-css.sh
+```
+
+コマンドでCSSファイルをビルドしてください。
+
 ## 権利
 
  * 設定ファイル、テンプレートなど制作環境（techbooster-doujin-base.styなど）はMITライセンスです
