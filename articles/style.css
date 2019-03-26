@@ -37,6 +37,9 @@ div.lead {
   font-size: 16px;
   margin-left: 3em; }
 
+p.flushright {
+  text-align: right; }
+
 .noteref {
   vertical-align: super;
   font-size: smaller; }
