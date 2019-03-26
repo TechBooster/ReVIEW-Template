@@ -15,9 +15,9 @@ body {
   line-height: 1.6;
   font-family: "ShinGoPro-Regular","ShinGo-Regular", sans-serif;
   /*
-  word-break: normal;
-  -webkit-line-break: after-white-space;
-  */ }
+    word-break: normal;
+    -webkit-line-break: after-white-space;
+    */ }
 
 p, ul, ol, dl, pre, table {
   font-family: "ShinGo Regular","ShinGo R","新ゴR","新ゴ R", sans-serif;
