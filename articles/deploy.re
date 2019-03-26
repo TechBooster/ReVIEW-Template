@@ -95,7 +95,7 @@ MySQLのDockerは今回は、既存のイメージをそのまま利用するの
 
 === 2. docker-compose.ymlの作成
 次に、1.で作成したdockerファイルを立ち上げて連携できるようにdocker-composeファイルを作成します。
-docker-composeとは、開発時などのローカルで複数のDockerコンテナを一つのコマンドで立ち上げられるようにするものです。
+docker-composeとは、開発時などのローカルで複数のDockerコンテナをひとつのコマンドで立ち上げられるようにするものです。
 docker-composeファイルはプロジェクトの直下に作りましょう。
 
 //list[dockercompose][docker-composeの内容][yml]{
@@ -135,9 +135,9 @@ volumes:
 //}
 
 === 3. 立ち上げ動作確認
-ここまででローカルのDocker関連のファイルの作成が完了しました！
-早速、動作確認をしてみましょう。
-コマンドラインから以下のコマンドを打ち込んで、動作を確認します。
+ここまでローカルのDocker関連のファイルの作成が完了しました！
+さっそく、動作確認をしてみましょう。
+コマンドラインから次のコマンドを打ち込んで、動作を確認します。
 
 //cmd{
 $ cd NullSuck-AI // docker-compose.ymlが置かれている場所に移動
@@ -168,7 +168,7 @@ app_1        | 10:24:23 Listening on: http://172.19.0.2:3000
 本作業以降から、Google Cloud SDKを用いて作業を行いますので、@<href>{https://cloud.google.com/sdk/} を参照いただき、コマンドラインからGoogle Cloud SDKを利用できるようにしておいてください。
 
 === GCPのプロジェクト作成
-まず、GCPを使えるようにするには、Googleアカウントにログインした上で、GCP上でプロジェクトを作成する必要があります。
+まず、GCPを使えるようにするには、Googleアカウントにログインしたうえで、GCP上でプロジェクトを作成する必要があります。
 自分のGoogleアカウントでログインし、@<href>{https://console.cloud.google.com/} にアクセスしましょう。
 
 次に示すとおり、「プロジェクトの作成」からプロジェクトを作成していきます。
@@ -182,7 +182,7 @@ app_1        | 10:24:23 Listening on: http://172.19.0.2:3000
 今回の例では、プロジェクト名は「nullsuck」、請求先アカウントは登録しています。@<fn>{gcp_account}
 
 === Dockerイメージをpush
-プロジェクトができたので、これでGoogle Container RegistryにDockerイメージをpushすることができます。
+プロジェクトができたので、これでGoogle Container RegistryにDockerイメージをpushできます。
 実際に、pushを行ってみましょう。
 
 自分のローカル環境でDockerのイメージをbuildするところから始めます。
@@ -192,7 +192,7 @@ $ cd NullSuck-AI // プロジェクト直下に移動
 $ docker build -t nullsuck_ai_app ./client/. // アプリのイメージビルド
 //}
 
-@<code>{docker build -t 名前}で指定した名前でイメージをビルドすることができます。
+@<code>{docker build -t 名前}で指定した名前でイメージをビルドできます。
 
 次のような形で @<tt>{Successfully built} と出力されればOKです。
 同様にAPI側もイメージビルドしましょう。
@@ -210,12 +210,12 @@ Successfully tagged nullsuck_ai_app:latest
 //}
 
 今度はこれを、Google Container Registryに命名ルールに沿って別名をつけてあげましょう。
-Google Container Registryでは以下の命名ルールに沿う必要があります。
+Google Container Registryでは次の命名ルールに沿う必要があります。
 //emlist{
   {asia|us|eu}.gcr.io/プロジェクトID/コンテナイメージの名前
 //}
 
-頭の、asiaなどの地域を指定することによって、イメージがどの場所でホストされるか指定することができます。
+頭の、asiaなどの地域を指定することによって、イメージがどの場所でホストされるか指定できます。
 今回は asia でやってみましょう。
 
 //cmd{
@@ -239,7 +239,7 @@ $ gcloud docker -- push asia.gcr.io/nullsuck/app
 
 //image[container_registry][GCP上のコンテナイメージ]
 
-これで、イメージをGoogle Container Registryに登録することができました。
+これで、イメージをGoogle Container Registryに登録できました。
 登録したイメージは次の章で実施に動かしていきます。
 
 
@@ -256,7 +256,7 @@ DB	Google Cloud SQL
 //}
 
 === 本番環境の構成
-本番環境の構成は次の通りです。
+本番環境の構成は次のとおりです。
 
 //image[GKE_kousei][GKEの構成]
 
@@ -264,18 +264,18 @@ IngressやPod、ServiceなどいろいろKubernetesの専門用語が並んで�
 //table[kubernetes][Kubernetesの専門用語]{
 用語	説明
 -----------------------
-Ingress	ロードバランサー的な役割を果たす
-Service	nginxなどのリバースプロクシ的な役割を果たす
+Ingress	ロードバランサ的な役割を果たす
+Service	nginxなどのリバースプロキシ的な役割を果たす
 Pod	コンテナのことを指す
 //}
 
 ==={kubernetes} Kubernetes関連のファイル設定
 では、実際に、構成を元に、Kubernetes関連のファイルを作成していきましょう。
 Kubernetesは、@<code>{kubectl}というコマンドラインツールで、設定を行うことも可能です。
-しかし、同じ環境を作るのに、毎回コマンドを叩くのだと不便です。
+しかし、同じ環境を作るのに、毎回コマンドをたたくのだと不便です。
 そのため、ymlファイルに保存しておき、適用する、というのがよく行われる手段です。
 
-今回は以下のような構成でファイルを作成していきます。
+今回は次のような構成でファイルを作成していきます。
 
 //list[kubernetes_files][今回作るKubernetesのファイル構成]{
 k8s // k8sというフォルダにまとめて管理する
@@ -291,7 +291,7 @@ k8s // k8sというフォルダにまとめて管理する
 それでは次から各ファイルの内容について説明していきます。
 まずはdeploymentからです。
 
-deploymentは、Podの情報を含め、Podをどのくらい複製してつくるかや配置方法などを決めるファイルです。
+deploymentは、Podの情報を含め、Podをどのくらい複製して作るかや配置方法などを決めるファイルです。
 Podを作る際には、Pod毎にファイルを作ることも可能ですが、今回のような小さいアプリであればdeploymentファイルを作れば十分でしょう。
 
 //list[deployment_app][app-deployment.yml][yml]{
@@ -375,11 +375,11 @@ spec:
           emptyDir:
 //}
 
-appファイルと異なる点は、Podが２つあり、一つはapi用、一つはCloud SQLへアクセスするProxy用を用意しています。
-また、Cloud SQLにアクセスするために必要なCredentialsやユーザ名・パスワード名は、すべてGKEのSecretを通して
+appファイルと異なる点は、Podが２つあり、ひとつはapi用、ひとつはCloud SQLへアクセスするプロキシ用を用意しています。
+また、Cloud SQLにアクセスするために必要なCredentialsやユーザー名・パスワード名は、すべてGKEのSecretを通して
 取得するようにしています。
 
-GKEのSecretは後ほど、設定します。
+GKEのSecretはのちほど、設定します。
 
 
 次に、serviceファイルを作ります。
@@ -422,15 +422,15 @@ spec:
 
 === GKE周りの設定
 実際に、GKEでKubernetesのClusterを作成してみましょう。
-Clusterとは、先程、定義したIngressやService、Podなどが載る基盤です。
+Clusterとは、さきほど、定義したIngressやService、Podなどが載る基盤です。
 
 次のコマンドでClusterを作ることができます。
 //cmd{
 $ gcloud container clusters create nullsuck --num-nodes 2 --zone asia-northeast1-a
 //}
 
-@<tt>{num-nodes}は、Clusterの個数を指定することができます。
-冗長性の観点では2以上にするとよいですが、その分お金がかかるのでとりあえず1でも良いかもしれません。
+@<tt>{num-nodes}は、Clusterの個数を指定できます。
+冗長性の観点では2以上にするとよいですが、そのぶんお金がかかるのでとりあえず1でもよいかもしれません。
 @<tt>{zone}は、マシンの地域を指定しています。@<fn>{gcloud_zone}
 
 ここから、@<tt>{kubectl}というKubernetes用のcliツールでKubernetesを操作します。
@@ -442,8 +442,8 @@ Kubernetesが操作できる環境にします。
 $ gcloud container clusters get-credentials nullsuck
 //}
 
-これでNullSuckプロジェクトのGKE環境を@<tt>{kubectl}で操作できるようになります。
-そして、さきほど、つくったymlファイル類を適用していきます。
+これでNullSuckプロジェクトのGKE環境を@<tt>{kubectl}で操作できます。
+そして、さきほど、作ったymlファイル類を適用していきます。
 
 //cmd{
 // deploymentを適用
@@ -458,7 +458,7 @@ $ kubectl apply -f api-service.yaml
 $ kubectl apply -f app-ingress.yaml
 //}
 
-これで以下のコマンド叩いてIPアドレスを確認しましょう
+これで次のコマンド叩いてIPアドレスを確認しましょう
 
 //cmd{
 $ kubectl get ingress
@@ -470,7 +470,7 @@ IPアドレスにアクセスしてみて、問題なくページが表示され
 ==={cloudsql} Cloud SQLの設定・Credientialsの設定
 次に、Cloud SQLを作っていきます。こちらもGoogle Cloud SDKで作成していきます。@<fn>{cloud_sql}
 
-以下のコマンドでCloud SQLのインスタンスを作成します。
+次のコマンドでCloud SQLのインスタンスを作成します。
 
 //cmd{
 $ gcloud beta sql instances create nullsuck-db
@@ -479,7 +479,7 @@ $ gcloud beta sql instances create nullsuck-db
 今回は、DBインスタンス名をnullsuck-db インスタンスタイプは一番、小さいdb-f1-microを利用します。
 
 Cloud SQLは、第一世代と第二世代のインスタンスがあります。
-GKEからProxyで接続するためには、第二世代のインスタンスを利用する必要があります。
+GKEからプロキシで接続するためには、第二世代のインスタンスを利用する必要があります。
 第二世代は頭にdb- とついているので、それを利用するようにしましょう。
 
 アクセスできるようにするため、rootのパスワードを設定します。
@@ -501,16 +501,16 @@ $ gcloud sql instances set-root-password nullsuck-db
 
 この手順で取得したjsonファイルをGKEのSecretsに設定します。@<fn>{gke_secrets}
 
-以下のコマンドでGKEのSecretsにjsonファイルを格納することができます。
-この格納したファイルはAPIのPodのCloudSQL Proxyが呼び出されます。
+次のコマンドでGKEのSecretsにjsonファイルを格納できます。
+この格納したファイルはAPIのPodのCloudSQL プロキシが呼び出されます。
 
 //cmd{
 $ kubectl create secret generic cloudsql-instance-credentials
   --from-file=credentials.json=[先程ダウンロードしたjsonのパス]
 //}
 
-次に、データベースのユーザ名とパスワードをSecretsに設定します。
-今回は、rootをユーザ名に指定してますが、別にユーザを作成して設定することをお勧めします。
+次に、データベースのユーザー名とパスワードをSecretsに設定します。
+今回は、rootをユーザー名に指定してますが、別にユーザーを作成して設定することをお勧めします。
 //cmd{
 $ kubectl create secret generic cloudsql-db-password
                          --from-literal=password=[パスワード名]
@@ -526,17 +526,17 @@ $ kubectl create secret generic cloudsql-db-username
 
 == CircleCIで自動でデプロイされるようにしよう
 最後に、今までの手順をすべて、CircleCIに設定して
-Githubのmasterブランチが更新されたら、自動的にデプロイが更新されるようにしましょう。
+GitHubのmasterブランチが更新されたら、自動的にデプロイが更新されるようにしましょう。
 
-CircleCIとGithubの連携はCircleCIから行います。(今回は省略)
-そしてレポジトリの直下に以下のような形でディレクトリ、ymlファイルを作成します。
+CircleCIとGitHubの連携はCircleCIから行います。（今回は省略）
+そしてリポジトリの直下に次のような形でディレクトリ、ymlファイルを作成します。
 //list[circleci_dir][CircleCIのディレクトリ]{
 NullSuck-AI/.circleci
 └── config.yml
 //}
 
 === CircleCIを設定する手順
-CircleCIでデプロイするために以下の3つの手順を踏みます。
+CircleCIでデプロイするために次の3つの手順を踏みます。
 
  1. CircleCIでデプロイするためのGCPのサービスアカウントの設定
  2. Kubernetesの設定ymlを一部、書き換える
@@ -545,7 +545,7 @@ CircleCIでデプロイするために以下の3つの手順を踏みます。
 ==== CircleCIでデプロイするためのサービスアカウント設定
 CircleCIでデプロイするためにサービスアカウントを設定します。
 基本的な内容は @<hd>{cloudsql} のサービスアカウント作成手順と同じですが
-権限を以下の様に設定します。
+権限を次の様に設定します。
 
  * Kubernetes > Kubernetes Engine 開発者
  * Storage > Storage 管理者
@@ -569,8 +569,8 @@ CircleCIでデプロイするためにサービスアカウントを設定しま
 
 ==== config.ymlを作成する
 config.ymlを作成していきます。
-config.ymlは簡単に言うとpushされた後に動かしてほしいコマンドを書いておくものです。
-ここに先程、手動で設定したGCRやGKEの設定手順をすべて、まとめて書いていきます。
+config.ymlは簡単にいうとpushされた後に動かしてほしいコマンドを書いておくものです。
+ここにさきほど、手動で設定したGCRやGKEの設定手順をすべて、まとめて書いていきます。
 
 次が実際のconfig.ymlファイルです。
 
@@ -616,13 +616,13 @@ workflows:
 //}
 
 基本的には、今までやってきた手順をすべて、コマンドとして起こしたものです。
-本ymlファイルで追加で行っていることとしては次の通りです。
+本ymlファイルで追加で行っていることとしては次のとおりです。
 
- * Kubernetesの設定ファイルをすべて一つのファイルにまとめている
+ * Kubernetesの設定ファイルをすべてひとつのファイルにまとめている
  * 前の手順で設定した環境変数に変換するため @<code>{envsbst} でymlファイルの変換を行っている。
 
 このファイルを実際にコミットして、CircleCIが動くことを確認できれば、デプロイの作業はすべて完了です。
-お疲れ様でした。
+お疲れさまでした。
 
 これでヌルサクAIアプリがネットに公開されました。
 
@@ -631,12 +631,12 @@ workflows:
 サンプルアプリｄえコンテナを使って開発していて実際に困ったことをまとめてみました。
 
 ==== 外からアクセスできない！
-ホスト名の指定を@<tt>{localhost}にしてると外からアクセスできません。
+ホスト名の指定を@<tt>{localhost}にしていると外からアクセスできません。
 @<tt>{0.0.0.0}にするとアクセスできます。
 
-==== ブラウザからAPIに叩こうとするけど、CORSエラーでるし、そもそも公開してない！
-Nuxt.jsだとproxyの機能があるので、それを使いましょう。
-これで、ブラウザ -> Nuxt.js -> APIで通信されるようになります。
+==== ブラウザからAPIにたたこうとするけど、CORSエラーでるし、そもそも公開していない！
+Nuxt.jsだとプロキシの機能があるので、それを使いましょう。
+これで、ブラウザ -> Nuxt.js -> APIで通信されます。
 
 nuxt.config.tsで次のように設定します。
 //emlist{
@@ -652,6 +652,6 @@ proxy: {
 
 
 //footnote[gcp_account][GCPを初回登録される方は、無料枠があるので、請求先アカウントを利用せずに無料で使えるかもしれないです。]
-//footnote[gcloud_zone][Google Cloud SDKの初期化時（@<code>{gcloud init}実行時）にDefault Zoneを指定していれば省略することができます。]
-//footnote[cloud_sql][コンソール画面上からも作成することができます。]
+//footnote[gcloud_zone][Google Cloud SDKの初期化時（@<code>{gcloud init}実行時）にDefault Zoneを指定していれば省略できます。]
+//footnote[cloud_sql][コンソール画面上からも作成できます。]
 //footnote[gke_secrets][Secretとは、パスワードや認証キーなどを暗号化して格納しておくKubernetesのオブジェクトです。詳細は @<href>{https://cloud.google.com/kubernetes-engine/docs/concepts/secret?hl=ja} 参照]

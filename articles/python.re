@@ -8,13 +8,13 @@
 名称  説明
 -----------------------
 APIフレームワーク	responder
-ORM	SQLAlchemy
+O/Rマッパ	SQLAlchemy
 機械学習ライブラリ	scikit-learn
 //}
 
 今回は、サーバサイドすべてPythonで作成します。
 ある一定の規模以上のAI/機械学習アプリを作る場合には
-機械学習部のみ今回の形式でPythonでモデルを呼び出すAPIを作成し、その他の部分はGoやJavaなどの静的型付き言語で作成すると開発効率が良いと思います。
+機械学習部のみ今回の形式を用いてPythonでモデルを呼び出すAPIを作成し、その他の部分はGoやJavaなどの静的型付き言語で作成すると開発効率がよいです。
 
 === APIフレームワーク Responder
 PythonのフレームワークというとDjango, Flaskが有名ですが
@@ -25,9 +25,9 @@ responderは2018年10月に公開された、新しいフレームワークで�
 
  * responderがPythonのデファクトスタンダードであるrequestsやpipenvの作者であるKenneth Reitzさんによって作られており、今後flask等に代わりPythonのapiフレームワークのデファクトスタンダードになる可能性が高い
  * flaskのシンプルさとfalconの書きやすさのいいところどりをしている
- * 新しくて私のテンションが上がる（！
+ * 新しくて私のテンションが上がる
 
- 実際にサンプルアプリを今回作ってみましたが、個人的にはクラスベースでHTTPのハンドラーを定義できるのが非常に気持ちよかったです。@<fn>{falcon}
+ 実際にサンプルアプリを今回作ってみましたが、個人的にはクラスベースでHTTPのハンドラを定義できるのが非常に気持ちよかったです。@<fn>{falcon}
 
 == プロジェクトの構成
 //emlist[project_python]{
@@ -49,9 +49,9 @@ server/
 1 directory, 12 files
 //}
 
-Pythonは、他のJava, C#, Goなどの言語と違い、フォルダごとにパッケージを分けず、一ファイルにクラスをまとめて書くのがスタンダードです。@<fn>{package}
+Pythonは、他のJava, C#, Goなどの言語と異なりフォルダごとにパッケージを分けず、一ファイルにクラスをまとめて書くのがスタンダードです。@<fn>{package}
 
-//list[python_dir][Pythonのプロジェクト構成と他言語の比較]{
+//list[python_dir][Pythonのプロジェクト構成とほか言語の比較]{
 # JavaやGoの場合
 ./
 ├── app.java
@@ -77,16 +77,16 @@ Pythonは、他のJava, C#, Goなどの言語と違い、フォルダごとに�
 
 しかも、virtualenvのように仮想環境を作ってくれます。
 システムのPythonライブラリのモジュールの整合性が合わなかったりして
-アプリが動かない、ということもないです。
+アプリが動かない、ということもありません。
 
-なにかPythonでアプリなどを作る際は、このpipenvを利用することを強くお勧めします。@<fn>{pipenv}
+何かPythonでアプリなどを作る際は、このpipenvを利用することを強くお勧めします。@<fn>{pipenv}
 
 === 各モジュールの責務
 #@# もしかしたら削ってもいいかも
-それぞれ、modelとhandlerとservicesは次の通りの依存関係になっています。
+model、handlerとservicesは次のとおりの依存関係になっています。
 //image[service_responsibity][各モジュールの債務]
 
-== 簡単なAPIをつくってreponderで動かしてみよう
+== 簡単なAPIを作ってreponderで動かしてみよう
 本格的な実装に入る前に、まずは簡単なAPIを作って動かすことで
 responderとpipenvの使い方に慣れていきましょう。
 
@@ -123,8 +123,8 @@ To activate this project's virtualenv, run pipenv shell.
 Alternatively, run a command inside the virtualenv with pipenv run.
 //}
 
-これでPipfileとPipfile.lockが出来上がります。
-このファイルはJavaScriptで言うところのpackage.jsonとpackage-lock.jsonにあたります。
+これでPipfileとPipfile.lockができあがります。
+このファイルはJavaScriptでいうところのpackage.jsonとpackage-lock.jsonにあたります。
 
 ここにresponderを追加してみましょう。
 
@@ -141,9 +141,9 @@ Alternatively, run a command inside the virtualenv with pipenv run.
 
 これでresponderが追加されます。合わせてPipfileとPipfile.lockも更新されています。
 
-=== 簡単なAPIをつくってみよう
-GETリクエストすると、キーとバリューがhelloを書かれたjsonを返すエンドポイントをつくります。
-次の通りapi.pyをプロジェクトに作ってみましょう。
+=== 簡単なAPIを作ってみよう
+GETリクエストすると、キーとバリューがhelloを書かれたjsonを返すエンドポイントを作ります。
+次のとおりapi.pyをプロジェクトに作ってみましょう。
 
 //listnum[first_api][api.py][python]{
 import responder
@@ -160,12 +160,12 @@ if __name__ == '__main__':
 @<code>{@api.route("/hello")}のデコレータでルーティングの定義をします。
 そして、関数の中で、@<code>{resp.media}にオブジェクトを入れることで、JSONを返すことができます。
 
-flaskと違って、関数の中でreturnを書かなくて良いというのが特徴です。（falcon譲り）
+flaskと違って、関数の中でreturnを書かなくてよいというのが特徴です。（falcon譲り）
 
 このapp.pyを動かすには、Pipenvで作られた仮想環境で動かす必要があります。
-Pipenv作られた仮想環境で動かすためには、以下の２つのやり方があります。
+Pipenv作られた仮想環境で動かすためには、次の２つのやり方があります。
 
- 1. @<code>{pipenv shell}で仮想環境のコンソールを立ち上げて@<code>{python} コマンドを叩く 
+ 1. @<code>{pipenv shell}で仮想環境のコンソールを立ち上げて@<code>{python} コマンドをたたく 
  2. @<code>{Pipfile} のscriptsにコマンドを書いて @<code>{pipenv run [コマンド定義名]}で動かす
 
 今回は1.の方法で動かしてみましょう。
@@ -174,10 +174,10 @@ Pipenv作られた仮想環境で動かすためには、以下の２つのや�
 $ pipenv shell
 Launching subshell in virtual environment…
 
-$ python api.py
+$ Python api.py
 INFO: Started server process [21140]
 INFO: Waiting for application startup.
-INFO: Uvicorn running on http://127.0.0.1:5042 (Press CTRL+C to quit)
+INFO: Uvicorn running on http://127.0.0.1:5042 （Press CTRL+C to quit）
 //}
 
 実際にcurlコマンドを叩いて確認してみましょう
@@ -190,9 +190,9 @@ $ curl localhost:5042/hello
 無事にHelloと帰ってきてたら無事に動いています！
 
 
-== ハンドラーを実装しよう
-では、プロジェクトに戻ってハンドラーを実装してみましょう。
-今回つくるAPIは極めてシンプルにエンドポイントは２つだけにします。
+== ハンドラを実装しよう
+では、プロジェクトに戻ってハンドラを実装してみましょう。
+今回作るAPIは極めてシンプルにエンドポイントは２つだけにします。
 
 //image[handler][エンドポイント設計]
 
@@ -200,7 +200,7 @@ $ curl localhost:5042/hello
 
 === ルーティングを定義しよう
 まずは、ルーティングを定義します。
-ルーティングは@<code>{api.py}に以下の通り定義します。
+ルーティングは@<code>{api.py}につぎのとおり定義します。
 //list[routing_python][ルーティング][python]{
 from handlers import WineAttributeResource, PredictionResource
 
@@ -214,14 +214,14 @@ api.add_route('/api/wine_attributes', WineAttributeResource)
 api.add_route('/api/predict', PredictionResource)
 //}
 
-@<code>{api.add_route}でルートを定義することができます。　第二引数には、関数かクラスを定義して
-該当のルーティングに対応する処理を指定することができます。
+@<code>{api.add_route}でルートを定義できます。　第二引数には、関数かクラスを定義して
+該当のルーティングに対応する処理を指定できます。
 
-=== ハンドラーを実装しよう
-今回は、クラスベースでハンドラーを実装してみます。
-ハンドラーは次のような形で実装できます、
+=== ハンドラを実装しよう
+今回は、クラスベースでハンドラを実装してみます。
+ハンドラは次のような形で実装できます。
 
-//list[handler_python][ハンドラーの実装][python]{
+//list[handler_python][ハンドラの実装][python]{
 class WineAttributeResource:
     def on_get(self, req, resp):
         wine_attributes = WineAttributeService.get_all()
@@ -241,7 +241,7 @@ class PredictionResource:
 //}
 
 クラスに@<code>{on_get}や@<code>{on_post}のメソッドを定義することで
-それぞれのエンドポイントのGETリクエストやPOSTリクエストについての挙動を記載することができます。
+それぞれのエンドポイントのGETリクエストやPOSTリクエストについての挙動を記載できます。
 
 やっていることはシンプルで、リクエストのデータをもとにビジネスロジックであるServiceにデータを投げたりしています。
 
@@ -260,13 +260,13 @@ $ pipenv install scikit-learn pandas numpy
 
 ちなみにpipenvの唯一の問題なのですが、こういった機械学習系の重めのライブラリを導入すると
 @<b>{ゴリゴリに時間がかかります。（半日ほど）}
-気長に待つか待てない方は、別の方法で導入しましょう。
+気長に待つか待ていない方は、別の方法で導入しましょう。
 
 === モデルを読み込むServiceを作成する
 では、実際にモデルを組み込んでみましょう。
-モデルの組み込み、計算はServiceにて行います。
+モデルの組込み計算はServiceにて行います。
 
-//list[service_python][モデルの組み込みを行っているservice.py][python]{
+//list[service_python][モデルの組込み行っているservice.py][python]{
 from models import WineAttribute, WineAttributeSchema, Prediction
 import pickle
 from pandas import DataFrame
@@ -296,7 +296,7 @@ class PredictionService:
 //}
 
 ここでもやっていることは非常にシンプルです。
-主に以下のことをやっています。
+主に次のことをやっています。
 
  * pickleで保存されているモデルを呼び出し
  * POSTデータをpandasのデータフレームの形式に変換してpickleから復元したモデルで予測
@@ -305,6 +305,6 @@ class PredictionService:
 #@# では、DBのモデルをPythonで実装しましょう。
 #@# 今回は、次のようなテーブル構成で実装を行います。
 
-//footnote[falcon][クラスベースでハンドラーを定義できるのはfalcon譲り。flaskはファンクションベースでしか定義できない。]
-//footnote[package][実際にJavaみたいに分けてみましたが、いろいろ大変でした。。。]
+//footnote[falcon][クラスベースでハンドラを定義できるのはfalcon譲り。flaskはファンクションベースでしか定義できない。]
+//footnote[package][実際にJavaみたいに分けてみましたが、いろいろたいへんでした。]
 //footnote[pipenv][しかも、pipenvとresponderは同じ作者です。すごすぎ。]
