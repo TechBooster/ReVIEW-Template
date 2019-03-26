@@ -27,7 +27,7 @@ NullSuck-AI
 ├── k8s.yml            
 ├── LICENSE            
 └── makefile           
-                       
+
 5 directories, 5 files 
 //}
 
@@ -179,7 +179,7 @@ npx: installed 379 in 17.006s
     }
   }
 //}
- 
+
 === プロジェクトの立ち上げ
 #@# 具体的なソースは貼っつけたほうが良さそう
 これらをやったら次のコマンドで立ち上げてみましょう。
@@ -213,7 +213,7 @@ client/
 ├── tsconfig.json        
 ├── tslint.json          
 └── README.md            
-                         
+
 9 directories, 8 files   
 //}
 
