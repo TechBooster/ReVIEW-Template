@@ -170,7 +170,7 @@ Pipenv作られた仮想環境で動かすためには、次の２つのやり�
 
 今回は1.の方法で動かしてみましょう。
 
-//cmd{//
+//cmd{
 $ pipenv shell
 Launching subshell in virtual environment…
 

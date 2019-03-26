@@ -492,12 +492,12 @@ $ gcloud sql instances set-root-password nullsuck-db
 次に、このCloud SQLをGKEから接続できるようにするためCredientialsを設定しましょう。
 まずはCloud SQLからアクセスできるように、コンソール画面からサービスアカウントを設定します。
 
-//image[creating_service]
-//image[creating_service2]
-//image[creating_service3]
-//image[creating_service4]
-//image[creating_service5]
-//image[creating_service6]
+//image[creating_service][Cloud SQLのアカウント設定 1.]
+//image[creating_service2][Cloud SQLのアカウント設定 2.]
+//image[creating_service3][Cloud SQLのアカウント設定 3.]
+//image[creating_service4][Cloud SQLのアカウント設定 4.]
+//image[creating_service5][Cloud SQLのアカウント設定 5.]
+//image[creating_service6][Cloud SQLのアカウント設定 6.]
 
 この手順で取得したjsonファイルをGKEのSecretsに設定します。@<fn>{gke_secrets}
 
