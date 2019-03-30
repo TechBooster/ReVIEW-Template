@@ -277,8 +277,10 @@ class PredictionService:
 
     @staticmethod
     def predict(data):
-        # data(POSTされてきたデータ)を元のモデル作成時と同じpandasのdataframe型に変換する
-        df = DataFrame.from_dict(PredictionService.convert_dict(data), orient='columns')
+        # data(POSTされてきたデータ)を元のモデル作成時
+        # と同じpandasのdataframe型に変換する
+        df = DataFrame.from_dict(PredictionService.convert_dict(data),
+                                                                 orient='columns')
         # 上記で指定したmodelファイルを呼び出し
         predict = PredictionService.model.predict([df['value']])
         # numpyの型で帰ってくるのをfloatに変換

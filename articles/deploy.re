@@ -152,7 +152,7 @@ api_1        | INFO: Waiting for application shutdown.
 api_1        | INFO: Finished server process [1]
 api_1        | INFO: Started server process [1]
 api_1        | INFO: Waiting for application startup.
-api_1        | INFO: Uvicorn running on http://0.0.0.0:5432 (Press CTRL+C to quit)
+api_1        | INFO: Uvicorn running on http://0.0.0.0:5432
 //}
 
 //list[docker_app_result][アプリの表示内容]{
@@ -426,7 +426,8 @@ Clusterとは、さきほど、定義したIngressやService、Podなどが載�
 
 次のコマンドでClusterを作ることができます。
 //cmd{
-$ gcloud container clusters create nullsuck --num-nodes 2 --zone asia-northeast1-a
+$ gcloud container clusters create nullsuck --num-nodes 2
+                                         --zone asia-northeast1-a
 //}
 
 @<tt>{num-nodes}は、Clusterの個数を指定できます。
@@ -589,9 +590,11 @@ jobs:
       - run:
           name: Setup Google Cloud SDK
           command : |
-            apt-get install -qq -y gettext # あとで利用するenvsubstコマンドのため導入
-            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json # Google
-            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            # あとで利用するenvsubstコマンドのため導入
+            apt-get install -qq -y gettext 
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account
+                            --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             (省略 Google Cloud SDKの設定)
       - setup_remote_docker
@@ -600,7 +603,8 @@ jobs:
           command: |
             docker build \
               -t ${PROJECT_NAME}/app ./client/.
-            docker tag ${PROJECT_NAME}/app asia.gcr.io/${PROJECT_NAME}/app:${CIRCLE_SHA1}
+            docker tag ${PROJECT_NAME}/app 
+                   asia.gcr.io/${PROJECT_NAME}/app:${CIRCLE_SHA1}
             docker build \
               -t ${PROJECT_NAME}/api ./server/.
             (省略 DockerのGCRへのpush作業)

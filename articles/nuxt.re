@@ -455,9 +455,10 @@ JavaScript用やフロントエンド用のグラフフレームワークはい�
  * 基本、有料ではあるが、ロゴを表示すれば無料で利用可
  * グラフの見た目がヌルサク
 
-今回、使うグラフは、このページ()から持ってきます。
+今回、使うグラフは、このページ(@<href>{https://www.amcharts.com/demos/radial-histogram/?theme=dataviz})から持ってきます。
 
-#@# ページの図を入れる
+//image[graph][Amchartsのページ]
+
 このグラフをFormCardと同じ要領でコンポーネント化してみましょう。ファイル名は@<code>{ResultChart.vue}としましょう。
 グラフをコンポーネント化するには、amChartsにあるTypeScript/ES2015と書かれたコードをほぼそのまま使うことができます。
 
