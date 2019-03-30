@@ -23,7 +23,7 @@ language: ja
 
 # 書名
 # 読みを入れる例 booktitle: {name: "Re:VIEW EPUBサンプル", file-as: "リビューイーパブサンプル"}
-booktitle: {name: "Nuxt.jsとPythonでつくる  ぬるさくAIアプリ開発入門", file-as: "ナクストトパイソンデツクルヌルサクエーアイアプリカイハツニュウモン"}
+booktitle: {name: "Nuxt.jsとPythonでつくるぬるさくAIアプリ開発入門", file-as: "ナクストトパイソンデツクルヌルサクエーアイアプリカイハツニュウモン"}
 
 # 著者名。「, 」で区切って複数指定できる
 # 読みを入れる例 aut: [{name: "青木峰郎", file-as: "アオキミネロウ"}, {name: "武藤健志", file-as: "ムトウケンシ"}, {name: "高橋征義", file-as: "タカハシマサヨシ"}, {name: "角征典", file-as: "カドマサノリ"}]
@@ -91,7 +91,7 @@ rights: (C) 2019 Norweigian Geek
 debug: null
 
 # 固有IDに使用するドメイン。省略した場合は時刻に基づくランダムUUIDが入る
-urnid: urn:uid:https://github.com/TechBooster/ReVIEW-Template
+# urnid: urn:uid:https://github.com/TechBooster/ReVIEW-Template
 #
 # ISBN。省略した場合はurnidが入る
 # isbn: null
@@ -133,6 +133,7 @@ toc: true
 # ePUB3においてはこの設定によらず必ず作成される
 # mytoc: true
 
+# coverfile: _cover.html
 # 表紙にするHTMLファイル。ファイル名を指定すると表紙として入る
 # cover: null
 #
