@@ -50,15 +50,57 @@
 \VerbatimFootnotes
 
 % ttでの折り返しの許容
-\usepackage{seqsplit}
-\let\textttorg=\texttt
-\def\texttt{\begingroup\obeyspaces\do@texttt}
-\def\do@texttt#1{\textttorg{\seqsplit{#1\relax}}\endgroup}
-% 目次に入る可能性があるのでRobust化しておく
-\DeclareRobustCommand{\reviewtt}[1]{\texttt{#1}}
-\DeclareRobustCommand{\reviewcode}[1]{\texttt{#1}}
-\DeclareRobustCommand{\reviewtti}[1]{\texttt{\textit{#1}}}
-\DeclareRobustCommand{\reviewttb}[1]{\texttt{\textbf{#1}}}
+% seqsplitに代わるrobustな実装
+% contributed by @zr_tex8r
+\newif\ifreview@ba@break
+\def\review@ba@end{\review@ba@end@}
+\DeclareRobustCommand{\reviewbreakall}[1]{%
+  \begingroup
+    \review@ba@breakfalse
+    \review@break@all@a#1\review@ba@end
+  \endgroup
+}
+\def\review@break@all@a{%
+  \futurelet\review@ba@tok\review@break@all@b
+}
+\def\review@break@all@b{%
+  \ifx\review@ba@tok\review@ba@end
+    \let\next\@gobble
+  \else\ifx\review@ba@tok\@sptoken
+    \let\next\review@break@all@c
+  \else\ifx\review@ba@tok~%
+    \let\next\review@break@all@d
+  \else\ifx\review@ba@tok\bgroup
+    \let\next\review@break@all@e
+  \else
+    \let\next\review@break@all@f
+  \fi\fi\fi\fi
+  \next
+}
+\expandafter\def\expandafter\review@break@all@c\space{%
+  \space
+  \review@ba@breakfalse
+  \review@break@all@a
+}
+\def\review@break@all@d#1{%
+  \review@break@all@f{\mbox{\space}}%
+}
+\def\review@break@all@e#1{%
+  \review@break@all@f{{#1}}%
+}
+\def\review@break@all@f#1{%
+  \ifreview@ba@break
+    \hskip0pt plus 0.02em\relax
+  \fi
+  #1%
+  \review@ba@breaktrue
+  \review@break@all@a
+}
+
+\DeclareRobustCommand{\reviewtt}[1]{{\ttfamily\reviewbreakall{#1}}}
+\DeclareRobustCommand{\reviewcode}[1]{{\ttfamily\reviewbreakall{#1}}}
+\DeclareRobustCommand{\reviewtti}[1]{{\ttfamily\itshape\reviewbreakall{#1}}}
+\DeclareRobustCommand{\reviewttb}[1]{{\ttfamily\bfseries\reviewbreakall{#1}}}
 
 \renewcommand{\captionsize}{\fontsize{9}{9}\selectfont}
 \newlength{\captionnumwidth}
