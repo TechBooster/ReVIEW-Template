@@ -183,6 +183,21 @@
 \renewcommand{\reviewtitlefont}{\gtfamily\sffamily\bfseries}
 
 % 既存命令のemptyページスタイルをパッチでplainheadに変更
+% ノンブルなし版を保持
+\let\includefullpagegraphicswithoutnmbl\includefullpagegraphics
+% 表紙画像にはwithoutnmbl版利用
+\if@reclscover
+  \ifdefined\review@coverfile% ファイル明示指定のときには何もしない
+  \else
+    \ifdefined\review@coverimage
+      \def\reviewcoverpagecont{% withoutnmbl版で再定義
+        \expandafter\includefullpagegraphicswithoutnmbl\expandafter[\review@coverimageoption]{\review@coverimage}
+        \cleardoublepage
+      }
+    \fi
+  \fi
+\fi
+
 \patchcmd{\includefullpagegraphics}{%
 {\thispagestyle{empty}\@includefullpagegraphics}
 }{%
