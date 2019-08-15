@@ -44,8 +44,6 @@ graphvizを使ったのでbrew install graphvizとかが必要かもしれませ
 $ gem install bundler
 $ git clone git@github.com:TechBooster/ReVIEW-Template.git
 $ cd ReVIEW-Template
-$ git submodule init
-$ git submodule update
 $ npm install
 $ npm run pdf
 ```
