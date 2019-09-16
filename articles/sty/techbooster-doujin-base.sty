@@ -15,15 +15,15 @@
 
 %% サンプルコードをさらに小さく
 \renewenvironment{reviewemlist}{%
-  \medskip\footnotesize\begin{shaded}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \medskip\footnotesize\begin{shaded}\ifdefined\reviewlistxkanjiskip\xkanjiskip=\reviewlistxkanjiskip\fi\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
   \end{alltt}\end{shaded}}
 
 \renewenvironment{reviewlist}{%
-  \begin{shaded}\footnotesize\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \begin{shaded}\footnotesize\ifdefined\reviewlistxkanjiskip\xkanjiskip=\reviewlistxkanjiskip\fi\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
   \end{alltt}\end{shaded}\par\vspace*{0.5zw}}
 
 \renewenvironment{reviewcmd}{%
-  \color{white}\medskip\footnotesize\begin{shadedb}\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
+  \color{white}\medskip\footnotesize\begin{shadedb}\ifdefined\reviewlistxkanjiskip\xkanjiskip=\reviewlistxkanjiskip\fi\setlength{\baselineskip}{1.2zw}\begin{alltt}}{%
   \end{alltt}\end{shadedb}}
 
 % ヘッダ・フッタの指定
