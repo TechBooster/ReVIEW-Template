@@ -135,7 +135,7 @@ TeXの環境構築が困難な場合、一式セットアップ済みの[docker�
 Dockerがうまく動くようになっている場合、以下のコマンドで細かい準備なしにビルドを行うことができます。
 
 ```
-$ docker pull vvakame/review:3.1
+$ docker pull vvakame/review:3.2
 $ ./build-in-docker.sh
 ```
 
