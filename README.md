@@ -223,9 +223,9 @@ articles/ディレクトリ以下の各種*.scssファイルを編集し、
 
 ## 過去のRe:VIEW 3依存プロジェクトをRe:VIEW 4に移行する
 
-Re:VIEW 3のプロジェクトは、review-update コマンドで簡単に更新できます。
+Re:VIEW 3のプロジェクトは、review-updateコマンドで簡単に更新できます。
 
-既存のプロジェクトフォルダ内 (本リポジトリを使っている場合は articles フォルダ) で、review-update コマンドを実行してください。
+既存のプロジェクトフォルダ内 (本リポジトリを使っている場合はarticlesフォルダ) で、review-updateコマンドを実行してください。
 
 ```
 $ review-update
