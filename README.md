@@ -1,6 +1,6 @@
 # Re:VIEW Template
 
-このリポジトリはRe:VIEW用の書籍テンプレートです。Re:VIEWバージョン3.0に対応します。
+このリポジトリはRe:VIEW用の書籍テンプレートです。Re:VIEWバージョン4.0に対応します。
 メンテナンスはTechBoosterが行っています。
 
  * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf)
@@ -135,7 +135,7 @@ TeXの環境構築が困難な場合、一式セットアップ済みの[docker�
 Dockerがうまく動くようになっている場合、以下のコマンドで細かい準備なしにビルドを行うことができます。
 
 ```
-$ docker pull vvakame/review:3.1
+$ docker pull vvakame/review:4.0
 $ ./build-in-docker.sh
 ```
 
@@ -221,17 +221,32 @@ articles/ディレクトリ以下の各種*.scssファイルを編集し、
 
 コマンドでCSSファイルをビルドしてください。
 
-## 過去のRe:VIEW 2依存プロジェクトをRe:VIEW 3に移行する
+## 過去のRe:VIEW 3依存プロジェクトをRe:VIEW 4に移行する
 
-Re:VIEW 2系向けの過去のTechBoosterテンプレートは、Re:VIEW 3とは互換性がありません。Re:VIEWは2から3および今後の移行を支援する「review-update」というコマンドを提供していますが、TechBoosterテンプレートを使用しているプロジェクトは対象外となっています。
+Re:VIEW 3のプロジェクトは、review-updateコマンドで簡単に更新できます。
 
-### Re:VIEW 3の互換モードを使う
+既存のプロジェクトフォルダ内 (本リポジトリを使っている場合はarticlesフォルダ) で、review-updateコマンドを実行してください。
 
-config.ymlで`review_version: 2.0`としておけば、当面は互換モードによりRe:VIEW 3でも変わりなく動作します。ただし、一部のRe:VIEW 3固有の機能は利用できません。また、将来的に互換は破棄される可能性があります。
+```
+$ review-update
+** review-update はプロジェクトを 4.0.0 に更新します **
+config.yml: 'review_version' を '4.0' に更新しますか? [y]/n
+プロジェクト/sty/review-base.sty は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.0.0/templates/latex/review-jsbook/review-base.sty) で置き換えられます。本当に進めますか? [y]/n
+プロジェクト/sty/review-jsbook.cls は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.0.0/templates/latex/review-jsbook/review-jsbook.cls) で置き換えられます。本当に進めますか? [y]/n
+完了しました。
+```
 
-### Re:VIEW 3のテンプレートに置き換える
+## 過去のRe:VIEW 2依存プロジェクトをRe:VIEW 4に移行する
 
-Re:VIEW 3ではTeX関連のファイルが大きく変わっているため、Re:VIEW 2系のプロジェクトの既存のファイルをいったん退避し、必要に応じて設定を書き戻すという手順になります。
+Re:VIEW 2系向けの過去のTechBoosterテンプレートは、Re:VIEW 3以降とは互換性がありません。Re:VIEWは2から3以上への移行を支援する「review-update」というコマンドを提供していますが、TechBoosterテンプレートを使用しているプロジェクトは対象外となっています。
+
+### Re:VIEW 3以降の互換モードを使う
+
+config.ymlで`review_version: 2.0`としておけば、当面は互換モードによりRe:VIEW 3以降でも変わりなく動作します。ただし、一部のRe:VIEW 3以降固有の機能は利用できません。また、将来的に互換は破棄される可能性があります。
+
+### Re:VIEW 4のテンプレートに置き換える
+
+Re:VIEW 3以降ではTeX関連のファイルが大きく変わっているため、Re:VIEW 2系のプロジェクトの既存のファイルをいったん退避し、必要に応じて設定を書き戻すという手順になります。
 
 1. 事前にフォルダごと必ずバックアップを取っておいてください。
 2. layoutsフォルダをリネーム（たとえばlayouts-oldなど）します。
@@ -245,18 +260,19 @@ Re:VIEW 3ではTeX関連のファイルが大きく変わっているため、Re
 
 書き戻しではなくどうしても古いconfig.ymlの書き換えで対処したいという場合は、以下の点に注意してください。
 
- * review_versionパラメータ：値を3.0にする必要があります。
+ * review_versionパラメータ：値を4.0にする必要があります。
  * texstyleパラメータ：値を["reviewmacro"]とします。
  * texdocumentclassパラメータ：2つの引数の内容は大きく変わっています。
  * texcommandパラメータ：オプションを指定していた場合、texoptionsパラメータに移設する必要があります。
  * dvicommandパラメータ：オプションを指定していた場合、dvioptionsパラメータに移設する必要があります。
 
-layouts/layouts.tex.erbやsty/techbooster-doujin.styに何らかのカスタマイズを加えていた場合は、sty/review-custom.styに類似の実装をする必要があります。Re:VIEW 2系のTechBoosterテンプレートはマクロ定義時点から書き換える手法をとっていましたが、Re:VIEW 3系では`\renewcommand`・`\reenvironment`・`\def`などの命令を使って既存のマクロ定義を再定義するというやり方に変わっています。
+layouts/layouts.tex.erbやsty/techbooster-doujin.styに何らかのカスタマイズを加えていた場合は、sty/review-custom.styに類似の実装をする必要があります。Re:VIEW 2系のTechBoosterテンプレートはマクロ定義時点から書き換える手法をとっていましたが、Re:VIEW 3系から`\renewcommand`・`\reenvironment`・`\def`などの命令を使って既存のマクロ定義を再定義するというやり方に変わっています。
 
-### Re:VIEW 3の変更点について
+### Re:VIEW 3以降の変更点について
 
-Re:VIEW 3で変わったことの詳細については、以下を参照してください。
+Re:VIEW 3以降で変わったことの詳細については、以下を参照してください。
 
+* [Re:VIEW 4.0 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review400.html)
 * [Re:VIEW 3からのLaTeX処理](https://review-knowledge-ja.readthedocs.io/ja/latest/latex/review3-latex.html)
 
 ### Re:VIEW 2用のテンプレートの入手
