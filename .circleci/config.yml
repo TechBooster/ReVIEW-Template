@@ -21,6 +21,11 @@ jobs:
       - run:
           name: Build PDF
           command: npm run pdf
+      - run:
+          name: Preparing artifacts
+          command: |
+            mkdir -p /tmp/artifacts
+            cp ./articles/*.pdf /tmp/artifacts
       - store_artifacts:
-          path: ./articles/ReVIEW-Template.pdf
-          destination: ReVIEW-Template.pdf
+          path: /tmp/artifacts
+          destination: /
