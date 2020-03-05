@@ -66,6 +66,8 @@ pbl: TechBooster
 # a-trc, trc: 筆記・タイプ作業者
 # a-trl, trl: 翻訳者
 
+# contact: 連絡先
+
 # 刊行日(省略した場合は実行時の日付)
 date: 2019-4-14
 # 発行年月。YYYY-MM-DD形式による配列指定。省略した場合はdateを使用する
@@ -139,7 +141,10 @@ titlepage: true
 # creditfile: null
 
 # 奥付を作成するか。デフォルトでは作成されない。trueを指定するとデフォルトの奥付、ファイル名を指定するとそれがcolophon.htmlとしてコピーされる
+# デフォルトの奥付における各項目の名前（「著　者」など）を変えたいときにはlocale.ymlで文字列を設定する（詳細はdoc/format.ja.mdを参照）
 colophon: true
+# デフォルトの奥付における、各項目の記載順序
+# colophon_order: ["aut", "csl", "trl", "dsr", "ill", "cov", "edt", "pbl", "contact", "prt"]
 
 # 裏表紙データファイル (PDFMaker向けにはLaTeXソース断片、EPUBMaker向けにはHTMLファイル)
 # backcover: null
@@ -175,8 +180,11 @@ colophon: true
 # reファイルを格納するディレクトリ。省略した場合は以下 (. はカレントディレクトリを示す)
 # contentdir: .
 
-# @<w>命令で使用する単語ファイルのパス
+# @<w>命令で使用する単語ファイルのパス。["common.csv", "mybook.csv"]のように配列指定も可
 # words_file: words.csv
+
+# //table命令における列の区切り文字。tabs (1文字以上のタブ文字区切り。デフォルト), singletab (1文字のタブ文字区切り), spaces (1文字以上のスペースまたはタブ文字の区切り), verticalbar ("0個以上の空白 | 0個以上の空白"の区切り)
+# table_row_separator: tabs
 
 # review-vol向けのヒント情報
 # 1ページの行数文字数と1kbごとのページ数を用紙サイズで指定する(A5 or B5)。
@@ -241,7 +249,7 @@ direction: "ltr"
 epubmaker:
   # HTMLファイルの拡張子
   htmlext: xhtml
-  stylesheet: ["style.css","epub_style.css"]
+  stylesheet: ["style.css", "epub_style.css"]
   #
   # 目次を要素の階層表現にしない。省略した場合(null)は階層化する。
   # 特に部扉が入るなどの理由で、構成によっては階層化目次でepubcheckに
@@ -309,6 +317,8 @@ epubmaker:
   # @<href>タグでの外部リンクを禁止し、地の文にする(falseで禁止する)
   # externallink: true
   #
+  # 脚注に「戻る」リンクを追加する(trueで追加)。脚注の記号および戻るリンクの記号はlocale.ymlで変更可能
+  # back_footnote: null
   # epubmaker:階層を使うものはここまで
 
 # LaTeX用のスタイルファイル(styディレクトリ以下に置くこと)
@@ -333,7 +343,7 @@ texdocumentclass: ["review-jsbook", "media=print,paper=b5,serial_pagination=true
 # texcommand: "uplatex"
 #
 # LaTeXのコマンドに渡すオプションを指定する
-# texoptions: "-interaction=nonstopmode -file-line-error"
+# texoptions: "-interaction=nonstopmode -file-line-error -halt-on-error"
 #
 # LaTeX用のdvi変換コマンドを指定する(dvipdfmx)
 # dvicommand: "dvipdfmx"
@@ -378,6 +388,9 @@ pdfmaker:
   # 画像のscale=X.Xという指定を画像拡大縮小率からページ最大幅の相対倍率に変換する
   # image_scale2width: true
   #
+  # 画像のデフォルトのサイズを、版面横幅合わせではなく、原寸をそのまま利用する
+  # use_original_image_size: null
+  #
   # PDFやIllustratorファイル(.ai)の画像のBoudingBoxの抽出に指定のボックスを採用する
   # cropbox(デフォルト), mediabox, artbox, trimbox, bleedboxから選択する。
   # Illustrator CC以降のIllustratorファイルに対してはmediaboxを指定する必要がある
@@ -411,4 +424,4 @@ pdfmaker:
 # という構成にする必要がある(インデントさせる)
 #
 webmaker:
-    stylesheet: ["style.css","style-web.css"]
+    stylesheet: ["style.css", "style-web.css"]
