@@ -1,6 +1,6 @@
 # Re:VIEW Template
 
-このリポジトリはRe:VIEW用の書籍テンプレートです。Re:VIEWバージョン4.0に対応します。
+このリポジトリはRe:VIEW用の書籍テンプレートです。Re:VIEWバージョン4.1に対応します。
 メンテナンスはTechBoosterが行っています。
 
  * [B5紙面サンプル（PDF）](https://github.com/TechBooster/ReVIEW-Template/tree/master/pdf-sample/TechBooster-Template-B5.pdf)
@@ -135,7 +135,7 @@ TeXの環境構築が困難な場合、一式セットアップ済みの[docker�
 Dockerがうまく動くようになっている場合、以下のコマンドで細かい準備なしにビルドを行うことができます。
 
 ```
-$ docker pull vvakame/review:4.0
+$ docker pull vvakame/review:4.1
 $ ./build-in-docker.sh
 ```
 
@@ -221,18 +221,18 @@ articles/ディレクトリ以下の各種*.scssファイルを編集し、
 
 コマンドでCSSファイルをビルドしてください。
 
-## 過去のRe:VIEW 3依存プロジェクトをRe:VIEW 4に移行する
+## 過去のRe:VIEW 3・4依存プロジェクトを最新のRe:VIEWバージョンに移行する
 
-Re:VIEW 3のプロジェクトは、review-updateコマンドで簡単に更新できます。
+Re:VIEW 3以降のプロジェクトは、review-updateコマンドで簡単に更新できます。
 
 既存のプロジェクトフォルダ内 (本リポジトリを使っている場合はarticlesフォルダ) で、review-updateコマンドを実行してください。
 
 ```
 $ review-update
-** review-update はプロジェクトを 4.0.0 に更新します **
+** review-update はプロジェクトを 4.1.0 に更新します **
 config.yml: 'review_version' を '4.0' に更新しますか? [y]/n
-プロジェクト/sty/review-base.sty は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.0.0/templates/latex/review-jsbook/review-base.sty) で置き換えられます。本当に進めますか? [y]/n
-プロジェクト/sty/review-jsbook.cls は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.0.0/templates/latex/review-jsbook/review-jsbook.cls) で置き換えられます。本当に進めますか? [y]/n
+プロジェクト/sty/review-base.sty は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.1.0/templates/latex/review-jsbook/review-base.sty) で置き換えられます。本当に進めますか? [y]/n
+プロジェクト/sty/review-jsbook.cls は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-4.1.0/templates/latex/review-jsbook/review-jsbook.cls) で置き換えられます。本当に進めますか? [y]/n
 完了しました。
 ```
 
@@ -260,7 +260,7 @@ Re:VIEW 3以降ではTeX関連のファイルが大きく変わっているた�
 
 書き戻しではなくどうしても古いconfig.ymlの書き換えで対処したいという場合は、以下の点に注意してください。
 
- * review_versionパラメータ：値を4.0にする必要があります。
+ * review_versionパラメータ：値を4.0にする必要があります (4.1でも構いません)。
  * texstyleパラメータ：値を["reviewmacro"]とします。
  * texdocumentclassパラメータ：2つの引数の内容は大きく変わっています。
  * texcommandパラメータ：オプションを指定していた場合、texoptionsパラメータに移設する必要があります。
@@ -272,6 +272,7 @@ layouts/layouts.tex.erbやsty/techbooster-doujin.styに何らかのカスタマ�
 
 Re:VIEW 3以降で変わったことの詳細については、以下を参照してください。
 
+* [Re:VIEW 4.1 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review410.html)
 * [Re:VIEW 4.0 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review400.html)
 * [Re:VIEW 3からのLaTeX処理](https://review-knowledge-ja.readthedocs.io/ja/latest/latex/review3-latex.html)
 
