@@ -1,23 +1,50 @@
-version: 2
-jobs:
-  build:
+
+version: 2.1
+executors:
+  # Executorではジョブ間で再利用するDockerイメージを定義する
+  # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
+  vvakame-executor:
+    working_directory: /tmp
     docker:
       - image: vvakame/review:4.1
+
+commands:
+  restore_npm_deps:
     steps:
-      - checkout
       - restore_cache:
-          keys:
-            - npm-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Setup
-          command: npm install
+          name: Restore npm dependencies
+          key: npm-cache-{{ checksum "package-lock.json" }}
+  save_npm_deps:
+    steps:
       - save_cache:
+          name: Cache npm dependencies
           key: npm-cache-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
+
+jobs:
+  setup:
+    executor: vvakame-executor
+    steps:
+      - checkout
+      - restore_npm_deps
+      - run:
+          name: Setup
+          command: npm install
+      - save_npm_deps
+  test:
+    executor: vvakame-executor
+    steps:
+      - checkout
+      - restore_npm_deps
       - run:
           name: Test
           command: npm test
+  build:
+    executor: vvakame-executor
+    steps:
+      - checkout
+      - restore_npm_deps
       - run:
           name: Build PDF
           command: npm run pdf
@@ -29,3 +56,15 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
           destination: /
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - setup
+      - test:
+          requires:
+            - setup
+      - build:
+          requires:
+            - test
+
