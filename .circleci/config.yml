@@ -4,7 +4,7 @@ executors:
   # Executorではジョブ間で再利用するDockerイメージを定義する
   # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
   vvakame-executor:
-    working_directory: /tmp
+    working_directory: ~/tmp
     docker:
       - image: vvakame/review:4.1
 
