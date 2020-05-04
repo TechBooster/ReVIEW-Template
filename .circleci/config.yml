@@ -1,4 +1,3 @@
-
 version: 2.1
 executors:
   # Executorではジョブ間で再利用するDockerイメージを定義する
