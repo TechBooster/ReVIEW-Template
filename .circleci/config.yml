@@ -1,13 +1,36 @@
 version: 2.1
+
+# -------------------------
+# EXECUTORS
+# -------------------------
+# Re:VIEWのバージョンアップ時はここが変わる or 増える
+# ここ以外にCircleCIで考慮しなくていいようにする
 executors:
   # Executorではジョブ間で再利用するDockerイメージを定義する
   # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
   vvakame-executor:
-    working_directory: ~/tmp
+    working_directory: ~/review
     docker:
       - image: vvakame/review:4.1
 
+# -------------------------
+# COMMANDS
+# -------------------------
 commands:
+  # ジョブ内で実行するステップシーケンスをマップとして定義する。複数のジョブ間でコマンド定義を再利用できる
+  # https://circleci.com/docs/ja/2.0/configuration-reference/#commandsversion21-%E3%81%8C%E5%BF%85%E9%A0%88
+  restore_cache_checkout:
+    steps:
+      - restore_cache:
+          key: review-repo-{{ .Environment.CIRCLE_SHA1 }}
+  save_cache_checkout:
+    # save_cache_checkoutコマンドは再利用できるようにしていますが実質的にはsetupのタイミングでしか利用しません
+    steps:
+      - save_cache:
+          key: review-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ./review
+
   restore_npm_deps:
     steps:
       - restore_cache:
@@ -26,15 +49,16 @@ jobs:
     executor: vvakame-executor
     steps:
       - checkout
+      - save_cache_checkout
       - restore_npm_deps
       - run:
-          name: Setup
+          name: Initial Setup
           command: npm install
       - save_npm_deps
   test:
     executor: vvakame-executor
     steps:
-      - checkout
+      - restore_cache_checkout
       - restore_npm_deps
       - run:
           name: Test
@@ -42,7 +66,7 @@ jobs:
   build:
     executor: vvakame-executor
     steps:
-      - checkout
+      - restore_cache_checkout
       - restore_npm_deps
       - run:
           name: Build PDF
@@ -65,5 +89,5 @@ workflows:
             - setup
       - build:
           requires:
-            - test
+            - setup
 
