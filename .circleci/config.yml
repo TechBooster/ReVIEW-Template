@@ -9,7 +9,7 @@ executors:
   # Executorではジョブ間で再利用するDockerイメージを定義する
   # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
   vvakame-executor:
-    working_directory: ~/review
+    working_directory: ~/tmp
     docker:
       - image: vvakame/review:4.1
 
@@ -29,7 +29,7 @@ commands:
       - save_cache:
           key: review-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/review
+            - ~/tmp
 
   restore_npm_deps:
     steps:
@@ -42,7 +42,7 @@ commands:
           name: Cache npm dependencies
           key: npm-cache-{{ checksum "package-lock.json" }}
           paths:
-            - ~/node_modules
+            - ./node_modules
 
 jobs:
   setup:
