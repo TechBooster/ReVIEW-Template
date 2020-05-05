@@ -29,7 +29,7 @@ commands:
       - save_cache:
           key: review-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ./review
+            - ~/review
 
   restore_npm_deps:
     steps:
