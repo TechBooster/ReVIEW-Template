@@ -42,7 +42,7 @@ commands:
           name: Cache npm dependencies
           key: npm-cache-{{ checksum "package-lock.json" }}
           paths:
-            - ./node_modules
+            - ~/node_modules
 
 jobs:
   setup:
