@@ -1,31 +1,237 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+
+# -------------------------
+# EXECUTORS
+# -------------------------
+# Re:VIEWのバージョンアップ時はここが変わる or 増える
+# ここ以外にCircleCIで考慮しなくていいようにする
+executors:
+  # Executorではジョブ間で再利用するDockerイメージを定義する
+  # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
+  vvakame-executor:
+    working_directory: ~/review
     docker:
       - image: vvakame/review:4.1
+
+# -------------------------
+# COMMANDS
+# -------------------------
+commands:
+  # ジョブ内で実行するステップシーケンスをマップとして定義する。複数のジョブ間でコマンド定義を再利用できる
+  # https://circleci.com/docs/ja/2.0/configuration-reference/#commandsversion21-%E3%81%8C%E5%BF%85%E9%A0%88
+  restore_cache_checkout:
     steps:
-      - checkout
       - restore_cache:
-          keys:
-            - npm-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Setup
-          command: npm install
+          key: v1-review-repo-{{ .Environment.CIRCLE_SHA1 }}
+
+  save_cache_checkout:
+    # save_cache_checkoutコマンドは再利用できるようにしていますが実質的にはsetupのタイミングでしか利用しません
+    steps:
       - save_cache:
-          key: npm-cache-{{ checksum "package-lock.json" }}
+          # working_directoryはsave_cacheには効かないので同じpathになるようにpathsを指定しておく
+          key: v1-review-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/review
+
+  restore_npm_deps:
+    steps:
+      - restore_cache:
+          name: Restore npm dependencies
+          key: v1-npm-cache-{{ checksum "package-lock.json" }}
+
+  save_npm_deps:
+    steps:
+      - save_cache:
+          key: v1-npm-cache-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
-      - run:
-          name: Test
-          command: npm test
-      - run:
-          name: Build PDF
-          command: npm run pdf
-      - run:
-          name: Preparing artifacts
-          command: |
-            mkdir -p /tmp/artifacts
-            cp ./articles/*.pdf /tmp/artifacts
+
+  restore_npm_deps_subdir:
+    parameters:
+      target_dir:
+        description: ビルド対象ソースがあるディレクトリを指定する
+        type: string
+    steps:
+      - restore_cache:
+          name: Restore npm dependencies
+          key: v1-npm-cache-<< parameters.target_dir >>-{{ checksum "<< parameters.target_dir >>/package-lock.json" }}
+
+  save_npm_deps_subdir:
+    parameters:
+      target_dir:
+        description: ビルド対象ソースがあるディレクトリを指定する
+        type: string
+    steps:
+      - save_cache:
+          name: Cache npm dependencies
+          key: v1-npm-cache-<< parameters.target_dir >>-{{ checksum "<< parameters.target_dir >>/package-lock.json" }}
+          paths:
+            - ./<< parameters.target_dir >>/node_modules
+
+# -------------------------
+# JOBS
+# -------------------------
+jobs:
+  setup:
+    executor: vvakame-executor
+    parameters:
+      target_dir:
+        description: ビルド対象ソースがあるディレクトリを指定する
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - save_cache_checkout
+      - when:
+          condition: << parameters.target_dir >>
+          steps:
+            - restore_npm_deps_subdir:
+                target_dir: << parameters.target_dir >>
+            - run:
+                name: Initial Setup
+                command: cd << parameters.target_dir >> && npm install
+            - save_npm_deps_subdir:
+                target_dir: << parameters.target_dir >>
+      - unless:
+          condition: << parameters.target_dir >>
+          steps:
+            - restore_npm_deps
+            - run:
+                name: Initial Setup
+                command: npm install
+            - save_npm_deps
+      # ワークスペースの保存（後続のWorkflowsのjobで利用可能）
+      # https://circleci.com/docs/ja/2.0/configuration-reference/#persist_to_workspace
+      # rootはWorkspace のルートディレクトリとなるコンテナ内のディレクトリなので＝working_directoryが無難
+      # pathsは相対パス 
+      - persist_to_workspace:
+          root: ~/review
+          paths:
+            - node_modules
+            - "*/node_modules"
+
+  test:
+    executor: vvakame-executor
+    parameters:
+      target_dir:
+        description: ビルド対象ソースがあるディレクトリを指定する
+        type: string
+        default: ""
+    steps:
+      - restore_cache_checkout
+      - attach_workspace:
+          at: ~/review
+      - when:
+          condition: << parameters.target_dir >>
+          steps:
+            - run:
+                name: Test
+                command: cd << parameters.target_dir >> && npm test
+      - unless:
+          condition: << parameters.target_dir >>
+          steps:
+            - run:
+                name: Test
+                command: npm test
+
+  build:
+    executor: vvakame-executor
+    parameters:
+      target_dir:
+        description: ビルド対象ソースがあるディレクトリを指定する
+        type: string
+        default: ""
+    steps:
+      - restore_cache_checkout
+      - attach_workspace:
+          at: ~/review
+      - when:
+          condition: << parameters.target_dir >>
+          steps:
+            - run: 
+                name: Build PDF
+                command: cd << parameters.target_dir >> && npm run pdf
+            - run:
+                name: Preparing artifacts
+                command: |
+                  mkdir -p /tmp/artifacts
+                  cp ./<< parameters.target_dir >>/articles/*.pdf /tmp/artifacts
+      - unless:
+          condition: << parameters.target_dir >>
+          steps:
+            - run:
+                name: Build PDF
+                command: npm run pdf
+            - run:
+                name: Preparing artifacts
+                command: |
+                  mkdir -p /tmp/artifacts
+                  cp ./articles/*.pdf /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
           destination: /
+
+# -------------------------
+# WORKFLOWS
+# -------------------------
+# ここに書いてある順番でCircleCIが動きます。
+# Review-Template付属のこの設定は(setup|test|build)それぞれのjobにサブディレクトリが指定できるようになっています
+# もしルートに設定ファイルがない場合は次のようにしてください
+# jobs:
+#   - setup:
+#       target_dir: "subdirectory_name"
+# setup以外のtest,buildも同様にtarget_dirを指定してください
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - setup
+      - test:
+          requires:
+            - setup
+      - build:
+          requires:
+            - setup
+
+      # ビルド対象が別の場所にあるときのworkflows設定例
+      # testとbuildはsetupに依存しています
+      # - setup:
+      #     target_dir: sub_directory_name
+      # - test:
+      #     target_dir: sub_directory_name
+      #     requires:
+      #        - setup
+      # - build:
+      #     target_dir: sub_directory_name
+      #     requires:
+      #        - setup
+
+      # ビルド対象が２つ以上のworkflows設定例
+      # リポジトリに2つ以上のRe:VIEWプロジェクトがある場合の指定です。setupも2回以上やる必要があります
+      # （何度もチェックアウトしてるので気になるならcheckout部分を別jobsにするとよさそう）
+      # 
+      # ひとつめ（target_dir_a）のsetup,test,build
+      # - setup:
+      #     name: setup_a
+      #     target_dir: target_dir_a
+      # - test:
+      #     target_dir: target_dir_a
+      #     requires:
+      #        - setup_a
+      # - build:
+      #     target_dir: target_dir_a
+      #     requires:
+      #        - setup_a
+      #
+      # ふたつめ（target_dir_b）のsetup,test,build
+      # - setup:
+      #     name: setup_b
+      #     target_dir: target_dir_b
+      # - test:
+      #     target_dir: target_dir_b
+      #     requires:
+      #        - setup_b
+      # - build:
+      #     target_dir: target_dir_b
+      #     requires:
+      #        - setup_b
