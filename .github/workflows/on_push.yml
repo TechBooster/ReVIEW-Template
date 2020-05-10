@@ -17,6 +17,6 @@ jobs:
     # Upload Distribution file
     - name: Upload distribution file to github artifacts
     - uses: actions/upload-artifact@v2
-        with:
-          name: Deliverables
-          path: ./articles/*.pdf
+      with:
+        name: Deliverables
+        path: ./articles/*.pdf
