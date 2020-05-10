@@ -1,0 +1,18 @@
+name: Build Re:VIEW PDF
+# The workflow is triggered on pushes to the repository.
+on: [push]
+
+jobs:
+  build:
+    name: 
+    runs-on: ubuntu-latest
+    steps:
+    # uses v2 Stable version
+    # https://github.com/actions/checkout
+    - name: checkout source
+      uses: actions/checkout@v2
+    # Build Artifacts
+    - name: Build distribution file
+      uses: TechBooster/ReVIEW-build-artifact-action@master
+
+      
