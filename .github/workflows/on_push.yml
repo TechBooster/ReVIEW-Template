@@ -16,7 +16,7 @@ jobs:
       uses: TechBooster/ReVIEW-build-artifact-action@master
     # Upload Distribution file
     - name: Upload distribution file to github artifacts
-    - uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2
       with:
         name: Deliverables
         path: ./articles/*.pdf
