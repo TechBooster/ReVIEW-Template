@@ -1,4 +1,4 @@
-name: Build Re:VIEW PDF
+name: Build Re:VIEW to make distribution file
 # The workflow is triggered on pushes to the repository.
 on: [push]
 
@@ -14,5 +14,3 @@ jobs:
     # Build Artifacts
     - name: Build distribution file
       uses: TechBooster/ReVIEW-build-artifact-action@master
-
-      
