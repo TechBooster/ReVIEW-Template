@@ -236,6 +236,8 @@ config.yml: 'review_version' を '4.0' に更新しますか? [y]/n
 完了しました。
 ```
 
+その後、articles/sty/reviewmacro.styとarticles/sty/techbooster-doujin-base.styを本リポジトリのファイルで上書きしてください。
+
 ## 過去のRe:VIEW 2依存プロジェクトをRe:VIEW 4に移行する
 
 Re:VIEW 2系向けの過去のTechBoosterテンプレートは、Re:VIEW 3以降とは互換性がありません。Re:VIEWは2から3以上への移行を支援する「review-update」というコマンドを提供していますが、TechBoosterテンプレートを使用しているプロジェクトは対象外となっています。
