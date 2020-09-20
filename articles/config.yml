@@ -414,6 +414,8 @@ pdfmaker:
   colophon: true
   # 表紙挿入時に表紙のページ番号名を「cover」とし、偶数ページ扱いにして大扉前に白ページが入るのを防ぐ。デフォルトはtrue
   # use_cover_nombre: true
+  # 裏表紙データファイル
+  # backcover: "sty/backcover.tex"
   # pdfmaker:階層を使うものはここまで
 
 # 以下のパラメータを有効にするときには、
