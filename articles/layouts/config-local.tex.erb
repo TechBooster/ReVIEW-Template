@@ -1,0 +1,8 @@
+\makeatletter
+<%- if @config['techbooster']['cover_fit_page'] -%>
+\recls@coverfitpagetrue
+<%- end -%>
+<%- if @config['techbooster']['backcoverimage'] -%>
+\def\techbooster@coverimage{images/<%= @config['techbooster']['backcoverimage'] %>}
+<%- end -%>
+\makeatother

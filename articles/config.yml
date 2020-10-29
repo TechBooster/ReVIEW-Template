@@ -363,6 +363,7 @@ pdfmaker:
   # TeX版で利用する表紙画像。
   # 仕上がりサイズ+塗り足し3mmありのPDFまたはIllustratorファイル（PDF互換オプション付き）を推奨。
   # 拡縮はされず「そのまま」貼り付けられる
+  # 原寸画像を用意できないときには、「,cover_fit_page=true」をtexdocumentclassパラメータの2つめの値に追加すると、仕上がりサイズにリサイズして貼り付ける
   # coverimage: cover-a5.ai
   #
   # TeXコンパイル前に実行するプログラム。変換後のTeXソースを調整したいときに使用する。
@@ -425,3 +426,11 @@ pdfmaker:
 #
 webmaker:
     stylesheet: ["style.css", "style-web.css"]
+
+# TechBooster Re:VIEW-Template独自設定
+techbooster:
+  # 表紙および裏表紙を実寸ではなく仕上がりサイズにリサイズするか
+  # texdocumentclassでcover_fit_page=trueを付けるのと同じ
+  # cover_fit_page: true
+  # 裏表紙画像指定。画像はimages/から探索される
+  # backcoverimage: backcover.jpg
