@@ -139,6 +139,17 @@ $ docker pull vvakame/review:4.1
 $ ./build-in-docker.sh
 ```
 
+## Docker Composeを使う
+
+`./build-in-docker.sh`の場合、毎回gem installやnpm installが走るので、
+Docker Composeでそれらを含んだ環境を作れます。
+
+初回はビルドが走りますが、二回目以降は`npm run pdf`だけが走ります。
+
+```sh
+$ ./build-in-docker-compose.sh
+```
+
 ## 紙面や設定ファイルの切り替え
 
 B5やA5といった紙面サイズ、印刷用・電子用といったメディアの切り替えは、articles/config.ymlのtexdocumentclassパラメータで設定しています。
