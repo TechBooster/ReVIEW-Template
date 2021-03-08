@@ -11,10 +11,12 @@ const reviewPostfix = process.env["REVIEW_POSTFIX"] || "";             // REVIEW
 const reviewConfig = process.env["REVIEW_CONFIG_FILE"] || "config.yml"; // REVIEW_CONFIG_FILE="config-ebook.yml" npm run pdf のようにすると別のconfigでビルドできるよ
 const reviewPreproc = `${reviewPrefix}review-preproc${reviewPostfix}`;
 const reviewCompile = `${reviewPrefix}review-compile${reviewPostfix}`;
-const reviewPdfMaker = `${reviewPrefix}review-pdfmaker${reviewPostfix}`;
-const reviewEpubMaker = `${reviewPrefix}review-epubmaker${reviewPostfix}`;
-const reviewWebMaker = `${reviewPrefix}review-webmaker${reviewPostfix}`;
-const reviewTextMaker = `${reviewPrefix}review-textmaker${reviewPostfix}`;
+const reviewPdfMaker = `${reviewPrefix}rake pdf ${reviewPostfix}`;
+const reviewEpubMaker = `${reviewPrefix}rake epub ${reviewPostfix}`;
+const reviewWebMaker = `${reviewPrefix}rake web ${reviewPostfix}`;
+const reviewTextMaker = `${reviewPrefix}rake text ${reviewPostfix}`;
+const reviewIDGXMLMaker = `${reviewPrefix}rake idgxml ${reviewPostfix}`;
+const reviewVivliostyle = `${reviewPrefix}rake vivliostyle ${reviewPostfix}`;
 
 module.exports = grunt => {
 	grunt.initConfig({
@@ -47,7 +49,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewTextMaker} ${reviewConfig}`
+				command: `${reviewTextMaker}`
 			},
 			compile2markdown: {
 				options: {
@@ -87,7 +89,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewPdfMaker} ${reviewConfig}`
+				command: `${reviewPdfMaker}`
 			},
 			compile2epub: {
 				options: {
@@ -95,7 +97,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewEpubMaker} ${reviewConfig}`
+				command: `${reviewEpubMaker}`
 			},
 			compile2web: {
 				options: {
@@ -103,7 +105,23 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewWebMaker} ${reviewConfig}`
+				command: `${reviewWebMaker}`
+			},
+			compile2idgxmlmaker: {
+				options: {
+					execOptions: {
+						cwd: articles,
+					}
+				},
+				command: `${reviewIDGXMLMaker}`
+			},
+			compile2vivliostyle: {
+				options: {
+					execOptions: {
+						cwd: articles,
+					}
+				},
+				command: `${reviewVivliostyle}`
 			}
 		}
 	});
@@ -133,13 +151,13 @@ module.exports = grunt => {
 		generateTask("html"));
 
 	grunt.registerTask(
-		"idgxml",
+		"idgxmlmaker",
 		"原稿をコンパイルしてInDesign用XMLファイルにする",
-		generateTask("idgxml"));
+		generateTask("idgxmlmaker"));
 
 	grunt.registerTask(
 		"pdf",
-		"原稿をコンパイルしてpdfファイルにする",
+		"原稿をコンパイルしてLaTeXでpdfファイルにする",
 		generateTask("pdf"));
 
 	grunt.registerTask(
@@ -151,6 +169,11 @@ module.exports = grunt => {
 		"web",
 		"原稿をコンパイルしてWebページファイルにする",
 		generateTask("web"));
+
+	grunt.registerTask(
+		"vivliostyle",
+		"原稿をコンパイルしてVivliostyle-CLIでpdfファイルにする",
+		generateTask("vivliostyle"));
 
 	require('load-grunt-tasks')(grunt);
 };
