@@ -2,7 +2,7 @@
 
 Re:VIEW フォーマットの文法について解説します。Re:VIEW フォーマットはアスキー社（現カドカワ）の EWB を基本としながら、一部に RD や各種 Wiki の文法を取り入れて簡素化しています。
 
-このドキュメントは、Re:VIEW 3.0 に基づいています。
+このドキュメントは、Re:VIEW 5.1 に基づいています。
 
 ## 段落
 
@@ -255,7 +255,6 @@ puts "hello world!"
 //}
 ```
 
-
 ### ソースコード専用の引用
 
 ソースコードを引用するには次のように記述します。
@@ -346,7 +345,7 @@ V1 --> V6 --|
 ```
 
 * `<imgdir>` はデフォルトでは images ディレクトリです。
-* `<builder>` は利用しているビルダ名（ターゲット名）で、たとえば `--target=html` としているのであれば、images/html ディレクトリとなります。
+* `<builder>` は利用しているビルダ名（ターゲット名）で、たとえば `--target=html` としているのであれば、images/html ディレクトリとなります。各 Maker におけるビルダ名は epubmaker および webmaker の場合は `html`、pdfmaker の場合は `latex`、textmaker の場合は `top` です。
 * `<chapid>` は章 ID です。たとえば ch01.re という名前であれば「ch01」です。
 * `<id>` は //image[〜] の最初に入れた「〜」のことです（つまり、ID に日本語や空白交じりの文字を使ってしまうと、後で画像ファイル名の名前付けに苦労することになります！）。
 * `<ext>` は Re:VIEW が自動で判別する拡張子です。ビルダによってサポートおよび優先する拡張子は異なります。
@@ -355,7 +354,7 @@ V1 --> V6 --|
 
 * HTMLBuilder (EPUBMaker、WEBMaker)、MARKDOWNBuilder: .png、.jpg、.jpeg、.gif、.svg
 * LATEXBuilder (PDFMaker): .ai、.eps、.pdf、.tif、.tiff、.png、.bmp、.jpg、.jpeg、.gif
-* それ以外のビルダ: .ai、.psd、.eps、.pdf、.tif、.tiff、.png、.bmp、.jpg、.jpeg、.gif、.svg
+* それ以外のビルダ・Maker: .ai、.psd、.eps、.pdf、.tif、.tiff、.png、.bmp、.jpg、.jpeg、.gif、.svg
 
 ### インラインの画像挿入
 
@@ -503,6 +502,19 @@ complexmatrixという識別子に基づく画像ファイルが貼り込まれ�
 
 内容には、空行で区切って複数の段落を記述可能です。
 
+Re:VIEW 5.0 以降では、囲み記事に箇条書きや図表・リストを含めることもできます。
+
+```
+//note{
+
+箇条書きを含むノートです。
+
+ 1. 箇条書き1
+ 2. 箇条書き2
+
+//}
+```
+
 ## 脚注
 
 脚注は「`//footnote`」を使って記述します。
@@ -589,7 +601,7 @@ LaTeX の式を挿入するには、`//texequation{ 〜 //}` を使います。
 「式1.1」のように連番を付けたいときには、識別子とキャプションを指定します。
 
 ```
-//texequationl[emc][質量とエネルギーの等価性]{
+//texequation[emc][質量とエネルギーの等価性]{
 \sum_{i=1}^nf_n(x)
 //}
 ```
@@ -600,7 +612,7 @@ LaTeX の式を挿入するには、`//texequation{ 〜 //}` を使います。
 
 LaTeX の数式が正常に整形されるかどうかは処理系に依存します。LaTeX を利用する PDFMaker では問題なく利用できます。
 
-EPUBMaker および WEBMaker では、MathML に変換する方法と、画像化する方法のどちらかを選べます。
+EPUBMaker および WEBMaker では、MathML に変換する方法、MathJax に変換する方法、画像化する方法から選べます。
 
 ### MathML の場合
 MathML ライブラリをインストールしておきます（`gem install math_ml`）。
@@ -608,10 +620,19 @@ MathML ライブラリをインストールしておきます（`gem install mat
 さらに config.yml に以下のように指定します。
 
 ```
-mathml: true
+math_format: mathml
 ```
 
 なお、MathML で正常に表現されるかどうかは、ビューアやブラウザに依存します。
+
+### MathJax の場合
+config.yml に以下のように指定します。
+
+```
+math_format: mathjax
+```
+
+MathJax の JavaScript モジュールはインターネットから読み込まれます。現時点で EPUB の仕様では外部からの読み込みを禁止しているため、MathJax を有効にすると EPUB ファイルの検証を通りません。また、ほぼすべての EPUB リーダーで MathJax は動作しません。CSS 組版との組み合わせでは利用できる可能性があります。
 
 ### 画像化の場合
 
@@ -627,7 +648,7 @@ TeXLive などの LaTeX 環境が必要です。必要に応じて config.yml �
 config.yml で以下のように設定すると、
 
 ```
-imgmath: true
+math_format: imgmath
 ```
 
 デフォルト値として以下が使われます。
@@ -662,7 +683,7 @@ imgmath_options:
 たとえば SVG を利用するには、次のようにします。
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   format: svg
   pdfcrop_pixelize_cmd: "pdftocairo -svg -r 90 -f %p -l %p -singlefile %i %o"
@@ -673,7 +694,7 @@ imgmath_options:
 単一のページの処理を前提とする `sips` コマンドや `magick` コマンドを使う場合、入力 PDF から指定のページを抽出するように `extract_singlepage: true` として挙動を変更します。単一ページの抽出はデフォルトで TeXLive の `pdfjam` コマンドが使われます。
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   extract_singlepage: true
   # pdfjamの代わりに外部ツールのpdftkを使う場合（Windowsなど）
@@ -687,7 +708,7 @@ imgmath_options:
 textmaker 向けに PDF 形式の数式ファイルを作成したいときには、たとえば以下のように設定します（ページの抽出には pdftk を利用）。
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   format: pdf
   extract_singlepage: true
@@ -698,7 +719,7 @@ imgmath_options:
 Re:VIEW 2 以前の dvipng の設定に合わせるには、次のようにします。
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   converter: dvipng
   fontsize: 12
@@ -912,8 +933,75 @@ LaTeXビルダを使用している場合:
 
 ```
 
-
 `//raw`、`//embed`、`@<raw>` および `@<embed>` は、HTML、XML や TeX の文書構造を容易に壊す可能性があります。使用には十分に注意してください。
+
+### 入れ子の箇条書き
+
+Re:VIEW の箇条書きは `*` 型の箇条書きを除き、基本的に入れ子を表現できません。いずれの箇条書きも、別の箇条書き、あるいは図表・リストを箇条書きの途中に配置することを許容していません。
+
+この対策として、Re:VIEW 4.2 では試験的に `//beginchild`、`//endchild` というブロック命令を追加しています。箇条書きの途中に何かを含めたいときには、それを `//beginchild` 〜 `//endchild` で囲んで配置します。多重に入れ子にすることも可能です。
+
+```
+ * UL1
+
+//beginchild
+#@# ここからUL1の子
+
+ 1. UL1-OL1
+
+//beginchild
+#@# ここからUL1-OL1の子
+
+UL1-OL1-PARAGRAPH
+
+ * UL1-OL1-UL1
+ * UL1-OL1-UL2
+
+//endchild
+#@# ここまでUL1-OL1の子
+
+ 2. UL1-OL2
+
+ : UL1-DL1
+        UL1-DD1
+ : UL1-DL2
+        UL1-DD2
+
+//endchild
+#@# ここまでUL1の子
+
+ * UL2
+```
+
+これをたとえば HTML に変換すると、次のようになります。
+
+```
+<ul>
+<li>UL1
+<ol>
+<li>UL1-OL1
+<p>UL1-OL1-PARAGRAPH</p>
+<ul>
+<li>UL1-OL1-UL1</li>
+<li>UL1-OL1-UL2</li>
+</ul>
+</li>
+
+<li>UL1-OL2</li>
+</ol>
+<dl>
+<dt>UL1-DL1</dt>
+<dd>UL1-DD1</dd>
+<dt>UL1-DL2</dt>
+<dd>UL1-DD2</dd>
+</dl>
+</li>
+
+<li>UL2</li>
+</ul>
+```
+
+（試験実装のため、命令名や挙動は今後のバージョンで変更になる可能性があります。）
 
 ## インライン命令
 主なインライン命令を次に示します。
@@ -934,6 +1022,8 @@ LaTeXビルダを使用している場合:
 * `@<ttb>{〜}` : 等幅＋太字にします。
 * `@<code>{〜}` : 等幅にします（コードの引用という性質）。
 * `@<tcy>{〜}` : 縦書きの文書において文字を縦中横にします。
+* `@<ins>{〜}` : 挿入箇所を明示します（デフォルトでは下線が引かれます）。
+* `@<del>{〜}` : 削除箇所を明示します（デフォルトでは打ち消し線が引かれます）。
 
 ### 参照
 * `@<chap>{章ファイル名}` : 「第17章」のような、章番号を含むテキストに置換されます。
