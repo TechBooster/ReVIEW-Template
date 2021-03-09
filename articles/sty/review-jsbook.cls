@@ -1,5 +1,5 @@
 %#!ptex2pdf -l -u -ot '-synctex=1' test-rejsbk
-% Copyright (c) 2018-2020 Munehiro Yamamoto, Kenshi Muto.
+% Copyright (c) 2018-2021 Munehiro Yamamoto, Kenshi Muto.
 %
 % Permission is hereby granted, free of charge, to any person obtaining a copy
 % of this software and associated documentation files (the "Software"), to deal
@@ -19,9 +19,10 @@
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 % THE SOFTWARE.
 
+\IfFileExists{plautopatch.sty}{\RequirePackage{plautopatch}}{}
 \NeedsTeXFormat{pLaTeX2e}
 \ProvidesClass{review-jsbook}
-  [2020/08/16 v5.0  Re:VIEW pLaTeX class modified for jsbook.cls]
+  [2021/01/12 v5.1 Re:VIEW pLaTeX class modified for jsbook.cls]
 
 \def\recls@error{\ClassError{review-jsbook}}
 \def\recls@warning{\ClassWarning{review-jsbook}}
@@ -491,6 +492,13 @@
 %% 表紙のノンブル
 \def\coverpagezero#1{\expandafter\@coverpagezero\csname c@#1\endcsname}
 \def\@coverpagezero#1{cover}
+
+%% 脚注がページをまたいで泣き別れさせない
+\interfootnotelinepenalty\@M
+
+%% 代替定義
+\def\reviewleftcurlybrace{\{}
+\def\reviewrightcurlybrace{\}}
 
 \listfiles
 \endinput
