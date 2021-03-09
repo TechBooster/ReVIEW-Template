@@ -4,8 +4,7 @@ The document is a brief guide for Re:VIEW markup syntax.
 
 Re:VIEW is based on EWB of ASCII (now KADOKAWA), influenced RD and other Wiki system's syntax.
 
-This document explains about the format of Re:VIEW 3.0.
-
+This document explains about the format of Re:VIEW 5.1.
 
 ## Paragraph
 
@@ -284,7 +283,6 @@ puts "hello world!"
 //}
 ```
 
-
 ### Quoting Source Code
 
 `//source` is for quoting source code. filename is mandatory.
@@ -339,7 +337,6 @@ You can use `//image{ ... //}` for figures.
 You can write comments or Ascii art in the block as an alternative description.
 When publishing, it's simply ignored.
 
-
 Usage:
 
 ```
@@ -378,7 +375,7 @@ The order of finding image is as follows.  The first matched one is used.
 ```
 
 * ``<imgdir>`` is `images` as default.
-* ``<builder>`` is a builder (target) name to use.  When you use review-comile commmand with ``--target=html``, `<imagedir>/<builder>` is `images/html`.
+* ``<builder>`` is a builder (target) name to use.  When you use review-comile commmand with ``--target=html``, `<imagedir>/<builder>` is `images/html`. The builder name for epubmaker and webmaker is `html`, for pdfmaker it is `latex`, and for textmaker it is `top`.
 * ``<chapid>`` is basename of *.re file.  If the filename is `ch01.re`, chapid is `ch01`.
 * ``<id>`` is the ID of the first argument of `//image`.  You should use only printable ASCII characters as ID.
 * ``<ext>`` is file extensions of Re:VIEW.  They are different by the builder you use.
@@ -387,7 +384,7 @@ For each builder, image files are searched in order of the following extensions,
 
 * HTMLBuilder (EPUBMaker, WEBMaker), MARKDOWNBuilder: .png, .jpg, .jpeg, .gif, .svg
 * LATEXBuilder (PDFMaker): .ai, .eps, .pdf, .tif, .tiff, .png, .bmp, .jpg, .jpeg, .gif
-* Other builders: .ai, .psd, .eps, .pdf, .tif, .tiff, .png, .bmp, .jpg, .jpeg, .gif, .svg
+* Other builders/makers: .ai, .psd, .eps, .pdf, .tif, .tiff, .png, .bmp, .jpg, .jpeg, .gif, .svg
 
 ### Inline Images
 
@@ -532,6 +529,19 @@ Some block commands are used for short column.
 
 The content is like paragraph; separated by empty lines.
 
+From Re:VIEW 5.0, it is also possible to include itemize, figures and tables in short columns.
+
+```
+//note{
+
+With ordered itemize.
+
+ 1. item1
+ 2. item2
+
+//}
+```
+
 ## Footnotes
 
 You can use `//footnote` to write footnotes.
@@ -624,7 +634,7 @@ Usage:
 If you'd like to assign a number like 'Equation 1.1`, specify the identifier and caption.
 
 ```
-//texequationl[emc][The Equivalence of Mass and Energy]{
+//texequation[emc][The Equivalence of Mass and Energy]{
 \sum_{i=1}^nf_n(x)
 //}
 ```
@@ -635,7 +645,7 @@ There is `@<m>{ ... }` for inline (see "Fence notation for inline commands" sect
 
 Whether LaTeX formula is correctly displayed or not depends on the processing system. PDFMaker uses LaTeX internally, so there is no problem.
 
-EPUBMaker and WEBMaker use either MathML transformation or imaging.
+In EPUBMaker and WEBMaker, you can choose between MathML conversion, MathJax conversion, and imaging.
 
 ### MathML case
 Install MathML library (`gem install math_ml`).
@@ -643,10 +653,19 @@ Install MathML library (`gem install math_ml`).
 Specify in config.yml as follows:
 
 ```
-mathml: true
+math_format: mathml
 ```
 
 Whether it is displayed properly in MathML depends on your viewer or browser.
+
+### MathJax case
+Specify in config.yml as follows:
+
+```
+math_format: mathjax
+```
+
+MathJax JavaScript module is loaded from the Internet. Because the EPUB specification prohibits loading files from external, enabling this feature will cause the EPUB file to fail validation. Also MathJax will not work in almost all EPUB readers, but may be available with CSS formatting processor.
 
 ### imaging case
 
@@ -662,7 +681,7 @@ In addition, external tools for image conversion are also needed. Currently, it 
 By setting in config.yml,
 
 ```
-imgmath: true
+math_format: imgmath
 ```
 
 it is set as follows:
@@ -697,7 +716,7 @@ imgmath_options:
 For example, to make SVG:
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   format: svg
   pdfcrop_pixelize_cmd: "pdftocairo -svg -r 90 -f %p -l %p -singlefile %i %o"
@@ -708,7 +727,7 @@ By default, the command specified in `pdfcrop_pixelize_cmd` takes the filename o
 If you want to use the `sips` command or the` magick` command, they can only process a single page, so you need to set `extract_singlepage: true` to extract the specified page from the input PDF. `pdfjam` command (in TeXLive) is used to extract pages.
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   extract_singlepage: true
   # use pdftk instead of default pdfjam (for Windows)
@@ -722,7 +741,7 @@ imgmath_options:
 To create PDF math images:
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   format: pdf
   extract_singlepage: true
@@ -733,7 +752,7 @@ imgmath_options:
 To set the same setting as Re:VIEW 2:
 
 ```
-imgmath: true
+math_format: imgmath
 imgmath_options:
   converter: dvipng
   fontsize: 12
@@ -956,6 +975,75 @@ this is a special line.
 
 (In other formats, it is just ignored.)
 
+### Nested itemize block
+
+Re:VIEW itemize blocks basically cannot express nested items. Also, none of itemize blocks allow to contain another itemize block or paragraph/image/table/list.
+
+As a workaround, Re:VIEW 4.2 provides an experimental `//beginchild` and `//endchild`. If you want to include something in an itemize block, enclose it with `//beginchild` and `//endchild`. It is also possible to create a multiple nest.
+
+```
+ * UL1
+
+//beginchild
+#@# child of UL1 start
+
+ 1. UL1-OL1
+
+//beginchild
+#@# child of UL1-OL1 start
+
+UL1-OL1-PARAGRAPH
+
+ * UL1-OL1-UL1
+ * UL1-OL1-UL2
+
+//endchild
+#@# child of UL1-OL1 end
+
+ 2. UL1-OL2
+
+ : UL1-DL1
+        UL1-DD1
+ : UL1-DL2
+        UL1-DD2
+
+//endchild
+#@# child of UL1 end
+
+ * UL2
+```
+
+Output:
+
+(In HTML:)
+
+```
+<ul>
+<li>UL1
+<ol>
+<li>UL1-OL1
+<p>UL1-OL1-PARAGRAPH</p>
+<ul>
+<li>UL1-OL1-UL1</li>
+<li>UL1-OL1-UL2</li>
+</ul>
+</li>
+
+<li>UL1-OL2</li>
+</ol>
+<dl>
+<dt>UL1-DL1</dt>
+<dd>UL1-DD1</dd>
+<dt>UL1-DL2</dt>
+<dd>UL1-DD2</dd>
+</dl>
+</li>
+
+<li>UL2</li>
+</ul>
+```
+
+(This is an experimental implementation. Names and behaviors may change in future versions.)
 
 ## Inline Commands
 
@@ -975,6 +1063,8 @@ this is a special line.
 @<ttb>{BarClass}:: teletype (monospaced font) and bold
 @<code>{a.foo(bar)}:: teletype (monospaced font) for fragments of code
 @<tcy>{}:: short horizontal text in vertical text
+@<ins>{sentence}:: inserted part (underline)
+@<del>{sentence}:: deleted part (strike through)
 ```
 
 ### References
@@ -1106,12 +1196,10 @@ C
 A,B,C
 ```
 
-
 ## HTML/LaTeX Layout
 
 `layouts/layout.html.erb` and `layouts/layout.tex.erb` are used as layout file.
 You can use ERb tags in the layout files.
-
 
 Sample layout file(layout.html.erb):
 

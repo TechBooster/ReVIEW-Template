@@ -7,6 +7,11 @@
 % TechBooster固有マクロ
 \RequirePackage{techbooster-doujin-base}
 
+% 囲み飾りの設定
+\ifdefined\reviewboxsetting%
+  \RequirePackage{review-tcbox}
+\fi
+
 % ユーザー固有の定義
 \RequirePackage{review-custom}
 

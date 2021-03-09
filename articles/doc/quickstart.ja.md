@@ -8,7 +8,7 @@ Re:VIEW は GNU Lesser General Public License Version 2.1 に基づいて配布�
 
 このドキュメントでは、Re:VIEW のセットアップから変換の例までを簡単に説明します。
 
-このドキュメントは、Re:VIEW 4.0 に基づいています。
+このドキュメントは、Re:VIEW 5.1 に基づいています。
 
 ## セットアップ
 
@@ -160,6 +160,16 @@ config.yml のサンプルについては以下を参照してください。
 
 * [config.yml.sample](https://github.com/kmuto/review/blob/master/doc/config.yml.sample)
 
+#### Vivliostyle CLI を使った PDF 化
+
+TeX (`review-pdfmaker`、`rake pdf`) を利用する代わりに、[Vivliostyle CLI](https://github.com/vivliostyle/vivliostyle-cli) を使って PDF を作成することもできます。Re:VIEW が EPUB を作成したあと、VivliostyleCLI がそれを PDF に変換します。
+
+```bash
+$ rake vivliostyle:build    ← Vivliostyle を使って PDF を作成
+$ rake vivliostyle:preview  ← Chrome/Chromium ブラウザでプレビュー
+$ rake vivliostyle          ← vivliostyle:buildのショートカット
+```
+
 ### 章を増やす、カスタマイズする
 作成した PDF あるいは EPUB を見ると、先に作成した RE:VIEW フォーマットテキストファイルが「第1章」となっていることがわかります。
 
@@ -217,11 +227,14 @@ $ review-preproc --replace ファイル ←ファイルを更新したもので�
 $ review-vol
 ```
 
-より細かな見出し一覧などを出したいときには、review-index コマンドを使うのもよいでしょう。
+より細かな見出し一覧などを出したいときには、review-index コマンドを使うとよいでしょう。
 
 ```bash
-$ review-index --level 掘り下げる見出しレベル数 -a
+$ review-index -l 掘り下げる見出しレベル数
+$ review-index -l 掘り下げる見出しレベル数 -d ←分量の詳細を表示
 ```
+
+review-vol と review-index では、文字数や行数、見込みページなど各値に大きな差が出ることがあります。これは、review-vol がごく簡単にファイルから概算しているのに対し、review-index は実際に内部でコンパイルして比較的精密に計量しているからです。
 
 ## プロジェクトフォルダを新しい Re:VIEW バージョンに追従する方法
 
@@ -229,8 +242,8 @@ Re:VIEW は定期的に更新されています。おおむね後方互換性を
 
 ```bash
 $ review-update
-** review-update はプロジェクトを 4.0.0 に更新します **
-config.yml: 'review_version' を '4.0' に更新しますか? [y]/n ←Enterで実行
+** review-update はプロジェクトを 5.0.0 に更新します **
+config.yml: 'review_version' を '5.0' に更新しますか? [y]/n ←Enterで実行
 Rakefile は Re:VIEW バージョンのもの (/.../review/samples/sample-book/src/Rakefile) で置き換えられます。本当に進めますか? [y]/n
 lib/tasks/review.rake は Re:VIEW バージョンのもの (/.../review/samples/sample-book/src/lib/tasks/review.rake) で置き換えられます。本当に進めますか? [y]/n
 INFO: 新しいファイル /.../sty/plistings.sty が作成されました。
@@ -246,7 +259,7 @@ INFO: 新しいファイル /.../sty/gentombow.sty が作成されました。
 
 ## クレジット
 
-Re:VIEW は、青木峰郎によって最初に作成されました。武藤健志がこの開発・保守を引き継ぎ、2019年12月時点では、武藤健志、高橋征義、角征典が開発・保守を継続しています。
+Re:VIEW は、青木峰郎によって最初に作成されました。武藤健志がこの開発・保守を引き継ぎ、2020年10月時点では、武藤健志、高橋征義、角征典が開発・保守を継続しています。
 
 バグ・パッチの報告、その他の情報は、
 
