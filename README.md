@@ -221,7 +221,7 @@ articles/ディレクトリ以下の各種*.scssファイルを編集し、
 
 コマンドでCSSファイルをビルドしてください。
 
-## 過去のRe:VIEW 3・4依存プロジェクトを最新のRe:VIEWバージョンに移行する
+## 過去のRe:VIEW 3・4・5依存プロジェクトを最新のRe:VIEWバージョンに移行する
 
 Re:VIEW 3以降のプロジェクトは、review-updateコマンドで簡単に更新できます。
 
@@ -235,6 +235,11 @@ config.yml: 'review_version' を '5.0' に更新しますか? [y]/n
 プロジェクト/sty/review-jsbook.cls は Re:VIEW バージョンのもの (/var/lib/gems/2.5.0/gems/review-5.1.1/templates/latex/review-jsbook/review-jsbook.cls) で置き換えられます。本当に進めますか? [y]/n
 完了しました。
 ```
+
+その後、articles/sty/reviewmacro.styとarticles/sty/techbooster-doujin-base.styを本リポジトリのファイルで上書きしてください。
+
+- [reviewmacro.sty](https://raw.githubusercontent.com/TechBooster/ReVIEW-Template/master/articles/sty/reviewmacro.sty)
+- [techbooster-doujin-base.sty](https://raw.githubusercontent.com/TechBooster/ReVIEW-Template/master/articles/sty/techbooster-doujin-base.sty)
 
 ## 過去のRe:VIEW 2依存プロジェクトをRe:VIEW 5に移行する
 
