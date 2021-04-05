@@ -21,7 +21,7 @@
 require 'fileutils'
 require 'rake/clean'
 
-BOOK = ENV['REVIEW_BOOK'] || 'book'
+BOOK = ENV['REVIEW_BOOK'] || 'ReVIEW-Template'
 BOOK_PDF = BOOK + '.pdf'
 BOOK_EPUB = BOOK + '.epub'
 CONFIG_FILE = ENV['REVIEW_CONFIG_FILE'] || 'config.yml'
