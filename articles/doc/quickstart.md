@@ -9,7 +9,7 @@ Re:VIEW is free software under the terms of the GNU Lesser General Public Licens
 
 This article describes how to setup Re:VIEW and use it.
 
-The supported version of the article is Re:VIEW 4.0.
+The supported version of the article is Re:VIEW 5.1.
 
 ## Set up Re:VIEW
 
@@ -161,6 +161,16 @@ $ rake idgxml    ## generate InDesign XML
 
 There is a sample YAML file [config.yml.sample](https://github.com/kmuto/review/blob/master/doc/config.yml.sample) in the same directory of this document.
 
+#### generate PDF using Vivliostyle CLI
+
+Instead of using TeX (`review-pdfmaker` or `rake pdf`), you can also create a PDF use [Vivliostyle CLI](https://github.com/vivliostyle/vivliostyle-cli). Re:VIEW creates EPUB first and then converts it to PDF with Vivliostyle CLI.
+
+```bash
+$ rake vivliostyle:build    ## build PDF using Viliostyle
+$ rake vivliostyle:preview  ## preview pages in Chrome/Chromium browser
+$ rake vivliostyle          ## shortcut of vivliostyle:build
+```
+
 ### add chapters and modify them
 
 `catalog.yml` file is a catalog of Re:VIEW format files.
@@ -181,7 +191,6 @@ POSTDEF:
 ```
 
 The first item in CHAPS is the first chapter, and the second item (if you add) is the second chapter. PREDEF is for front matter, APPENDIX is for appendix, and POSTDEF is for back matter.  You can see in detail with [catalog.md](https://github.com/kmuto/review/blob/master/doc/catalog.ja.md).
-
 
 ### more information
 
@@ -223,8 +232,11 @@ $ review-vol
 You can also use `review-index` command to generate header list.
 
 ```bash
-$ review-index --level <heading level> -a
+$ review-index --level <heading level>
+$ review-index --level <heading level> -d  ## show volumes also
 ```
+
+review-vol and review-index can have large differences in the number of characters, lines, and pages. While review-vol only estimates from the file, review-index actually compiles and calculates.
 
 ## how to update the document folder to the new Re:VIEW version
 
@@ -232,8 +244,8 @@ Re:VIEW is updated regularly. We Re:VIEW team watch the backward compatibility c
 
 ```bash
 $ review-update
-** review-update updates your project to 4.0.0 **
-config.yml: Update 'review_version' to '4.0'? [y]/n
+** review-update updates your project to 5.0.0 **
+config.yml: Update 'review_version' to '5.0'? [y]/n
 Rakefile will be overridden with Re:VIEW version (/.../review/samples/sample-book/src/Rakefile). Do you really proceed? [y]/n
 lib/tasks/review.rake will be overridden with Re:VIEW version (/.../review/samples/sample-book/src/lib/tasks/review.rake). Do you really proceed? [y]/n
 INFO: new file /.../sty/plistings.sty is created.
@@ -249,7 +261,7 @@ Finished.
 
 ## Copyright
 
-The original author of Re:VIEW is Minero Aoki. The current maintainer is Kenshi Muto(@kmuto), and committers are Masayoshi Takahashi and Masanori Kado (December 2019).
+The original author of Re:VIEW is Minero Aoki. The current maintainer is Kenshi Muto(@kmuto), and committers are Masayoshi Takahashi and Masanori Kado (March 2020).
 
 If you want to report bugs and patches, or to get more information, see:
 

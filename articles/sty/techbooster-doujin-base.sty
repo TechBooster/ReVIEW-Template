@@ -216,4 +216,16 @@
   }
 \fi
 
+% 裏表紙
+\ifdefined\techbooster@coverimage
+  \ifdefined\review@coverimageoption\else%
+    \def\review@coverimageoption{}%
+  \fi
+  \ifrecls@coverfitpage%
+    \def\review@coverimageoption{width=\paperwidth,height=\paperheight}%
+  \fi
+  \def\reviewbackcovercont{%
+  \expandafter\includefullpagegraphicswithoutnmbl\expandafter[\review@coverimageoption]{\techbooster@coverimage}}%
+\fi
+
 \makeatother
