@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  review:
+    build: .
+    volumes:
+      - .:/book
+      - bundle:/usr/local/bundle
+      - /book/node_modules
+volumes:
+  bundle:
