@@ -279,8 +279,8 @@ Re:VIEW 3以降で変わったことの詳細については、以下を参照�
 
 * [Re:VIEW 5.1 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review510.html)
 * [Re:VIEW 5.0 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review500.html)
-* [Re:VIEW 4.2 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review410.html)
-* [Re:VIEW 4.2 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review410.html)
+* [Re:VIEW 4.2 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review420.html)
+* [Re:VIEW 4.1 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review410.html)
 * [Re:VIEW 4.0 での変更点](https://review-knowledge-ja.readthedocs.io/ja/latest/releases/review400.html)
 * [Re:VIEW 3からのLaTeX処理](https://review-knowledge-ja.readthedocs.io/ja/latest/latex/review3-latex.html)
 
