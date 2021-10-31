@@ -131,11 +131,12 @@ $ review-textmaker config.yml
 
 ## Dockerを使う
 
-TeXの環境構築が困難な場合、一式セットアップ済みの[dockerイメージ](https://registry.hub.docker.com/u/vvakame/review/)を用意してあるので使ってください。
+TeXの環境構築が困難な場合、一式セットアップ済みのDockerイメージを [ghcr.io](https://github.com/vvakame/docker-review/pkgs/container/review) または [DockerHub](https://hub.docker.com/r/vvakame/review) に用意してあるので使ってください。
 Dockerがうまく動くようになっている場合、以下のコマンドで細かい準備なしにビルドを行うことができます。
 
 ```
-$ docker pull vvakame/review:5.3
+$ docker pull ghcr.io/vvakame/review:5.3 (ghcrからのダウンロードの場合)
+$ docker pull vvakame/review:5.3 (Docker Hubからのダウンロードの場合)
 $ ./build-in-docker.sh
 ```
 
