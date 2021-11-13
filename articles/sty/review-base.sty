@@ -1,4 +1,4 @@
-\ProvidesClass{review-base}[2020/12/31]
+\ProvidesClass{review-base}[2021/09/06]
 \RequirePackage{ifthen}
 \@ifundefined{Hy@Info}{% for jsbook.cls
   \RequirePackage[dvipdfmx,bookmarks=true,bookmarksnumbered=true]{hyperref}
@@ -40,6 +40,9 @@
 \RequirePackage{amsthm}
 \RequirePackage{bm}
 \RequirePackage{tabularx}
+\RequirePackage{endnotesj}
+
+\def\enoteheading{}% endnotesj.styの後注前見出しおよび空行の出力を抑制
 
 %% if you use @<u>{} (underline), use jumoline.sty
 \IfFileExists{jumoline.sty}{
@@ -65,9 +68,12 @@
 \rubysetup{J}}{%
 \rubysetup{g}}
 
+\DeclareRobustCommand{\reviewtcy}[1]{\PackageError{review-base}{\reviewtcy is not allowed in yoko mode}{}}
+
 \ifthenelse{\equal{\review@documentclass}{utbook} \OR \equal{\review@documentclass}{tbook}}{%
 \newcommand{\headfont}{\gtfamily\sffamily\bfseries}
 \RequirePackage{plext}
+\DeclareRobustCommand{\reviewtcy}[1]{\rensuji{#1}}
 }{%
 }
 
@@ -112,8 +118,8 @@
 
 \newenvironment{reviewdummyimage}{%
   \begin{figure}
-    \begin{center}\begin{alltt}}{%
-    \end{alltt}\end{center}
+    \begin{center}}{%
+    \end{center}
   \end{figure}}
 
 \DeclareRobustCommand{\reviewincludegraphics}[2][]{%
