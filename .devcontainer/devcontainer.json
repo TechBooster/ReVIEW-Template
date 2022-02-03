@@ -1,0 +1,14 @@
+{
+	"image": "vvakame/review:5.3",
+	"settings": {
+		"editor.wordWrap": "on"
+	},
+	"extensions": [
+		"yuqquu.review-starter-syntax-highlight"
+	],
+	"postCreateCommand": [
+		"npm",
+		"ci",
+	],
+	"remoteUser": "root"
+}
