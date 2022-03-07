@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Kenshi Muto
+# Copyright (c) 2020-2022 Kenshi Muto
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@
 
 require 'fileutils'
 require 'yaml'
+require 'date'
 
 def make_mdre(ch, p2r, path)
   if File.exist?(ch) # re file
@@ -29,9 +30,28 @@ def make_mdre(ch, p2r, path)
   end
 end
 
+def yaml_load_file_compatible(file)
+  if YAML.respond_to?(:safe_load_file)
+    YAML.safe_load_file(file, aliases: true, permitted_classes: [Date])
+  else
+    File.open(file, 'rt:bom|utf-8') do |f|
+      begin
+        # < Ruby 3.1
+        YAML.safe_load(f, filename: file, aliases: true, permitted_classes: [Date])
+      rescue ArgumentError
+        # < Ruby 2.7
+        YAML.safe_load(f, [Date])
+      rescue Psych::DisallowedClass
+        # < Ruby 2.5
+        YAML.safe_load(File.read(file), [Date])
+      end
+    end
+  end
+end
+
 desc 'run pandoc2review'
 task :pandoc2review do
-  config = YAML.load_file('config.yml')
+  config = yaml_load_file_compatible('config.yml')
   if config['contentdir'] == '_refiles'
     path = '_refiles'
     p2r = 'pandoc2review'
@@ -41,7 +61,7 @@ task :pandoc2review do
       File.write("#{path}/THIS_FOLDER_IS_TEMPORARY", '')
     end
 
-    catalog = YAML.load_file('catalog.yml')
+    catalog = yaml_load_file_compatible('catalog.yml')
     %w(PREDEF CHAPS APPENDIX POSTDEF).each do |block|
       if catalog[block].kind_of?(Array)
         catalog[block].each do |ch|
