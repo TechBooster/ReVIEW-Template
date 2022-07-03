@@ -25,6 +25,16 @@ PDFを確認するためには、GitHubのgreebookfestclub organizationに参加
 捨てアカウントで構いませんので、GitHub(github.com)のアカウントを教えてください。
 * 技術書典13原稿: https://github.com/greebookfestclub/bookfest13
 
+# おすすめエディッタ
+AtomをPCにインストールします。 https://atom.io/
+その後、以下のコマンドでプラグインをインストールします。
+
+```
+$ brew install redpen
+$ apm install language-review
+$ apm install linter-redpen
+```
+
 # 記事の追加方法
 articlesの下に"名前.re"というファイルを作り、review形式で記載します。
 作ったファイル名をarticles/catalog.ymlに追加します。
