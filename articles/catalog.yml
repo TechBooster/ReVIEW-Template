@@ -2,10 +2,11 @@ PREDEF:
   - preface.re
 
 CHAPS:
-  - article.re
   - endo.re
   - higuchi.re
+  - shirai.re
   - tote.re
+  - negoro.re
   - takatsu.re
 
 APPENDIX:
