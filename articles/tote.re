@@ -8,6 +8,7 @@
 
 (そこでIaCですよ、みたいな話をする)
 
+
 == 作るサーバー
     * BuildersHut
     * WatchTower
