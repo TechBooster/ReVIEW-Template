@@ -10,7 +10,11 @@
 ソフトウェアエンジニアで、カタンとドミニオンとビールが好き。
 好きな筋トレは、ラットプルダウン。
 
-==== 髙津周佑 / @<href>{https://github.com/at0x0ft,@at0x0ft} (@<chap>{takatsu})
+==== 柳澤良輔 / @<href>{https://twitter.com/totegamma,@totegamma} (@<chap>{tote})
+
+グリー株式会社に22年度に新卒としてjoin。インフラ部にて日々勉強中です。
+
+==== 髙津周佑 / @<href>{https://twitter.com/at0x0ft,@at0x0ft} (@<chap>{takatsu})
 
 2022年新卒入社のソフトウェアエンジニア。
 グリーグループの株式会社WFSにて、共通基盤システムを作っております。
