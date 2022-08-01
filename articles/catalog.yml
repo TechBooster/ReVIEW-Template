@@ -4,6 +4,7 @@ PREDEF:
 CHAPS:
   - article.re
   - endo.re
+  - higuchi.re
   - takatsu.re
 
 APPENDIX:
