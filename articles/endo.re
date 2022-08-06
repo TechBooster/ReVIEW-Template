@@ -115,7 +115,8 @@ def outputHeatmap(heatmap_array, vmax, image_no):
     sns.set(font='IPAexGothic', font_scale=2.5)
     plt.gca().get_xaxis().set_ticks_position('top')
     plt.gca().get_yaxis().set_ticks_position('right')
-    heatmap = sns.heatmap(df, cmap='Oranges', annot=True, square=True, cbar=False, vmin=0, vmax=vmax)
+    heatmap = sns.heatmap(df, cmap='Oranges', annot=True, square=True, cbar=False,\
+        vmin=0, vmax=vmax)
     heatmap.set_yticklabels(heatmap.get_yticklabels(), rotation=0) 
     plt.savefig('animation/heatmap_' + str(image_no).zfill(4) + '.png')
     plt.close('all')
@@ -129,9 +130,9 @@ def outputHeatmap(heatmap_array, vmax, image_no):
 
 //list[endo_image_to_movie][画像から動画]{
 1秒に1画像を使う場合
-./ffmpeg -framerate 1 -i heatmap_%04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
+./ffmpeg -framerate 1 -i %04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
 1秒に2画像を使う場合
-./ffmpeg -framerate 2 -i heatmap_%04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
+./ffmpeg -framerate 2 -i %04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
 //}
 
 出力した動画と画像を結合します。
