@@ -31,7 +31,7 @@ for move in kif['moves']:
     print('{:0=81b}'.format(board.occupied[shogi.WHITE]))# 後手
 
     print('-'*100)
-}
+//}
 
 駒と位置の表記法はUSIプロトコル@<fn>{endofn04}として定義されています。駒はアルファベット表記で大文字が先手で小文字が後手、盤面表記では1段目の9筋側から表記され、数字が書いてあったらそこから何マス空白があるかを表しています。
 
@@ -55,7 +55,7 @@ track.append(Message('note_on', note=60+7, velocity=64, time=0))
 track.append(Message('note_off', note=60+7, time=480))
 
 mid.save('new_song.mid')
-}
+//}
 
 === 棋譜データを音に変換する
 
@@ -84,7 +84,7 @@ for move in kif['moves']:
     number = number + 1
 
 mid.save('new_song.mid')
-}
+//}
 
 
 === 棋譜データを音に変換する(別バージョン)
@@ -119,7 +119,7 @@ def outputHeatmap(heatmap_array, vmax, image_no):
     heatmap.set_yticklabels(heatmap.get_yticklabels(), rotation=0) 
     plt.savefig('animation/heatmap_' + str(image_no).zfill(4) + '.png')
     plt.close('all')
-}
+//}
 
 ここに盤面の状態を配列にして流し込むことで画像を得ます。
 
@@ -132,13 +132,13 @@ def outputHeatmap(heatmap_array, vmax, image_no):
 ./ffmpeg -framerate 1 -i heatmap_%04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
 1秒に2画像を使う場合
 ./ffmpeg -framerate 2 -i heatmap_%04d.png -vcodec libx264 -pix_fmt yuv420p -r 30 out.mp4
-}
+//}
 
 出力した動画と画像を結合します。
 
 //list[endo_merge_sound_and_movie][動画と音声を結合]{
 ./ffmpeg -i out.mp4 -i out.wav result.mp4
-}
+//}
 
 === 完成
 完成です！早速再生して確認しましょう。
