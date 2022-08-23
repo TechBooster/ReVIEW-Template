@@ -10,7 +10,7 @@
 主に HTTP Request/Response とルーティング設定にのみ Slim が用いられています。
 モデルの生成や Database クライアントなどについては、他のライブラリや自社で開発したツールなどが適宜用いられています。
 
-チームに配属されてからはじめて Slim で API を開発したとき、私ははじめて次のようなコードと出会いました。
+チームに配属されてから Slim で API を開発したとき、私は次のようなコードとはじめて出会いました。
 
 //list[ganyariya-slim-di][Slim の設定ファイルにおける DI (Dependency Injection)][php]{
 <?php
@@ -26,7 +26,7 @@ return [
 ];
 //}
 
-開発経験が豊富なエンジニアの方々にとってはよく見るものである気がします。
+開発経験が豊富なエンジニアの方々にとってはよく見るものでしょう。
 しかし、私にとっては、なんなんだこれは...となりました。
 というのも 私は主に競技プログラミングやゲーム開発 (Siv3D) などを学生のころは行っており、本格的な Web 開発は初めてだったためです。
 
@@ -232,14 +232,79 @@ $c = new C(new E(), new F(new H(new K()), new I(new K()), new J(new K())));
 DAG の場合、根のノードから DFS の要領で順番に要素にアクセスすることで、依存性を自動的に解決できそうです。
 また、解決したオブジェクト (@<code>{$c, $k} など)をキャッシュしておけば、ノードの数を N, 辺の数を M とすれば、計算量が O(N + M) に抑えられます。 
 
-DFS を利用し、かつ解決したオブジェクトを保存し適宜取り出すものが DI コンテナです（ここまで来るまで長かった）。
+この DFS を利用し、かつ解決したオブジェクトを保存し適宜取り出すものが DI コンテナです（ここまで来るまで長かった）。
 それでは、実際に DI コンテナの例を見ていき、自作していきます。
 
 == DI コンテナ
 
+DI コンテナ は、依存性注入を手助けするツールです。
+手助けするとあるように、依存性注入を行うために DI コンテナが必ず必要となるというわけではありません。
+DI コンテナがあるとより手軽に依存性注入を実現できるというだけにすぎません。
+
+具体的には、DI コンテナは @<code>{{"key": "value"}}の形式で、オブジェクトを取り出すためのキーと、そのオブジェクト自体を紐付けて保存しています。
+
+以下は DI コンテナのイメージ例です。 "hello" というキーに対して、 "world" というオブジェクト（値）を格納しています。 
+また、 UserBookRepositoryInterface::class というキーに対して、 Interface を実装した UserCatRepository のオブジェクトを格納しています。
+
+//list[ganyariya-di-container][DIコンテナのイメージ][php]{
+$container = new Container();
+$container->set("hello", "world!");
+assert($container->get("hello"), "world");
+
+$container->set(UserCatRepositoryInterface::class, new UserCatRepository());
+assert($container->get(UserCatRepositoryInterface::class) instanceof UserCatRepository);
+//}
+
+また、DI コンテナライブラリによっては、自動的に依存性を解決し (autowire)、自分で依存性を解決しなくてよいものもあります。
+詳しくはこちらのテストコードを参考いただきたい@<fn>{ganyariya-di-autowire-testcode}ですが、以下のように Interface に対してその Interface を実装したクラスを指定するだけで自動で依存性を解決してくれます。
+
+//list[ganyariya-di-container-autowire][DIコンテナ autowire][php]{
+$container->set(GetsInterface::class, Hako\fetch(GetsInteractor::class));
+$container->set(MasterRepositoryInterface::class, Hako\fetch(MasterRepository::class));
+$container->set(UserRepositoryInterface::class, Hako\fetch(UserRepository::class));
+//}
+
+上記コードのあとで @<code>{$container->get(GetsInterface::class);} のように書くと、GetsInteractor のコンストラクタ情報を解析して必要なオブジェクトの依存性を再帰的に解決してインスタンスを生成してくれます。
+また、自動的に生成された GetsInteractor インスタンスをキャッシュするため、他オブジェクトが GetsInteractor インスタンスを利用しようとすると、キャッシュされていた GetsInterface を取得します。
+これによって、無駄なオブジェクトを生成するということを避けられます（必ず新規作成したい場合は、そのような設定を別途行えます）。
+
+DI コンテナをより詳しく知るには、 PHP における DI コンテナライブラリとして有名な PHP-DI @<fn>{ganyariya-php-di} を参考にしてください。
+
 == 自作 DI コンテナ
 
+それでは実際に自作 DI コンテナを作っていきます。
+DI コンテナを自作することで、 DI コンテナが内部で何を主に行っているかを理解していきます。
+
+PHP における DI コンテナライブラリの多くは、 PSR という規約に従っています。
+今回自作する DI コンテナも PSR に従うことにします。
+
 === PSR
+
+PSR (PHP Standards Recommendations) @<fn>{ganyariya-php-psr} は PHP-FIG (The PHP Framework Interoperability Group) @<fn>{ganyariya-php-fig} が定めている PHP フレームワークにおける標準規約です。
+
+PHP-FIG は PHP フレームワークやライブラリのメンテナの方々らが立ち上げた団体であり、 PHP のエコシステムを発展させて、より優れた標準規約を推進することを目的にしています。
+PHP フレームワーク・ライブラリの開発者による相互運用組織であり、 PHP 公式の団体ではありません。
+
+また、 PSR は PHP-FIG が策定した規約です。
+具体的には、フレームワークを相互運用するために必要なインターフェースなどが、内容ごとに番号を分けて規定されています。
+例えば、 PSR-1 は標準的なコーディングルールであり、 PSR-7 は HTTP でやり取りするメッセージの Interface を規定しています。
+
+これらの規約はあくまで PHP-FIG の開発者の間で取り決めたものであり、その他の PHP を利用しているエンジニアは PSR に従う必要はありません。
+しかし、開発をする上ではじめからルールがあったほうが嬉しいため、多くのエンジニア・組織は好きな PSR のルールとインターフェースを取り入れてコーディングしています。
+
+DI コンテナについても PSR-11 @<fn>{ganyariya-php-psr-11} でインターフェースが取り決められています。
+@<kw>{Psr\\Container\\ContainerInterface} が定義されており、 @<code>{get, has} というメソッドのみ持ちます。
+get では識別子に一致するオブジェクトを返し、ないなら @<code>{NotFoundExceptionInterface} を実装した例外を返します。
+また、 has は識別子に一致するオブジェクトがあるなら true を返し、ないなら false を返します。
+
+PSR-11 のインターフェースはこれだけしか、つまり @<kw>{識別子・キーに対するオブジェクトの取り出し方}しか定義されていません。
+よって、 map で key と value を内部で管理するという辞書構造そのままの DI コンテナを作ったとしても get, has を定義しておけば PSR-11 を満たしたといえます（簡単ですね）。
+
+ただし、取り出し方は定められている一方、@<kw>{識別子・キーに対する値の設定方法}や@<kw>{依存の解決方法}は定義されていません。
+よって、どのように識別子にオブジェクトを設定するか、依存性を解決するかは DI コンテナライブラリごとの実装に依存しています。
+
+今回作成する自作 DI コンテナは、 PHP-DI @<fn>{ganyariya-php-di} のような識別子に対する値の設定方法を実装します。
+ただし、 PHP-DI の内部実装を読んだわけでなく、 @<code>{DI\\get} のようなメソッド名や機能のみ参考にしているため、内部的な構造は大きく異なる可能性が高いことに注意してください。
 
 === 自作
 
@@ -252,6 +317,12 @@ DFS を利用し、かつ解決したオブジェクトを保存し適宜取り�
 //footnote[ganyariya-di-article1][https://qiita.com/uhooi/items/03ec6b7f0adc68610426]
 //footnote[ganyariya-di-article2][http://blog.a-way-out.net/blog/2015/08/31/your-dependency-injection-is-wrong-as-I-expected/]
 //footnote[ganyariya-ioc][https://ja.wikipedia.org/wiki/%E5%88%B6%E5%BE%A1%E3%81%AE%E5%8F%8D%E8%BB%A2]
+//footnote[ganyariya-di-autowire-testcode][https://github.com/ganyariya/Hako/blob/99d29f76bad594e3fca81eaa9cbe8e0488eaffb8/tests/HogameTest.php]
+//footnote[ganyariya-php-di][https://php-di.org/doc/understanding-di.html]
+//footnote[ganyariya-php-fig][https://www.php-fig.org/bylaws/]
+//footnote[ganyariya-php-psr][https://www.php-fig.org/psr/]
+//footnote[ganyariya-php-psr-11][https://www.php-fig.org/psr/psr-11/]
+
 
 #@# https://qiita.com/uhooi/items/03ec6b7f0adc68610426
 #@# 
