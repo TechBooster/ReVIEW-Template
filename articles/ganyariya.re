@@ -1,16 +1,16 @@
 = 必要最低限な DI コンテナを作ってみる
 
-こんにちは！ 私は 2022 年から WFS 社の新卒サーバーサイドエンジニアとして働かせていただいている @<href>{https://twitter.com/ganyariya,@ganyariya} です。
+こんにちは！ 私は 2022 年から WFS 社の新卒サーバーサイドエンジニアとして働かせていただいている @ganyariya @<fn>{ganyariya-twitter} です。
 チームに配属されて以降は、バックエンドの API 開発・運用などを行いながら、先輩方に追いつこうと日々勉強中です。
 
-さて、私が所属するサーバサイドチームでは PHP のフレームワークである @<href>{https://www.slimframework.com/,Slim} を用いてバックエンド API を開発しています
+さて、私が所属するサーバサイドチームでは PHP のフレームワークである Slim @<fn>{ganyariya-slim-di-container} を用いてバックエンド API を開発しています
 （より詳細なサーバサイドの技術については弊社の技術ブログ@<fn>{ganyariya-wfs-note}をご参考ください）。
 
 この Slim は非常にシンプルなマイクロフレームワークです。
 主に HTTP Request/Response とルーティング設定にのみ Slim が用いられています。
 モデルの生成や Database クライアントなどについては、他のライブラリや自社で開発したツールなどが適宜用いられています。
 
-チームに配属されてから Slim で API を開発したとき、私は次のようなコードとはじめて出会いました。
+チームに配属されてから Slim で API を開発したとき、私は@<list>{ganyariya-slim-di}のようなコードとはじめて出会いました。
 
 //list[ganyariya-slim-di][Slim の設定ファイルにおける DI (Dependency Injection)][php]{
 <?php
@@ -73,7 +73,7 @@ Dependency Injection Container (DI コンテナ) を理解・自作するため�
 ここで、要素とはクラスやライブラリ、モジュール、ミドルウェアなどシステム開発に必要な多くのものが当てはまります。
 できるだけ要素の依存関係を弱くし、要素間の結合度を下げることで、開発しやすくテストしやすい状態を保てます。
 
-文章では少し分かりづらいため、サンプルコードで説明します。
+文章では少し分かりづらいため、サンプルコード @<list>{ganyariya-dependency}で説明します。
 この例では、クラス A はクラス B がない限り生成できません。この場合、 A は B に依存しているといえます。
 
 //list[ganyariya-dependency][依存][php]{
@@ -92,9 +92,10 @@ $a = new A();
 var_dump($a);
 //}
 
-以降 A が B に依存しているとき、下図のような矢印で表すこととします。
+以降 A が B に依存しているとき、@<img>{dependency} のような矢印で表すこととします。
 
-//indepimage[dependency][]
+//image[dependency][依存性を表す矢印]{
+//}
 
 == 依存性注入
 
@@ -108,7 +109,7 @@ var_dump($a);
 
 ==== 強い依存
 
-猫のガチャを引く処理である GachaDrawInteractor は、 ユーザが持っている猫を扱う UserCatRepository に強く依存しています。
+@<list>{ganyariya-strong-dependency} の例では、猫のガチャを引く処理である GachaDrawInteractor は、 ユーザが持っている猫を扱う UserCatRepository に強く依存しています。
 ここで、 Repository や Interactor の用語については Clean Architecture を調べていただければと思います。
 
 このままでは、 GachaDrawInteractor を生成すると必ず新しい UserCatRepository が生成されます。
@@ -140,7 +141,7 @@ class GachaDrawInteractor
 
 ==== 依存性注入を用いた場合
 
-依存性注入を用いると以下のように表せます。
+依存性注入を用いると@<list>{ganyariya-dependency-injection}のように表せます。
 UserCatRepository は外部から設定ファイルを受け取ることができ、テスト用の MySQL インスタンスなどを指定できます。
 GachaDrawInteractor も UserCatRepository を継承したクラスなどを引数として受け取ります。
 
@@ -168,7 +169,7 @@ class GachaDrawInteractor
 
 ==== IoC (制御の反転)
 
-しかし、上記の実装では Application Business Rule (ABR) に含まれる GachaDrawInteractor が、
+しかし、@<list>{ganyariya-dependency-injection}の実装では Application Business Rule (ABR) に含まれる GachaDrawInteractor が、
 より変更がされやすく重要度が低い Interface Adapters の UserCatRepository に依存してしまっています。
 
 プロダクトとして重要なのは Domain Object ならびに UseCase です。
@@ -178,7 +179,7 @@ class GachaDrawInteractor
 
 そこで、@<kw>{制御の反転 (IoC: Inversion of Control)} を行います @<fn>{ganyariya-ioc}。
 
-UserCatRepositoryInterface をプロダクト側で用意し、 Interactor は UserCatRepositoryInterface を受け取るようにします。
+@<list>{ganyariya-ioc} では、UserCatRepositoryInterface をプロダクト側で用意し、 Interactor は UserCatRepositoryInterface を受け取るようにします。
 これによって、猫ガチャを引く Interactor は、中身の実装は不明だが、ある猫の取得・すべての猫の取得・ある猫の削除を行えるようになります。
 
 テストを実行するときは UserCatRepositoryInterface を実装したインメモリ StubRepository を利用すれば高速にテストできます。
@@ -212,20 +213,21 @@ class GachaDrawInteractor
 しかし、実際にオブジェクトを注入するためにはどこかで生成、すなわちコンストラクタを呼び出す必要があります。
 このとき、複数の要素が相互に依存しあっている場合、適切に注入することが困難となります。
 
-以下の図で示すような依存関係があったとします（複雑ですね）。
+@<img>{dependency_tree}で示すような依存関係があったとします（複雑ですね）。
 
-//indepimage[dependency_tree][]
+//image[dependency_tree][複雑な依存関係（依存ツリー）]{
+//}
 
 このとき、 C を生成する場合を考えてみます。
-愚直に実装すると以下のようなコードになります。
+愚直に実装すると@<list>{ganyariya-tree}のようなコードになります。
 C を生成するために K を何度も生成しており、無駄にメモリを消費してしまいます。
-
-また、 @<code>{$k = new K();} とすれば K を再利用して C や G を生成できますが、自らの手でボトムアップに依存関係を考慮してコードを書く必要があります。
-ある 1 箇所にコンストラクタの生成が集まっているならまだ良いですが、他の場所でもコンストラクタを呼び出す場合収集がつかなくなってきます。
 
 //list[ganyariya-tree][依存ツリー][php]{
 $c = new C(new E(), new F(new H(new K()), new I(new K()), new J(new K())));
 //}
+
+また、 @<code>{$k = new K();} とすれば K を再利用して C や G を生成できますが、自らの手でボトムアップに依存関係を考慮してコードを書く必要があります。
+ある 1 箇所にコンストラクタの生成が集まっているならまだ良いですが、他の場所でもコンストラクタを呼び出す場合収集がつかなくなってきます。
 
 この問題を解決するために、依存関係の構造に着目します。
 依存関係は有向グラフかつ閉路がない、つまり非巡回有向グラフ (DAG) であるといえます。
@@ -241,9 +243,9 @@ DI コンテナ は、依存性注入を手助けするツールです。
 手助けするとあるように、依存性注入を行うために DI コンテナが必ず必要となるというわけではありません。
 DI コンテナがあるとより手軽に依存性注入を実現できるというだけにすぎません。
 
-具体的には、DI コンテナは @<code>{{"key": "value"}}の形式で、オブジェクトを取り出すためのキーと、そのオブジェクト自体を紐付けて保存しています。
+具体的には、DI コンテナは @<code>{{"key":"value"}}の形式で、オブジェクトを取り出すためのキーと、そのオブジェクト自体を紐付けて保存しています。
 
-以下は DI コンテナのイメージ例です。 "hello" というキーに対して、 "world" というオブジェクト（値）を格納しています。 
+@<list>{ganyariya-di-container}は DI コンテナのイメージ例です。 "hello" というキーに対して、 "world" というオブジェクト（値）を格納しています。 
 また、 UserBookRepositoryInterface::class というキーに対して、 Interface を実装した UserCatRepository のオブジェクトを格納しています。
 
 //list[ganyariya-di-container][DIコンテナのイメージ][php]{
@@ -256,7 +258,7 @@ assert($container->get(UserCatRepositoryInterface::class) instanceof UserCatRepo
 //}
 
 また、DI コンテナライブラリによっては、自動的に依存性を解決し (autowire)、自分で依存性を解決しなくてよいものもあります。
-詳しくはこちらのテストコードを参考いただきたい@<fn>{ganyariya-di-autowire-testcode}ですが、以下のように Interface に対してその Interface を実装したクラスを指定するだけで自動で依存性を解決してくれます。
+詳しくは Hako のテストコードを参考いただきたい@<fn>{ganyariya-di-autowire-testcode}ですが、@<list>{ganyariya-di-container-autowire}のように Interface に対してその Interface を実装したクラスを指定するだけで自動で依存性を解決してくれます。
 
 //list[ganyariya-di-container-autowire][DIコンテナ autowire][php]{
 $container->set(GetsInterface::class, Hako\fetch(GetsInteractor::class));
@@ -303,15 +305,62 @@ PSR-11 のインターフェースはこれだけしか、つまり @<kw>{識別
 ただし、取り出し方は定められている一方、@<kw>{識別子・キーに対する値の設定方法}や@<kw>{依存の解決方法}は定義されていません。
 よって、どのように識別子にオブジェクトを設定するか、依存性を解決するかは DI コンテナライブラリごとの実装に依存しています。
 
-今回作成する自作 DI コンテナは、 PHP-DI @<fn>{ganyariya-php-di} のような識別子に対する値の設定方法を実装します。
+今回作成する自作 DI コンテナは、 PHP-DI @<fn>{ganyariya-php-di} のような設定方法を実装します。
 ただし、 PHP-DI の内部実装を読んだわけでなく、 @<code>{DI\\get} のようなメソッド名や機能のみ参考にしているため、内部的な構造は大きく異なる可能性が高いことに注意してください。
 
 === 自作
+
+今回自作した DI コンテナライブラリは @<kw>{Hako} @<fn>{ganyariya-hako} です。
+使い方や詳しい実装は README ならびにソースコードとテストコードを参考にしてください。
+
+==== ひとまず array にオブジェクトを入れる
+
+PSR-11 では @<kw>{Psr\\Container\\ContainerInterface} を定義しているため、このインターフェースを実装した最も簡単なコンテナクラス Container.php @<fn>{ganyariya-hako-container} を作ります。
+ソースコードの一部のみ@<list>{ganyariya-hako-container}に掲載しています。
+ある key(id) に対してオブジェクト value を紐付けているだけです。
+
+//list[ganyariya-hako-container][最もシンプルな Conainer][php]{
+// 省略
+use Psr\Container\ContainerInterface;
+class Container implements ContainerInterface
+{
+    private array $data;
+    public function __construct()
+    {
+        $this->data = [];
+    }
+    public function get(string $id): mixed
+    {
+        if (!$this->has($id)) throw new ContainerException("Not Found: $id");
+        return $this->data[$id];
+    }
+    public function has(string $id): bool
+    {
+        return array_key_exists($id, $this->data);
+    }
+}
+//}
+
+==== set と fetch 
+
+さきほどの Container では、get, has で値を取り出せますが、値を設定できません。
+そのため、@<list>{ganyariya-hako-set}のように、set(id, value) で値を設定できるようにします@<fn>{ganyariya-hako-set}。
+
+//list[ganyariya-hako-set][set][php]{
+    public function set(string $id, mixed $value): void
+    {
+        $this->data[$id] = $value;
+    }
+//}
+
+また、 Fetcher / fetch というヘルパークラス・メソッドを用意することによって、指定した id をコンテナから取り出せるようにします @<fn>{ganyariya-hako-fetcher}。
+PHP-DI における DI\get と同じ機能を持ちます。 @<list>{ganyariya-di-container-autowire} のような autowire を行うために用意します。
 
 == 最後に
 
 次回の技術書展では、より発展させた DI コンテナ、そしてオレオレ Web フレームワークの話もしていきます。
 
+//footnote[ganyariya-twitter][https://twitter.com/ganyariya]
 //footnote[ganyariya-wfs-note][https://note.com/wfs_blog/n/n11d137738919]
 //footnote[ganyariya-slim-di-container][https://www.slimframework.com/docs/v4/concepts/di.html]
 //footnote[ganyariya-di-article1][https://qiita.com/uhooi/items/03ec6b7f0adc68610426]
@@ -322,6 +371,10 @@ PSR-11 のインターフェースはこれだけしか、つまり @<kw>{識別
 //footnote[ganyariya-php-fig][https://www.php-fig.org/bylaws/]
 //footnote[ganyariya-php-psr][https://www.php-fig.org/psr/]
 //footnote[ganyariya-php-psr-11][https://www.php-fig.org/psr/psr-11/]
+//footnote[ganyariya-hako][https://github.com/ganyariya/Hako]
+//footnote[ganyariya-hako-container][https://github.com/ganyariya/Hako/blob/68889089286a3addf78f90b0b8bfd6ed0a1272c6/src/Container.php]
+//footnote[ganyariya-hako-set][https://github.com/ganyariya/Hako/blob/cf02f4d851ec1260302f9c207373941f80dbbece/src/Container/Container.php#L23]
+//footnote[ganyariya-hako-fetcher][https://github.com/ganyariya/Hako/blob/cf02f4d851ec1260302f9c207373941f80dbbece/src/Fetcher/Fetcher.php]
 
 
 #@# https://qiita.com/uhooi/items/03ec6b7f0adc68610426
