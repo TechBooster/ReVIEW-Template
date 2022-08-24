@@ -354,11 +354,90 @@ class Container implements ContainerInterface
 //}
 
 また、 Fetcher / fetch というヘルパークラス・メソッドを用意することによって、指定した id をコンテナから取り出せるようにします @<fn>{ganyariya-hako-fetcher}。
-PHP-DI における DI\get と同じ機能を持ちます。 @<list>{ganyariya-di-container-autowire} のような autowire を行うために用意します。
+これらは PHP-DI における DI\get と同じ機能を持ちます。 @<list>{ganyariya-di-container-autowire} のような autowire を今後行うために今のうちに用意しています。
+
+@<kw>{注意点として、この時点ではすべての依存性を自分でコードを書いて設定しなくてはなりません}。
+たとえば、何もコンストラクタを取らない @<code>{A} というクラスがあったとします。
+このとき @<code>{$container->set(A::class, new A());} と必ず自分の手で設定する必要があります。
+クラス名から自動で依存性を解決するためには、後述する DFS と Reflection による自動解決を実装しなければなりません。
+
+==== ContainerClosure
+
+次に、ContainerClosure と Hako で呼称している機能を追加しました@<fn>{ganyariya-hako-container-closure}。
+@<list>{ganyariya-container-closure} のように、ごにょごにょ操作をしたオブジェクトを返したい場合に利用します。
+@<code>{function(ContainerInterface)} が value に入っているかどうかは ReflectionFunction を使って判定しています。
+
+//list[ganyariya-container-closure][ContainerClosure][php]{
+$container->set(UserRepositoryInterface::class, function(ContainerInterface $c) {
+    /**
+     * ここで色々追加で操作をする
+     * config['localhost']を取得したり時間操作をするなど自由に操作をする
+     */
+
+    return new UserRepository(
+        $c->get(MasterRepositoryInterface::class);
+    );
+});
+//}
+
+==== Cache
+
+続いて、 Cache クラスを導入し一度解決した依存性をキャッシュするようにします @<fn>{ganyariya-hako-cache}。
+これによって、あるクラスのインスタンスが複数作成されることを防げます。
+詳しい実装は @<fn>{ganyariya-hako-cache} をご参考ください。
+
+実装としてはシンプルで、@<code>{set(id, value)} で与えられる value を Cache インスタンスの内部に actualData として格納します。
+そして、依存性が解決されたタイミングで、解決されたオブジェクトを resolvedData として保存します。
+
+==== DFS と Reflection による依存性解決
+
+それでは DFS と Reflection による依存性解決を実装してきます。
+この機能を実装すると @<list>{ganyariya-di-container-autowire} で示すように、インターフェース id とそのインターフェースを実装したクラス value を指定するだけで自動で依存性解決をしてくれるようになります。
+くわえて、インターフェース以外、つまりすべてのクラスの依存性が自動で解決されるようになります。
+まとめると、@<kw>{あるインターフェースに対してどのクラスを返すかのみ指定するだけで、それ以外はすべて自動で解決されます}（便利ですね）。
+
+ここからは説明が難しいため、@<list>{ganyariya-di-container-autowire} の例を用いて依存性解決の流れをたどりながら説明します。
+@<list>{ganyariya-di-container-autowire}のあとに @<code>{$container->get(GetsInterface::class)} を実行したとします。
+すると、@<code>{GetsInterface::class} に紐付いている @<code>{GetsInteractor::class} をコンテナ内で探します。
+
+しかし、@<code>{GetsInteractor::class} は明示的に set されていません @<fn>{ganyariya-hako-dfs-1}。
+そのため、@<code>{this->get($id)} が false となり、@<code>{$this->dynamicLoader->existsDeclaredClass($id)} で DynamicLoader のメソッドが呼ばれます。
+
+ここで、DynamicLoader は依存性を動的に解決するヘルパークラスです。
+@<code>{existsDeclaredClass} で指定された id が autoload 名前空間に存在するかを調べます @<fn>{ganyariya-hako-dfs-2}。
+存在するのであればクラス情報を Reflection で取得し、動的に依存性を解決・オブジェクトを生成します。
+@<code>{GetsInteractor::class} は名前空間に存在するため true になり、依存性の動的解決フェーズに移ります。
+
+依存性の動的解決として DynamicLoader の load が呼ばれます@<fn>{ganyariya-hako-dfs-3}。
+コードを見ていただくとわかりますが、 ReflectionClass を用いてコンストラクタのパラメータ情報を取り出しています（ReflectionHelperというヘルパークラスに名前を取得する処理を切り分けています）。
+そして、コンストラクタのパラメータ名で再帰的に get し依存性を解決します@<fn>{ganyariya-hako-dfs-4}。
+ここが DFS の部分となります。
+
+再帰的に取得したインスタンスをもとに @<code>{$generated = new $id(...$arguments)}で @<code>{GetsInteractor::class} のインスタンスを生成しキャッシュします。
+これで、明示的に依存性を指定しなくても名前から自動で解決してくれるようになりました@<fn>{ganyariya-hako-dfs-5}。
+
+これらの依存性の解決方法は再帰的に行われるため、流れが追いづらいものとなっています。
+テストコードをお読みいただき、fetch, cache, loader がどう呼ばれているかを追っていただくと良さそうです。
+
+==== addDefinitions
+
+最後に、よりシンプルに DI コンテナを作成できるように ContainerBuilder を用意しました@<fn>{ganyariya-hako-container-builder}。
+set を使用するかわりに、配列を指定することで設定を行えます。
 
 == 最後に
 
-次回の技術書展では、より発展させた DI コンテナ、そしてオレオレ Web フレームワークの話もしていきます。
+後半はかなり駆け足になってしまいましたが、依存性注入と DI コンテナ、そして自作 DI コンテナについて書かせていただきました。
+PHP における DI コンテナがどのように依存性を解決しているのかを、自分の手でライブラリを書くことでより理解できました。
+懸念点として、Slim などの Web フレームワークとまだ組み合わせていないため、 Hako で設定した DI コンテナが Slim などで動くかどうかを試そうと思います。
+
+次回の技術書展では、 Go 言語で以下のどれかを自作してまとめようと思います。
+
+ * Micro Web Framework
+ * Git System
+ * Database
+ * 自作コンパイラ
+
+ここまでお読みいただきありがとうございました。
 
 //footnote[ganyariya-twitter][https://twitter.com/ganyariya]
 //footnote[ganyariya-wfs-note][https://note.com/wfs_blog/n/n11d137738919]
@@ -375,7 +454,14 @@ PHP-DI における DI\get と同じ機能を持ちます。 @<list>{ganyariya-d
 //footnote[ganyariya-hako-container][https://github.com/ganyariya/Hako/blob/68889089286a3addf78f90b0b8bfd6ed0a1272c6/src/Container.php]
 //footnote[ganyariya-hako-set][https://github.com/ganyariya/Hako/blob/cf02f4d851ec1260302f9c207373941f80dbbece/src/Container/Container.php#L23]
 //footnote[ganyariya-hako-fetcher][https://github.com/ganyariya/Hako/blob/cf02f4d851ec1260302f9c207373941f80dbbece/src/Fetcher/Fetcher.php]
-
+//footnote[ganyariya-hako-container-closure][https://github.com/ganyariya/Hako/commit/fca4a6a37723cf43694608abb8d4ebcdbf816abb]
+//footnote[ganyariya-hako-cache][https://github.com/ganyariya/Hako/commit/fca4a6a37723cf43694608abb8d4ebcdbf816abb]
+//footnote[ganyariya-hako-dfs-1][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Container/Container.php#L39]
+//footnote[ganyariya-hako-dfs-2][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Dynamic/Loader.php#L13]
+//footnote[ganyariya-hako-dfs-3][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Dynamic/Loader.php#L19]
+//footnote[ganyariya-hako-dfs-4][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Dynamic/Loader.php#L30]
+//footnote[ganyariya-hako-dfs-5][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Dynamic/Loader.php#L32]
+//footnote[ganyariya-hako-container-builder][https://github.com/ganyariya/Hako/blob/v0.1.1/src/Container/ContainerBuilder.php]
 
 #@# https://qiita.com/uhooi/items/03ec6b7f0adc68610426
 #@# 
