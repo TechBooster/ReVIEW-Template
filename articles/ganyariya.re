@@ -195,7 +195,7 @@ interface UserCatRepositoryInterface
     public function findAll(): array;
     public function delete($id): void;
 }
-class UserCatRepository extends UserCatRepositoryInterface
+class UserCatRepository implements UserCatRepositoryInterface
 {
     // find, findAll, delete を実装する
 }
