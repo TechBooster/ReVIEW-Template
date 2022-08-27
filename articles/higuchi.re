@@ -128,10 +128,17 @@ $ bq mk -t --time_partitioning_type DAY aumo_media.simplecov simplecov.json
 GitHubでPull Requestを作ると、GitHub Actionsでテストが回るように設定しています。
 そこで、rspec実行後にBigQueryへ転送する処理を追記します。
 
+まず、BigQueryへの編集権限のあるサービスアカウントを作成します。
+それをGitHubに設定して、Actionsからsecrets.GCP_SERVICE_ACCOUNTで取得できるようにします。
+//indepimage[higuchi_01]
+//indepimage[higuchi_02]
 
-secretsの設定方法を説明
-設定画面のスクショ
-GitHub Actionsの設定を説明
+次にActionsの設定ファイルを変更します。
+設定ファイルは、.github/workflows/以下に存在します。
+そのrspec実行より下に以下の記載を追記します。
+
+"Authenticate GCP"で、secretsに設定したサービスアカウントを使って認証を行います。
+"setup GCP"でbqコマンドを使えるようにして、"send coverage to BigQuery"でBigQueryへデータを送信します。
 
 //listnum[SpecHelper][SpecHelper][yml]{
   - name: Authenticate GCP
@@ -147,9 +154,13 @@ GitHub Actionsの設定を説明
       bq load --source_format NEWLINE_DELIMITED_JSON aumo_media.simplecov tea-app/coverage/simplecov.log
 //}
 
+この変更を含んだPull Requestを作ると、GitHub Actionsが実行され、BigQueryにカバレッジデータが格納されます。
+Actionが成功したら、対象テーブルをqueryして、データが格納されたことを確認します。
 
-確認方法の説明
-BigQuery画面のスクショ
+//cmd{
+$ bq query --nouse_legacy_sql \
+'SELECT * FROM `aumo_media.simplecov` WHERE DATE(_PARTITIONTIME) = "2022-08-10"'
+//}
 
 == DataStudioを使った時系列グラフ作成
 DataStudioはGoogleが提供する無料のBIツールです。
@@ -159,16 +170,34 @@ DataStudioはGoogleが提供する無料のBIツールです。
 Google Accountへのログインが求められるので、BigQueryのユーザ権限のあるユーザでログインします。
 以下のようなホーム画面が表示されるので、「空のレポート」をクリックします。
 
-DataStudioホーム画面のスクショ
+//indepimage[higuchi_03_ds_top]
 
 すると空のシートができます。まずは、BigQueryへの接続設定を行います。
+接続先候補一覧が表示されるため、BigQueryを選択します。
 
-BigQueryコネクタのスクショ
+//indepimage[higuchi_04_ds_bq1]
 
-次にグラフを追加します。
+次に接続先のproject、DB(dataset)とテーブルを選択します。
 
-グラフ作成画面のスクショ
+//indepimage[higuchi_05_ds_bq2]
 
+すると左側に表示するグラフ、右側にそのグラフの設定が表示されます。
+そこで右上の「グラフ」の右にある▽をクリックすると、グラフの種類を選択可能となります。
+そこで、時系列グラフを選択します。
+ディメンションにtime(日付)、指標にAVGとcovered_percentを選択します。
+
+//indepimage[higuchi_06_ds_bq3]
+
+このままだと休日などPull Requestが作られない日は、カバレッジデータが存在しないため0として表示されてしまいます。
+そこで、欠損データを補完するようにします。
+画面右上のスタイルをクリックし、欠損データを選びます。
+「ゼロとして扱う」となっている部分を「線形補完」に変更します。
+すると、次のように期待したグラフが作成されました。
+
+//indepimage[higuchi_07_ds_bq4]
+
+適切な共有設定を行い、URLを共有すれば、チームメンバー全員がこのグラフを閲覧できます。
+定例会議などで定期的にこのグラフを確認することで、テストを書く意識を浸透させることができました。
 
 == まとめ
 カバレッジの時系列グラフを作成することができました。
