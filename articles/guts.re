@@ -85,7 +85,7 @@ zsh -i -c exit
 -i でインタラクティブモードで起動し、-c exit で起動後すぐに exit コマンドを実行するようにします。
 
 //list[guts-zsh-result][][bash]{
-$ hyperfine 'zsh -i -c exit' --warmup 3 --runs 5 --show-output --export-json bench.json
+$ hyperfine 'zsh -i -c exit' --warmup 3 --runs 5 --export-json bench.json
 Benchmark 1: zsh -i -c exit
   Time (mean ± σ):      30.1 ms ±   0.2 ms    [User: 19.6 ms, System: 9.2 ms]
   Range (min … max):    30.0 ms …  30.4 ms    5 runs
@@ -101,7 +101,7 @@ nvim --headless -c q
 --headless で UI を起動しないようにし、-c q で設定ファイルを読んだ後に q コマンドを実行するようにします。
 
 //list[guts-nvim-help][][bash]{
-$ hyperfine 'nvim --headless -c q' --warmup 3 --runs 5 --show-output --export-json bench.json
+$ hyperfine 'nvim --headless -c q' --warmup 3 --runs 5 --export-json bench.json
 Benchmark 1: nvim --headless -c q
   Time (mean ± σ):      95.0 ms ±   1.9 ms    [User: 44.0 ms, System: 50.0 ms]
   Range (min … max):    92.1 ms …  97.2 ms    5 runs
@@ -151,7 +151,13 @@ fi
 command="${1}"
 name="${2}"
 
-hyperfine "${command}" --show-output --warmup 3 --runs 10 -u millisecond --export-json bench.json > /dev/null
+hyperfine "${command}" \
+    --show-output \
+    --warmup 3 \
+    --runs 10 \
+    --export-json bench.json \
+    > /dev/null
+
 mean_time=$(cat bench.json | jq '.results[0].mean * 1000 | tostring')
 
 cat<<EOF
@@ -217,7 +223,8 @@ jobs:
           sudo apt install zsh
 
           # Install hyperfine
-          wget https://github.com/sharkdp/hyperfine/releases/download/v1.14.0/hyperfine_1.14.0_amd64.deb
+          wget https://github.com/sharkdp/hyperfine/releases/download/v1.14.0/hype
+rfine_1.14.0_amd64.deb
           sudo dpkg -i hyperfine_1.14.0_amd64.deb
 
       - name: Install test dependencies
@@ -229,12 +236,14 @@ jobs:
 
       - name: Run zsh benchmark
         run: |
-          ./scripts/benchmark.sh 'zsh -i -c exit' 'zsh load time (${{ runner.os }})' > zsh-benchmark-result.json
+          ./scripts/benchmark.sh 'zsh -i -c exit' 'zsh load time (${{ runner.os }})
+' > zsh-benchmark-result.json
           cat zsh-benchmark-result.json
 
       - name: Run neovim benchmark
         run: |
-          ./scripts/benchmark.sh 'nvim --headless -c q' 'nvim load time (${{ runner.os }})' > nvim-benchmark-result.json
+          ./scripts/benchmark.sh 'nvim --headless -c q' 'nvim load time (${{ runne
+r.os }})' > nvim-benchmark-result.json
           cat nvim-benchmark-result.json
 
       - name: Store zsh benchmark result
@@ -267,12 +276,14 @@ jobs:
 //list[guts-github-workflow-run-benchmark][Run zsh/neovim benchmark][yaml]{
       - name: Run zsh benchmark
         run: |
-          ./scripts/benchmark.sh 'zsh -i -c exit' 'zsh load time (${{ runner.os }})' > zsh-benchmark-result.json
+          ./scripts/benchmark.sh 'zsh -i -c exit' 'zsh load time (${{ runner.os }})
+' > zsh-benchmark-result.json
           cat zsh-benchmark-result.json
 
       - name: Run neovim benchmark
         run: |
-          ./scripts/benchmark.sh 'nvim --headless -c q' 'nvim load time (${{ runner.os }})' > nvim-benchmark-result.json
+          ./scripts/benchmark.sh 'nvim --headless -c q' 'nvim load time (${{ runn
+er.os }})' > nvim-benchmark-result.json
           cat nvim-benchmark-result.json
 //}
 benchmark.sh を使用し、zsh と neovim のそれぞれのベンチマーク結果を JSON として出力しています。各 OS ごとのベンチマーク結果を生成しており、${{ runner.os }} で現在実行中の OS を取得しています。
