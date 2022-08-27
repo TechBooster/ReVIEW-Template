@@ -248,13 +248,13 @@ DI コンテナがあると、より手軽に依存性注入を実現できる�
 
 具体的には、DI コンテナは @<code>{{"key":"value"}}の形式で、オブジェクトを取り出すためのキーと、そのオブジェクト自体を紐付けて保存しています。
 
-@<list>{ganyariya-di-container}は DI コンテナのイメージ例です。 "hello" というキーに対して、 "world" というオブジェクト（値）を格納しています。 
+@<list>{ganyariya-di-container}は DI コンテナのイメージ例です。 "hello" というキーに対して、 "world!" というオブジェクト（値）を格納しています。 
 また、 UserCatRepositoryInterface::class というキーに対して、 Interface を実装した UserCatRepository のオブジェクトを格納しています。
 
 //list[ganyariya-di-container][DIコンテナのイメージ][php]{
 $container = new Container();
 $container->set("hello", "world!");
-assert($container->get("hello"), "world");
+assert($container->get("hello") === "world!");
 
 $container->set(UserCatRepositoryInterface::class, new UserCatRepository());
 assert($container->get(UserCatRepositoryInterface::class) instanceof UserCatRepository);
@@ -294,8 +294,8 @@ PHP のエコシステムを発展させて、より優れた標準規約を推�
 具体的には、フレームワークを相互運用するために必要なインターフェースなどが、内容ごとに番号で別れて規定されています。
 例えば、 PSR-1 は標準的なコーディングルールであり、 PSR-7 は HTTP でやり取りするメッセージの Interface を規定しています。
 
-これらの規約はあくまで PHP-FIG の開発者の間で取り決めたものであり、その他の PHP を利用しているエンジニアは PSR に必ず従う必要はありません。
-しかし、開発をする上で共通のルールがあったほうが嬉しいため、多くのエンジニアと組織は好きな PSR のルールとインターフェースを取り入れてコーディングしています。
+これらの規約はあくまで PHP-FIG の開発者の間で取り決めたものであり、その他の PHP エンジニアは PSR に必ず従う必要はありません。
+しかし、開発をする上で共通のルールがあったほうが嬉しいため、多くのエンジニアは好きな PSR のルールとインターフェースを取り入れてコーディングしています。
 
 DI コンテナについても PSR-11 @<fn>{ganyariya-php-psr-11} でインターフェースが取り決められています。
 具体的は、@<kw>{Psr\\Container\\ContainerInterface} が定義されており、 @<code>{get, has} というメソッドのみ持ちます。
@@ -422,15 +422,15 @@ $container->set(UserRepositoryInterface::class, function(ContainerInterface $c) 
 これらの依存性の解決方法は再帰的に行われるため、流れが追いづらいものとなっています。
 テストコードをお読みいただき、fetch, cache, loader がどう呼ばれているかを追っていただくと良さそうです。
 
-==== addDefinitions
+==== ContainerBuilder
 
 最後に、よりシンプルに DI コンテナを作成できるよう ContainerBuilder を用意しました@<fn>{ganyariya-hako-container-builder}。
 set を使用するかわりに、配列を指定することで設定できます。
 
 == 最後に
 
-後半はかなり駆け足になってしまいましたが、依存性注入と DI コンテナ、そして自作 DI コンテナについて書かせていただきました。
-PHP における DI コンテナがどのように依存性を解決しているのかを、自分の手で書くことでより理解できました。
+後半がかなり駆け足になってしまいましたが、依存性注入と DI コンテナ、そして自作 DI コンテナについて書かせていただきました。
+PHP における DI コンテナがどのように依存性を解決しているのかを、自作することでより理解できました。
 懸念点として、Slim などの Web フレームワークと Hako をまだ組み合わせていないため、 Hako で設定した DI コンテナが Slim などで動くかどうかを試そうと思います。
 
 @<kw>{車輪の再発明}を行うと、その技術がどうして存在するのか、どのように成り立っているのか分かってよいですね。
