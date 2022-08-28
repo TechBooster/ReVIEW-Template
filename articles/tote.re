@@ -60,30 +60,9 @@ Bについて、これは一見バカみたいな問題に見えますが、趣�
 ということは！ずばりIaC(Infrastructure as Code)ですね。サーバーの構成やアプリケーションのインストール、configファイルの配布を手動ではなくコードで示すことで、
 自動でサーバーが建つ上に・コードそのものがドキュメントとなって一挙両得です。
 
-<!--
--->
-
-<!--
-== 本稿で目指す姿
-本稿では上の問題を解決するべく、自動でサーバーを構築するサーバーと、モニタリングを行うサーバーを構築しようと思います。
-また、ちょっとこれは本筋から離れていて蛇足ではあるのですが、おまけで1台ゲートウェイサーバーを構築します。
-
-というのも、固定IPを自宅に複数引いてる人は稀(ですよね!?)でしょうから、1つのIPでやりくりをする仕組みもあったほうが自宅サーバーが便利になります。
-具体的にはapacheでproxyサーバーを立てます。また、最近はteleportっていう踏み台用のミドルウェアが存在しており、
-
-というわけでまとめると、今回作るサーバーは次の3つです。(適当な名前をつけました。やっぱり名前がつくとテンションが上がりますね。)
-* 自動構築サーバー BuildersHut
-* モニタリングサーバー WatchTower
-* ゲートウェイサーバー Bastion
-
-この3つのサーバーがうまーい具合に協力して、新しく構築されたサーバーに対してモニタリングやsshもできる環境を自動で提供できたら、
-少ない手間できちんと管理できて使い勝手も良い、持続可能な自宅サーバー環境が作れそうです。
-
--->
 
 == 自動構築用サーバーを建てよう
 本稿では上の問題を解決するべく、自動でサーバーを構築するサーバーを構築しようと思います。
-
 
 最初の理念通り、作るものはちゃんとコードを残す(=自動構築できるようにする)べきなのです。それは、自動構築サーバーも例に漏れずです。
 本章では自動構築用サーバーを作るに当たり私が選定した技術を紹介するとともに、作業の流れを説明します。
@@ -104,8 +83,7 @@ ESXiを管理するVSphereというシステムをVMWare社は提供していて
 では、terraform-provider-esxiでインスタンスを作ってみましょう。
 次のようなHashicorp-HCLを記述します。
 
-main.tf
-```HCL
+//list[tote-main-tf-1][main.tf][hcl]{
 variable "esxi_hostname"     {}
 variable "esxi_username"     {}
 variable "esxi_password" {}
@@ -128,18 +106,18 @@ provider "esxi" {
 resource "esxi_guest" "myFirstServer" {
 
     guest_name     = "MyFirstServer"
-    disk_store     = "Disk" = お使いの環境に合わせてください
-    virthwver      = "11"   = お使いの環境に合わせてください
+    disk_store     = "Disk" # お使いの環境に合わせてください
+    virthwver      = "11"   # お使いの環境に合わせてください
     power          = "on"
     boot_disk_size = 32
     guestos        = "ubuntu"
     ovf_source     = "./bionic-server-cloudimg-amd64.ova"
 
     network_interfaces {
-        virtual_network = "main" = お使いの環境に合わせてください
+        virtual_network = "main" # お使いの環境に合わせてください
     }
 }
-```
+//}
 
 terraform-provider-esxiはインスタンスの作成だけでなく、OSイメージのOVAファイルをもとにOSのインストールまでやってくれます。
 UbuntuのOVAイメージは"https://cloud-images.ubuntu.com/"から見つけることができます。 このmain.tfと同じ階層にダウンロードしておきます。
@@ -158,8 +136,8 @@ shell script形式か、yaml形式で記述することができます。
 
 たとえば、testユーザーを作成するcloud-init.yamlは次のようになります。
 
-```
-=cloud-config
+//list[tote-cloud-init][cloud-init.yaml][yaml]{
+#cloud-config
 users:
   - name: testuser
     plain_text_passwd: "password"
@@ -168,7 +146,7 @@ users:
     shell: /bin/bash
     ssh_authorized_keys:
         - ssh-rsa AAAAAAAAAAAAAAA= MYHOSTNAME
-```
+//}
 
 'users:'というのはcloud-initにおける「モジュール」の1つとなっていて、他にもパッケージをインストールしたり、Diskをマウントしたり、想像以上に多くのことができます。
 詳しくは公式ドキュメントの'https://cloudinit.readthedocs.io/en/latest/topics/modules.html'を参考にしてください。
@@ -176,8 +154,7 @@ users:
 
 そして、このcloud-initファイルですが、先程のterraformファイルに織り込むことができます。次のとおりです。
 
-main.tf(抜粋)
-```
+//list[tote-main-tf-2][main.tf(抜粋)][hcl]{
 resource "esxi_guest" "myFirstServer" {
     ...
     guestinfo = {
@@ -185,14 +162,14 @@ resource "esxi_guest" "myFirstServer" {
         "userdata.encoding" = "gzip+base64"
     }
 }
-```
+//}
 ここで指定することで、インスタンスが立ち上がった後自動で実行してくれます。
 この後、再度terraform applyすれば自動的にVMが再生成(replace)され、testuserというユーザーが作成された状態で新しいインスタンスが上がってくるはずです。
 
 ところで、サーバーとして使うならIPを固定したいですよね。 ネットワーク関連の設定もcloud-initでできるのですが、少し別枠になります。
 
 別途でmeta.yamlを作成します。
-```
+//list[tote-cloud-init-1][meta.yaml][yaml]{
 network:
   version: 1
   config:
@@ -205,16 +182,13 @@ network:
     - type: nameserver
       address:
         - 0.0.0.0 = おうちのDNS
-```
+//}
 
 そして、main.tfでmetadataとして読み込みます。
 
-main.tf(抜粋)
-```
+//list[tote-main-tf-3][main.tf(抜粋)][hcl]{
 resource "esxi_guest" "teleport_proxy" {
-
 	...
-
 	guestinfo = {
 		"userdata"          = base64gzip(file("./cloud-init.yaml"))
 		"userdata.encoding" = "gzip+base64"
@@ -222,7 +196,7 @@ resource "esxi_guest" "teleport_proxy" {
 		"metadata.encoding" = "gzip+base64"
 	}
 }
-```
+//}
 
 これで再度terraform applyすれば、また作り変えられた新しいインスタンスが、IPが固定された状態で上がってくはずです。
 
@@ -248,14 +222,13 @@ sshを用いて構成対象に接続し、自動的にコマンドを送るこ�
 
 スムーズにansibleでセットアップできるように、gpgとpython3だけ予めcloud-initでインストールしておくことにします。
 
-cloud-init.yaml(追記)
-```
+//list[tote-cloud-init-2][cloud-init.yaml(追記)][yaml]{
 package_update: true
 package_upgrade: true
 packages:
   - gpg
   - python3
-```
+//}
 
 ==== 冪等性
 「冪等性(idempotency)」というのはAnsibleの大きなテーマとなっています。
@@ -300,7 +273,7 @@ Concourseは様々な種類のプラグインが'resource'として公式・コ�
 
 私も初めはこれを利用していたのですが、esxiでovaイメージを扱うにはovf-toolが必要で、このresourceには含まれていなかったので自分で作成します。
 
-```Dockerfile
+//list[tote-dockerfile][Dockerfile][dockerfile]{
 FROM ubuntu:focal
 
 RUN apt update \
@@ -321,10 +294,10 @@ RUN chmod 0600 $HOME/.ssh/config
 ADD VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle /
 RUN chmod +x /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle \
  && /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle --console --eulas-agreed --required
-```
+//}
 
 concourseのファイルは次の通りです。
-```
+//list[tote-concourse-yaml][concourse-task.yaml][yaml]{
 resource_types:
   - name: githubapps-content
     type: docker-image
@@ -391,7 +364,7 @@ jobs:
                 -var esxi_password="$esxi_password" \
                 -var ova_filepath="$ova_filepath" \
                 -auto-approve
-```
+//}
 
 少し長いですね。
 入力リソースが2つあることが分かると思います。1つ(repo-terraform)はterraformのレポジトリそのもので、もう1つ(ovaimage)がs3に入っているovaファイルです。
@@ -410,8 +383,7 @@ Concourseは様々なシークレットマネージャーをサポートして�
 ValutはまたしてもHashicorp社のプロダクトの一つで、例によってオープンソース版は無料で利用することができます。
 VaultをインストールするAnsible Playbookは次の通りです。
 
-Ansible
-```
+//list[tote-vault-ansible][ansible][yaml]{
 - name: Add HashiCorp DEB key
   apt_key:
     url: https://apt.releases.hashicorp.com/gpg
@@ -430,13 +402,13 @@ Ansible
   service:
     name: vault
     enabled: true
-```
+//}
 
 ==== Concourse用のシークレットを作成
 vaultは鍵をURIのようにスラッシュ区切りの階層構造で表現できます
-```
+//cmd{
 hoge/piyo/fuga/... ← こんな感じ
-```
+//}
 なのですが、この一番最初の'hoge'はそれ以下の空間を代表していて、「データ型」を設定することができます。
 
 hoge以下のpiyoやその下のfuga以降に連なる空間では、hogeのデータ型を継承します。
@@ -447,25 +419,25 @@ concourseでは、concourse/から始まる空間でkv型を使います。
 
 そのため、まずはvaultに、concourseから始まる空間ではkv型を使うと設定します。
 
-```
+//cmd{
 $ vault secrets enable -version=1 -path concourse kv
 Success! Enabled the kv secrets engine at: concourse/
-```
+//}
 これでconcourse/以下に自由にkv型のデータを配置できるようになりました。
 
 ちなみに、concourseの鍵のルックアップルールは、
-```
+//cmd{
 concourse/チーム名/パイプライン名/パラメータ名
-```
+//}
 となっています。んで、若干頭がこんがらがりますが、vaultのkv型ではこの場所にいくつでもkvを定義することができます。
 すなわち、concourse/main/test-pipeline/test-parameterに、[{user: hoge}, {pass: piyo}, {shell: bash}...]というふうなデータを入れられるということです。
 
 concourseで((variable))と書いた場合、concourse/<teamname>/<pipelinename>/variableにある、valueという名前のキーが取得されます。 value以外のキー例えばuserを取得したい場合は、((variable.user))と書けばOKです。
 
 KVペアの作成は
-```
-valut kv put <path> <key>=<value>
-```
+//cmd{
+$ valut kv put <path> <key>=<value>
+//}
 といったコマンドで可能です。
 
 また、vaultはすごく見た目の良いwebUIが用意されており、そちらで大抵の設定をすることも可能です。併せてご活用ください。
@@ -475,30 +447,31 @@ concourseはvaultの全アクセス権を握る必要はなく、concourse/以�
 
 なので、そのようなポリシーを作成します。
 まずポリシー定義ファイルconcourse-policy.hclを以下の内容で作成します。
-```
+
+//list[tote-concourse-policy][concourse-policy.hcl][hcl]{
 path "concourse/*" {
     capabilities = ["read"]
 }
-```
+//}
 
 次に、作成したconcourse-policy.hclをvalutにインストールします。
-```
+//cmd{
 $ vault policy write concourse ./concourse-policy.hcl
 Success! Uploaded policy: concourse
-```
+//}
 これでconcourseポリシーを作ることができました。
 では、concourseポリシーに基づいたtokenを発行します。
-```
+//cmd{
 ansible@BuildersHut:~$ vault token create --policy concourse
-```
+//}
 
 これにより、concourse/以下の値の読み込みだけが出来るトークンを作ることができました。
 
 このトークンをconcourseCIに設定します！docker-composeファイルに以下を追記するだけです。
-```
+//cmd{
 CONCOURSE_VAULT_URL: http://<よしなに-ipv4>:8200
 CONCOURSE_VAULT_CLIENT_TOKEN: hvs.*******************************************************************************************
-```
+//}
 
 === 自動構築用サーバー完成！
 これで、レポジトリに構成の定義をpushするだけで、好きにサーバーを構築できるようになりました。
@@ -522,27 +495,28 @@ file_sdは正直ServiceDiscoveryと呼ぶには微妙なのですが、要する
 Ansibleは内部にjinja2と呼ばれるpythonのテンプレートエンジンが搭載されており、
 変数をもとにファイルを生成することができます。
 
-```yaml
+//list[tote-call-template][テンプレートの呼び出し][yaml]{
 - name: template
   template:
     src: targets.j2
     dest: /etc/targets.yml
   register: config_updated
-```
+//}
 
-```j2
+//list[tote-template][targets.j2][j2]{
 - targets:
 {% for elem in groups.All %}
   - {{elem}}:9100
 {% endfor %}
-```
+//}
 
 === ゲートウェイサーバー
 固定IPを自宅に複数引いてる人は稀(ですよね!?)でしょうから、1つのIPでやりくりをする仕組みがあると嬉しいですよね。
 apacheでproxyサーバーを建てましょう。
 
 以下のように設定できます。
-```
+
+//list[tote-apache-conf][apache.conf][conf]{
 <VirtualHost *:80>
   RewriteEngine on
   RewriteCond %{HTTPS} off
@@ -557,16 +531,17 @@ apacheでproxyサーバーを建てましょう。
   SSLCertificateFile /etc/letsencrypt/live/example.com/fullchain.pem
   SSLCertificateKeyFile /etc/letsencrypt/live/example.com/privkey.pem
 </VirtualHost>
-```
+//}
 
 grafanaとteleportはhttp(s)だけでなく、ws(s)も通す必要があります。
 これは、RewriteConfigで実現できます。
-```
+
+//list[tote-apache-conf][websocketのプロキシ][conf]{
 RewriteEngine on
-RewriteCond %{HTTP:Upgrade}    websocket        [NC]
-RewriteCond %{HTTP:Connection} upgrade          [NC]
+RewriteCond %{HTTP:Upgrade}    websocket   [NC]
+RewriteCond %{HTTP:Connection} upgrade     [NC]
 RewriteRule ^/?(.*) "ws://myserviceip/$1"  [P]
-```
+//}
 
 上記の設定で証明書を指定してhttps対応していますが、証明書の取得はCertbotを使って
 無料でLet's Encryptから取得できます。
@@ -582,5 +557,4 @@ RewriteRule ^/?(.*) "ws://myserviceip/$1"  [P]
 
 自動構築は非常に楽しいですね！カードゲームでオレオレコンボデッキを組んでいるような感じです。
 みんなもぜひ自宅サーバーのデッキ構築してみて、そして紹介してください！
-
 
