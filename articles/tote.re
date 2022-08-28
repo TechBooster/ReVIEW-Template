@@ -4,7 +4,7 @@
 さてさて。みなさま思い思いに自宅サーバーを運営なさっていることと思います。
 昨今クラウドがもてはやされている中、硬派に自宅にサーバーをおいているアナタ、ステキです。
 
-思いの丈は人それと思いますが、私の場合、クラウドでは何をするにも従量課金になってしまう一方、
+思いの丈は人それと思いますが、筆者の場合、クラウドでは何をするにも従量課金になってしまう一方、
 自宅サーバーは(電気代及び初期投資を棚に上げれば)自分は計算資源を無料で使えるんだ！と思えるところが魅力的ですね。
 
 ところが、自宅サーバーの運用は簡単ではありません。
@@ -12,18 +12,17 @@
 「結局このサーバーって何がはいってるんだっけ？」ってなっちゃったり、
 かそもそも手入れのタイミングに間が空きすぎて全部忘れちゃって、同じ内容のサーバーを構築しようと思っても毎回「apache 設定ファイル 場所」みたいなアホな検索をしちゃったり。
 
-自宅サーバーは、放置され、忘れられ、廃墟となっていきがちです。
+@<b>{自宅サーバーは、放置され、忘れられ、廃墟となっていきがち}です。
 
-本稿は、私がこの問題を少しでもマシにするために自宅サーバーを再建した方法を紹介することで、皆様が思い思いの自宅サーバーを構成する「きっかけ」を提供できれば、というコンセプトでお送り致します。
+本稿は、筆者がこの問題を少しでもマシにするために自宅サーバーを再建した方法を紹介することで、皆様が思い思いの自宅サーバーを構成する「きっかけ」を提供できれば、というコンセプトでお送り致します。
 あくまで「一例の紹介」であり、「ベストプラクティスの提案」ではないことをご承知おきください。
 
 == 自宅サーバーはなぜ廃墟化するのか
 まえがきで、趣味のサーバーは廃墟になってしまいがちという話をしました。
 なぜでしょうか？要因として次が考えられます。
 
-* 用途が気まぐれ 責任範囲が明確でない
-* ドキュメントが存在しない
-* ヘルスチェックがされていない
+ * 用途が気まぐれ 責任範囲が明確でない
+ * ドキュメントが存在しない
 
 === 用途が気まぐれ 責任範囲が明確でない
 なんかOOP(オブジェクト指向プログラミング)で語られがちな言葉がでましたが、
@@ -36,27 +35,29 @@
 
 しかしこうすると新たに以下の2つの問題が発生します。
 
-A. そんなにマシンがあるわけない
-B. ていうかめんどくさい
+ * A. そんなにマシンがあるわけない
+ * B. ていうかめんどくさい
 
 Aについて、自宅にそんな大量のサーバーマシンを置ける訳はないので(ですよね...?)、1サービス1サーバーみたいな贅沢はできません。
-そこで、私はベアメタル・ハイパーバイザーを用いることにしました。
+そこで、筆者はベアメタル・ハイパーバイザーを用いることにしました。
 具体的にはVMWareのESXiを使います。なんと無料です！
 これはOSレベルの仮想化エンジンで、複数のゲストOSを起動することができます。
 これで、1つのマシンで複数のサーバーを起動出来るため、1サービス1サーバーへの道が開けます。
 
-Bについて、これは一見バカみたいな問題に見えますが、趣味においては本質問題です。
+Bについて、これは一見バカみたいな問題に見えますが、趣味においては本質問題であり、@<b>{一番の原因}です。
 たしかに、毎回いちいちESXiの管理画面からcpuやメモリのリソース量を設定して、OSをインストールして...とやるのはめんどくさすぎです。
 絶対我慢できずに既存サーバーに別アプリケーションをインストールしちゃいます。
+
 これは、自動化で解決しましょう！
 例えば、ちょっとサーバー定義を追加してgithubにpushするだけで自動的にOSと基本ソフトウェアインストール済みのサーバーが上がってくるなら、まだめんどくさがらず運用できる気がしませんか。
 
 === ドキュメントが存在しない
-耳が痛くなる話ですね。
+耳が痛くなる話です。
+
 しかし、やはりどのサーバーに何がどうイントールされたのか、どこの設定ファイルをどう編集したのかが分からないと、メンテナンスが困難になってしまいます。
 とは言っても！わざわざ趣味で運営してるサーバーのために新しくマニュアル/手順書/ドキュメント、作りたくないものです。
 
-どうしたものか... そういえば一個前の課題の解決方法に、自動化がありました。
+どうしたものか...... そういえば一個前の課題の解決方法に、自動化がありました。
 ということは！ずばりIaC(Infrastructure as Code)ですね。サーバーの構成やアプリケーションのインストール、configファイルの配布を手動ではなくコードで示すことで、
 自動でサーバーが建つ上に・コードそのものがドキュメントとなって一挙両得です。
 
@@ -64,8 +65,8 @@ Bについて、これは一見バカみたいな問題に見えますが、趣�
 == 自動構築用サーバーを建てよう
 本稿では上の問題を解決するべく、自動でサーバーを構築するサーバーを構築しようと思います。
 
-最初の理念通り、作るものはちゃんとコードを残す(=自動構築できるようにする)べきなのです。それは、自動構築サーバーも例に漏れずです。
-本章では自動構築用サーバーを作るに当たり私が選定した技術を紹介するとともに、作業の流れを説明します。
+そして最初の理念通り、作るものはちゃんとコードを残す(=自動構築できるようにする)べきなのです。それは、自動構築サーバーも例に漏れずです。
+本章では自動構築用サーバーを作るに当たり筆者が選定した技術を紹介するとともに、作業の流れを説明します。
 また、本章はESXiは構成済みとして話を進めさせて頂きます。
 
 === サーバーインスタンスを自動で建てる Terraform
@@ -75,10 +76,12 @@ Terraformは様々なサービスを「Provider」という形で抽象化し、
 
 今回はterraform-provider-esxiという有志の方が作ってくれているproviderを使います。 こうやって広く拡張がコミュニティで開発されているところがTerraformのいいところですね。
 
-ちなみになのですが、Hashicorp社が公式に出しているvsphere-providerというproviderも存在はしています。
+====[column]
+ちなみに、Hashicorp社が公式に出しているvsphere-providerというproviderも存在はしています。
 ESXiを管理するVSphereというシステムをVMWare社は提供していて、それを通してESXiを構築することができます。
 公式なので心惹かれるのですが、ESXiが無料で公開されている一方、VSphereは完全にエンタープライズ向けの製品で、結構良いお値段がするので個人で所有するのはちょっと......という感じですね。 
 このproviderで、vsphere抜きにしてESXIだけ触れたら超最高なのですが、そう上手くはいかないですね。
+====[/column]
 
 では、terraform-provider-esxiでインスタンスを作ってみましょう。
 次のようなHashicorp-HCLを記述します。
@@ -86,7 +89,7 @@ ESXiを管理するVSphereというシステムをVMWare社は提供していて
 //list[tote-main-tf-1][main.tf][hcl]{
 variable "esxi_hostname"     {}
 variable "esxi_username"     {}
-variable "esxi_password" {}
+variable "esxi_password"     {}
 
 terraform {
     required_providers {
@@ -200,6 +203,34 @@ resource "esxi_guest" "teleport_proxy" {
 
 これで再度terraform applyすれば、また作り変えられた新しいインスタンスが、IPが固定された状態で上がってくはずです。
 
+====[column]
+本文中では触れていませんが、筆者は@<code>{esxi_virtual_disk}リソースを利用して、追加のディスクを作成し、@<code>{esxi_guest}の@<code>{virtual_disks}で追加で指定することで、
+インスタンスに2つのディスクを付与しています。というのも、インスタンスを設定変更ではなく再構築した場合(replaceがかかった場合)、サーバー上のデータが消えてしまいます。
+
+設定データなどはgit管理とシンクしている状態が生なので消えて良いのですが、例えばゲームサーバーであればセーブデータは消えてもらってはこまりますし、セーブデータをgitに上げるのはちょっとちがいます。
+
+なので、2作ったディスクのうち、1つはOSなどがインストールされている「消えて良いディスク」、もう1つがdbのデータなどが入っている「消えたら困るディスク」として運用しています。
+
+ちなみに、diskのセットアップはcloud-initで次のように設定できます。
+
+//list[tote-disk-setup][cloud-init.yaml][yaml]{
+device_aliases:
+    persistent: /dev/sdb
+disk_setup:
+    persistent:
+        table_type: gpt
+        layout: [100]
+
+fs_setup:
+    - label: fs1
+      filesystem: ext4
+      device: persistent.1
+
+mounts:
+    - ["persistent.1", "/persistent"]
+//}
+====[/column]
+
 === サーバーの中身を設定する Ansible
 cloud-initはたしかに便利ではあるものの、これでサーバーのすべてを構築するには少し無理があります。
 例えば、cloud-initは外部ファイルを読み込むことができないので、自分でカスタマイズしたconfigファイルをサーバーにプリインストールしようと思うと、
@@ -209,7 +240,7 @@ cloud-initはたしかに便利ではあるものの、これでサーバーの�
 Ansibleは結構古くからある構成管理ツールで、次の特徴があります。
 
 ==== エージェントレス
-エージェントレスというのは、すなわち、構成管理対象に例えば「Ansible-client(存在しません)」のようなものをインストールする必要がないということです。
+エージェントレスというのは、すなわち、構成管理対象に例えば「Ansible-client(実在しません)」のようなものをインストールする必要がないということです。
 sshを用いて構成対象に接続し、自動的にコマンドを送ることで構築をする仕組みとなっています。
 これは他の構成管理ツールからしても少し珍しい特徴です。
 
@@ -247,7 +278,35 @@ Ansibleは'Ansible Galaxy'と呼ばれる、Ansibleのプラグインを作っ�
 
 ---
 
-Ansibleはここですべて解説するというよりは、「今後登場するミドルウェア」をAnsibleでインストール・設定することになるので、ひとまずの説明はここまでにして、その都度登場してもらいます。
+Ansibleは、構築対象のサーバーをリストアップした「inventory」と呼ばれるファイルを読み込んで利用する必要があります。
+そして今サーバーを自動で増やせるシステムを作っているので、当然このinventoryファイルも自動で生成したいですよね。
+
+terraformは、showコマンドを用いて、stateファイルをもとに現在構成されているすべてのリソースに関する情報をjsonで吐き出すことができます。
+Ansibleはinveontoryファイルの形式としてjsonが使えないのですが、yamlが使えるので、一度jqで必要な要素だけ取り出し、整形し、yqでyamlに変換するスクリプトを書いておくと便利です。これは、後にCI/CDプロセスに入れ込みます。
+
+//cmd{
+terraform -chdir=repo-terraform init
+terraform -chdir=repo-terraform show -json \
+  | jq '.values.root_module.resources
+    | map(select(.type == "esxi_guest")) | {
+      "all": {
+        "children": (
+          map({(.name): {"hosts": {(.values.ip_address): {}}}}) + [
+            {
+              "All": {
+                "children": map({
+                  (.name): {}
+                }) | add
+              }
+            }
+          ]
+        ) | add
+      }
+    }' \
+  | yq -p j -o y '.' > inventory/host
+//}
+
+このスクリプトでは、それぞれのホスト名をグループ名にした、単一のIPアドレスからなるグループ群に加え、すべてのホストが入っているALLというグループを作っています。
 
 === 継続的デプロイ ConcourseCI
 ここまででコードをもとにTerraformでサーバーインスタンスを建て、Ansibleでミドルウェア等を自動でインストール・設定する術を手に入れました。
@@ -271,7 +330,7 @@ concourseはdocker-composeファイルが公開されており、それだけで
 
 Concourseは様々な種類のプラグインが'resource'として公式・コミュニティ共に多く開発され、公開されており、中にはなんとterraformが動作するものもあります。
 
-私も初めはこれを利用していたのですが、esxiでovaイメージを扱うにはovf-toolが必要で、このresourceには含まれていなかったので自分で作成します。
+筆者も初めはこれを利用していたのですが、esxiでovaイメージを扱うにはovf-toolが必要で、このresourceには含まれていなかったので自分で作成します。
 
 //list[tote-dockerfile][Dockerfile][dockerfile]{
 FROM ubuntu:focal
@@ -296,7 +355,7 @@ RUN chmod +x /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle \
  && /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle --console --eulas-agreed --required
 //}
 
-concourseのファイルは次の通りです。
+concourseのファイルの、terraformを実行する箇所は次のとおりです。
 //list[tote-concourse-yaml][concourse-task.yaml][yaml]{
 resource_types:
   - name: githubapps-content
@@ -347,7 +406,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((s3.access_key))
           AWS_SECRET_ACCESS_KEY: ((s3.secret_key))
-          AWS_DEFAULT_REGION: 'ap-northeast-1' =terraformのbackendにs3を利用しているため
+          AWS_DEFAULT_REGION: 'ap-northeast-1' # terraformのbackendにs3を利用しているため
           esxi_host: ((esxi.host))
           esxi_user: ((esxi.username))
           esxi_password: ((esxi.password))
@@ -363,7 +422,6 @@ jobs:
                 -var esxi_user="$esxi_user" \
                 -var esxi_password="$esxi_password" \
                 -var ova_filepath="$ova_filepath" \
-                -auto-approve
 //}
 
 少し長いですね。
@@ -371,12 +429,68 @@ jobs:
 ovaファイルは500MBくらいあるので正直に毎回構築するたびにs3からダウンロードするとちょっとoutgressでお金がかかりそうですが、
 Concourseはリソースをいい感じにローカルにキャッシュしてくれるので、恐れず使うことができます。
 
-s3は公式リソースであり、特別な設定なしで利用することができますが、repo-terraformはgithubapps-contentという有志(手前味噌で恐縮ですが私です)が作成したリソースを利用しているため、コードの最初の方にあるresource_typesブロックで定義が必要です。
+s3は公式リソースであり、特別な設定なしで利用することができますが、repo-terraformはgithubapps-contentという有志(手前味噌で恐縮ですが筆者です)が作成したリソースを利用しているため、コードの最初の方にあるresource_typesブロックで定義が必要です。
 
 一番見るべきはコードの最後の方で、terraformを実際にconcourseで実行していることが読み取れると思います。
 
-ですが、実はこのconcourseのyamlファイルは、そのままは読み込むことができません。というのも、コード中のいたるところに((こんな感じの))記法があるのがあるのが分かると思いますが、これは機密情報を別途読み込んでいる部分です。そして、concourseはその本体に機密情報を使う仕組みを持っていないため、他のシークレットマネージャーを用いる必要があります。この設定が行われるまではエラーになっちゃうということです。
-Concourseは様々なシークレットマネージャーをサポートしているのですが、私はVaultというものを使いました。
+次に、この処理が完了した後にansibleを実行するようにしましょう。
+
+//list[tote-concourse-yaml2][ansible実行箇所][yaml]{
+- name: ansible
+  plan:
+  - get: repo-terraform
+    passed: [terraform-apply]
+    trigger: true
+  - get: repo-ansible
+    trigger: true
+  - task: ansible
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ***
+          tag: main
+      inputs:
+        - name: repo-ansible
+      params:
+        ANSIBLE_KEY: ((ansible.private_key))
+      run:
+        path: sh
+        args:
+          - -ce
+          - |
+            cd repo-ansible
+            echo "$ANSIBLE_KEY" > ansible_key
+            chmod 700 ansible_key
+            TARGETS=$(cat host | yq '.all.children.All.children | keys | join(" ")')
+            for TARGET in $TARGETS; do
+                echo $TARGET
+                if [ -d $TARGET ]; then
+                  ansible-playbook -i host --private-key ansible_key $TARGET/playbook.yaml
+                else
+                  cp common/default.yaml $TARGET.yaml
+                  sed -i -e "s/<TARGET>/$TARGET/g" $TARGET.yaml
+                  ansible-playbook -i host --private-key ansible_key $TARGET.yaml
+                fi
+            done
+//}
+
+特にterraformの実行がansibleの実行になっただけで特に変わりないですが、少しシェルスクリプトで複雑なことをしています。
+これは、①管理対象の全てにAnsibleをそれぞれ実行する という意味合いと、②管理対象のホスト名のAnsible-playbookがレポジトリに存在すればそれをそのまま実行し、そうでなければデフォルトのplaybookを実行する　という意味合いでできています。
+
+この辺はつくる人それぞれのカスタマイズが生きる箇所だと思いますが、筆者は「自動構築で管理するサーバーはそれはそれとして、ちょっと特定のミドルウェアの検証だけで作るサーバーはも基本的な設定を施した上で自動構築したい。」という気持ちがあったのでこのようなスクリプトを書きました。
+
+====[column]
+筆者は上記のterraformを実行するjob、ansibleを実行するjobに加え、Discordコマンドをイベントとして受け取り、特定のリソースをtaint状態にするjobを追加しています。
+taint状態はterraformのリソースが取りうる状態の一つで、この状態に指定されたリソースは、次のapply時に強制的にreplaceがかかります。
+
+taint状態などはgit上のファイルに直接記述するようなものではなく、イベント的に発生する事項なのでこのような実装にしています。
+詳しくは、筆者のブログ( https://gammalab.net/blog/pdjvbkb94na2p/ )も併せて御覧ください。
+====[/column]
+
+それはそれとして、実はこのconcourseのyamlファイルは、そのままは読み込むことができません。というのも、コード中のいたるところに((こんな感じの))記法があるのにお気づきだと思いますが、これは機密情報をファイルの外から読み込んでいる部分です。そして、concourseはその本体に機密情報を使う仕組みを持っていないため、他のシークレットマネージャーを用いる必要があります。この設定が行われるまではエラーになっちゃうということです。
+Concourseは様々なシークレットマネージャーをサポートしているのですが、筆者はVaultを採用しました。
 
 === 機密情報の管理 Vault
 
@@ -469,8 +583,8 @@ ansible@BuildersHut:~$ vault token create --policy concourse
 
 このトークンをconcourseCIに設定します！docker-composeファイルに以下を追記するだけです。
 //cmd{
-CONCOURSE_VAULT_URL: http://<よしなに-ipv4>:8200
-CONCOURSE_VAULT_CLIENT_TOKEN: hvs.*******************************************************************************************
+CONCOURSE_VAULT_URL: http://<myip>:8200
+CONCOURSE_VAULT_CLIENT_TOKEN: hvs.****************
 //}
 
 === 自動構築用サーバー完成！
@@ -479,19 +593,21 @@ CONCOURSE_VAULT_CLIENT_TOKEN: hvs.**********************************************
 持続可能なサーバー環境に一歩近づきました。
 
 == おまけ: 他にも便利な管理用サーバーを構築しよう！
+自動構築サーバーができましたが、次はこれを使って何を建てましょうか。
+早速minecraftのゲームサーバーを建てる...... のも良いのですが、他にも作っておくとQOLが爆上がりするサーバーが2種あるので、コラム程度に簡単にご紹介します。
+
 === モニタリングサーバー
-いつの間にかディスク容量がfullになってて、何かおかしいな〜と思ってsshしたらbashに「bash: cannot create temp file for here-document: No space left on device」って言われて冷や汗出た経験、
-あるんじゃないでしょうか。
+いつの間にかディスク容量がfullになってて、何かおかしいな〜と思ってsshしたらbashに「bash: cannot create temp file for here-document: No space left on device」って言われて冷や汗出た経験、一度はあるのではないでしょうか。
 やはり、趣味のサーバーとはいえモニタリングの存在は重要です。
 
-私はPrometheusとGrafanaの鉄板コンビで構築しました。
+筆者はPrometheusとGrafanaの鉄板コンビで構築しました。
 ところで、今回インスタンスの自動生成をやっているので、新しくできたインスタンスをもちろん自動的に監視対象に加えたいですよね。
 prometheusは監視対象を柔軟に決定するための、ServiceDiscoveryの機能が搭載されています。
 
 ここでは、一番シンプルなfile_sdを使うことにします。
 file_sdは正直ServiceDiscoveryと呼ぶには微妙なのですが、要するに別ファイルに記載したターゲットの一覧を、定期的に読み込んでくれるといったものです。
 
-今回、監視対象となるAnsibleに登録されている変数をもとに生成するのが楽ですね。
+今回、監視対象は、Ansibleに登録されている変数をもとに生成するのが楽ですね。
 Ansibleは内部にjinja2と呼ばれるpythonのテンプレートエンジンが搭載されており、
 変数をもとにファイルを生成することができます。
 
