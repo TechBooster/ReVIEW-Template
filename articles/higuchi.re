@@ -140,7 +140,7 @@ GitHubでPull Requestを作ると、GitHub Actionsでテストが回るように
 "Authenticate GCP"で、secretsに設定したサービスアカウントを使って認証を行います。
 "setup GCP"でbqコマンドを使えるようにして、"send coverage to BigQuery"でBigQueryへデータを送信します。
 
-//listnum[SpecHelper][SpecHelper][yml]{
+//listnum[workflows][workflows][yml]{
   - name: Authenticate GCP
     uses: google-github-actions/auth@v0
     with:
