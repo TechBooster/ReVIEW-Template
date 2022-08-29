@@ -95,7 +95,14 @@ end
 //cmd{
 $ rspec
 $ tail -1 ./coverage/simplecov.log
-  {"covered_percent":100.0,"never_lines":9,"lines_of_code":5,"covered_lines":5,"missed_lines":0,"time":1660003200}
+{
+	"covered_percent":100.0,
+	"never_lines":9,
+	"lines_of_code":5,
+	"covered_lines":5,
+	"missed_lines":0,
+	"time":1660003200
+}
 //}
 
 
@@ -158,7 +165,8 @@ GitHubの対象リポジトリを表示し、Settingタブをクリックしま�
 
   - name: send coverage to BigQuery
     run: |
-      bq load --source_format NEWLINE_DELIMITED_JSON aumo_media.simplecov tea-app/coverage/simplecov.log
+      bq load --source_format NEWLINE_DELIMITED_JSON \
+				aumo_media.simplecov tea-app/coverage/simplecov.log
 //}
 
 この変更を含んだPull Requestを作ると、GitHub Actionsが実行され、BigQueryにカバレッジデータが格納されます。
