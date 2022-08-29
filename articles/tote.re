@@ -51,9 +51,7 @@ Bについて、これは一見バカみたいな問題に見えますが、趣�
 まだめんどくさがらず運用できる気がしませんか。
 
 === 原因2. ドキュメントが存在しない
-耳が痛くなる話です。
-
-しかし、やはりどのサーバーに何がどうイントールされたのか、どこの設定ファイルをどう編集したのかが分からないと、メンテナンスが困難になってしまいます。
+耳が痛くなる話です。しかし、やはりどのサーバーに何がどうイントールされたのか、どこの設定ファイルをどう編集したのかが分からないと、メンテナンスが困難になってしまいます。
 とは言っても！わざわざ趣味で運営してるサーバーのために新しくマニュアル/手順書/ドキュメント、作りたくないものです。
 
 どうしたものか......。 そういえば一個前の課題の解決方法に、自動化がありました。
@@ -80,7 +78,7 @@ Terraformは例えばAWSやGCPを始めとしたクラウドサービスを初�
 今回はESXiに対して構築を行いたい為、terraform-provider-esxiという有志の方が作ってくれているproviderを使います。
 こうやって広く拡張がコミュニティで開発されているところがTerraformのいいところですね。
 
-//notice[注意]{
+//notice[terraform-provider-esxiの依存]{
 基本的にはprovider自身の依存関係を気にする必要はないのですが、今回使うterraform-provider-esxiはovftoolsという
 vmware社のツールに依存しているため、それは予めホストマシンにインストールしておく必要があります。
 //}
@@ -180,7 +178,7 @@ resource "esxi_guest" "myFirstServer" {
 
 この後、再度terraform applyすれば自動的にVMが再生成(replace)され、testuserというユーザーが作成された状態で新しいインスタンスが上がってくるはずです。
 
-//info[ちなみに...]{
+//info[なぜ変更ではなく再生成されるの？]{
 terraformは基本的には「現状」と「コード上の定義」を見比べて、変更が必要なところだけ変更をかけてくれます。
 ですが、例えば仮想ディスクの容量など、「作成後変更できない」パラメーターも中には存在します。
 
@@ -341,7 +339,7 @@ terraform -chdir=repo-terraform show -json \
 CI/CDツールはjenkinsを始め、今となってはたくさん種類がありますが、今回はConcourseCIというものを用いてみました。
 理由は見た目がカワイイからです。
 
-
+@<img>{tote-concourse}
 
 他にも次の特徴があります。
 
@@ -466,7 +464,7 @@ s3は公式リソースであり、特別な設定なしで利用することが
 
 次に、この処理が完了した後にansibleを実行するようにしましょう。
 
-//footnote[tote-githubapp-content][concourseには標準でgitリソースが存在しているのですが、これは個人のssh鍵を利用するする必要があります。筆者は特定のOrganizationに限ってcloneできる鍵を作りたかったため、GithubAppsの認証情報を用いてcloneできるようにしたリソース、githubapp-contentを作成したという背景があります。個人的にもおすすめしています。 https://github.com/totegamma/githubapps-content-resource]
+//footnote[tote-githubapp-content][concourseには標準でgitリソースが存在しているのですが、これは個人のssh鍵を利用するする必要があります。筆者は特定のOrganizationに限ってcloneできる鍵を作りたかったため、GithubAppsの認証情報を用いてcloneできるようにしたリソース、githubapp-contentを作成したという背景があります。 https://github.com/totegamma/githubapps-content-resource]
 
 //list[tote-concourse-yaml2][ansible実行箇所][yaml]{
 - name: ansible
@@ -589,7 +587,7 @@ $ valut kv put <path> <key>=<value>
 //}
 のように、kvコマンドを用いて作成できます。
 
-//info[ちなみに...]{
+//info[vault webUI]{
 今回はコマンドベースでの説明を行いましたが、vaultはすごく見た目の良いwebUIが用意されており、そちらで大抵の設定をすることも可能です。併せてご活用ください。
 //}
 
