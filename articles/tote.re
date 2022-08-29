@@ -14,44 +14,41 @@
 
 @<b>{自宅サーバーは、放置され、忘れられ、廃墟となっていきがち}です。
 
-本稿は、筆者がこの問題を少しでもマシにするために自宅サーバーを再建した方法を紹介することで、皆様が思い思いの自宅サーバーを構成する「きっかけ」を提供できれば、というコンセプトでお送り致します。
+本稿は、筆者の自宅にて朽ち果てたサーバーをリノベーションするにあたり、この問題を少しでもマシにするためにとった方法を紹介することで、皆様が思い思いの自宅サーバーを構成する「きっかけ」を提供できれば、というコンセプトでお送り致します。
 あくまで「一例の紹介」であり、「ベストプラクティスの提案」ではないことをご承知おきください。
 
 == 自宅サーバーはなぜ廃墟化するのか
 まえがきで、趣味のサーバーは廃墟になってしまいがちという話をしました。
 なぜでしょうか？要因として次が考えられます。
 
- * 用途が気まぐれ 責任範囲が明確でない
- * ドキュメントが存在しない
-
-=== 用途が気まぐれ 責任範囲が明確でない
-なんかOOP(オブジェクト指向プログラミング)で語られがちな言葉がでましたが、
+=== 原因1. 用途が気まぐれ 責任範囲が明確でない
+OOP(オブジェクト指向プログラミング)で語られがちな言葉がでましたが、
 すなわち、いろんなプログラムをインストールしているといつか「このサーバーって何のためにあるんだっけ？」という状態になってしまい、
 「このファイルって消して問題ないんだっけ？」「なんかCPU/メモリリソースが足りてないけど何を削ったらいいんだっけ？」という問いを頻発して
 メンテナンスを困難にしてしまいます。
 
-解決方法はずばり！単一責任の法則を守るしかないです。
-つまり、1つのサーバーに複数のゲームサーバーをインストールしない！これだけです。
+解決方法はずばり、単一責任の法則を守るしかないです。
+すなわち@<b>{1つのサーバーに複数のサービスを展開しない！}これだけです。
 
 しかしこうすると新たに以下の2つの問題が発生します。
 
- * A. そんなにマシンがあるわけない
+ * A. そんなにマシンが家にあるわけない
  * B. ていうかめんどくさい
 
-Aについて、自宅にそんな大量のサーバーマシンを置ける訳はないので(ですよね...?)、1サービス1サーバーみたいな贅沢はできません。
+Aについて、たしかに自宅にそんな大量のサーバーマシンを置ける訳はないので(ですよね...?)、1サービス1サーバーみたいな贅沢はできません。
 そこで、筆者はベアメタル・ハイパーバイザーを用いることにしました。
 具体的にはVMWareのESXiを使います。なんと無料です！
 これはOSレベルの仮想化エンジンで、複数のゲストOSを起動することができます。
 これで、1つのマシンで複数のサーバーを起動出来るため、1サービス1サーバーへの道が開けます。
 
-Bについて、これは一見バカみたいな問題に見えますが、趣味においては本質問題であり、@<b>{一番の原因}です。
+Bについて、これは一見バカみたいな問題に見えますが、趣味においては@<b>{本質問題}であり、@<b>{一番の原因}です。
 たしかに、毎回いちいちESXiの管理画面からcpuやメモリのリソース量を設定して、OSをインストールして...とやるのはめんどくさすぎです。
 絶対我慢できずに既存サーバーに別アプリケーションをインストールしちゃいます。
 
 これは、自動化で解決しましょう！
 例えば、ちょっとサーバー定義を追加してgithubにpushするだけで自動的にOSと基本ソフトウェアインストール済みのサーバーが上がってくるなら、まだめんどくさがらず運用できる気がしませんか。
 
-=== ドキュメントが存在しない
+=== 原因2. ドキュメントが存在しない
 耳が痛くなる話です。
 
 しかし、やはりどのサーバーに何がどうイントールされたのか、どこの設定ファイルをどう編集したのかが分からないと、メンテナンスが困難になってしまいます。
@@ -71,17 +68,22 @@ Bについて、これは一見バカみたいな問題に見えますが、趣�
 
 === サーバーインスタンスを自動で建てる Terraform
 なにはともあれ、まずはサーバーインスタンスがなければ始まりません。
-TerraformはいわゆるIaC(Infrastucture as Code)を実現するツールの1つです。HashiCorp社(Vagrantとか作ってる)が開発しているOSSで、無料で使えます。 
+TerraformはいわゆるIaC(Infrastucture as Code)を実現するツールの1つです。HashiCorp社(他の製品ではVagrantなどが有名ですね)が開発しているOSSで、無料で使えます。 
 Terraformは様々なサービスを「Provider」という形で抽象化し、プラグインのように追加できるようにしていることで、同じノリで様々なサービスに対して開発を行う事ができます。 
 
 今回はterraform-provider-esxiという有志の方が作ってくれているproviderを使います。 こうやって広く拡張がコミュニティで開発されているところがTerraformのいいところですね。
 
 ====[column]
+
 ちなみに、Hashicorp社が公式に出しているvsphere-providerというproviderも存在はしています。
 ESXiを管理するVSphereというシステムをVMWare社は提供していて、それを通してESXiを構築することができます。
 公式なので心惹かれるのですが、ESXiが無料で公開されている一方、VSphereは完全にエンタープライズ向けの製品で、結構良いお値段がするので個人で所有するのはちょっと......という感じですね。 
 このproviderで、vsphere抜きにしてESXIだけ触れたら超最高なのですが、そう上手くはいかないですね。
+
 ====[/column]
+
+terraformはファイル本体に利用するproviderを指定するだけで、@<code>{terraform init}コマンドを実行した際に必要なProviderをダウンロードしてきてくれるので、依存関係などを自分で解消する必要がないのが便利です。
+......なのですが、今回使うterraform-provider-esxiはovftoolsというvmware社のツールに依存するため、それはホストマシンにインストールする必要があります。
 
 では、terraform-provider-esxiでインスタンスを作ってみましょう。
 次のようなHashicorp-HCLを記述します。
@@ -151,11 +153,10 @@ users:
         - ssh-rsa AAAAAAAAAAAAAAA= MYHOSTNAME
 //}
 
-'users:'というのはcloud-initにおける「モジュール」の1つとなっていて、他にもパッケージをインストールしたり、Diskをマウントしたり、想像以上に多くのことができます。
-詳しくは公式ドキュメントの'https://cloudinit.readthedocs.io/en/latest/topics/modules.html'を参考にしてください。
+@<code>{users:}というのはcloud-initにおける「モジュール」の1つとなっていて、他にもパッケージをインストールしたり、Diskをマウントしたり、想像以上に多くのことができます。
+詳しくは公式ドキュメントの@<code>{https://cloudinit.readthedocs.io/en/latest/topics/modules.html}を参考にしてください。
 
-
-そして、このcloud-initファイルですが、先程のterraformファイルに織り込むことができます。次のとおりです。
+そして、このcloud-initファイルですが、先程のterraformファイルに織り込むことができます。次の通りです。
 
 //list[tote-main-tf-2][main.tf(抜粋)][hcl]{
 resource "esxi_guest" "myFirstServer" {
@@ -216,6 +217,7 @@ resource "esxi_guest" "teleport_proxy" {
 //list[tote-disk-setup][cloud-init.yaml][yaml]{
 device_aliases:
     persistent: /dev/sdb
+
 disk_setup:
     persistent:
         table_type: gpt
@@ -247,7 +249,7 @@ sshを用いて構成対象に接続し、自動的にコマンドを送るこ�
 とはいえ、嘘つきと思われないように予め補足しておくと、確かに構築対象にエージェントをインストールする必要はないのですが、とは言え全くなにもインストールしなくても使えるわけではありません。
 例えばsshはもちろん必須ですし、他にもpython3が必須となっています。
 
-また、この依存関係は使用するモジュールごとに異なっていて、例えばaptでレポジトリの鍵を新しく登録する'apt_key'モジュールはgpgに依存しています。
+また、この依存関係は使用するモジュールごとに異なっていて、例えばaptでレポジトリの鍵を新しく登録する@<code>{apt_key}モジュールは@<code>{gpg}に依存しています。
 
 モジュールごとに1つ1つ細かく依存関係があり、それらを先にインストールしておかなければ実行途中に失敗してしまうという点がansibleの欠点の1つではありますね。
 
@@ -270,14 +272,13 @@ Ansibleのモジュール1つ1つは、自身に記述してある「あるべ�
 
 ところで、Ansibleそのものは冪等性を保証するものではなく、冪等性を持てるかどうかはモジュールや、それを記述するユーザーに委ねられています。
 例えばAnsibleには任意のコマンドを実行できるモジュールがありますが、そのコマンドで何が起こるかまではAnsibleは知ることができません。
-ですが、Ansibleは'changed_when'を初めとした様々な便利な指示子により、ユーザーが冪等性を意識し、簡単にそれを実現できるような仕組みを提供しています。
+ですが、Ansibleは@<code>{changed_when}を初めとした様々な便利な指示子により、ユーザーが冪等性を意識し、簡単にそれを実現できるような仕組みを提供しています。
 
 ==== 多くのプラグイン
-Ansibleは'Ansible Galaxy'と呼ばれる、Ansibleのプラグインを作って共有できるコミュニティがあります。
-これにより、例えばApache、様々なRDBMSなどなど、様々なミドルウェアの構成管理が楽になります。
+Ansibleは@<code>Ansible Galaxy}と呼ばれる、Ansibleのプラグインを作って共有できるコミュニティがあります。
+これにより、例えばApache、種々のRDBMSなどなど、様々なミドルウェアの構成管理が楽になります。
 
----
-
+====[column]
 Ansibleは、構築対象のサーバーをリストアップした「inventory」と呼ばれるファイルを読み込んで利用する必要があります。
 そして今サーバーを自動で増やせるシステムを作っているので、当然このinventoryファイルも自動で生成したいですよね。
 
@@ -308,6 +309,8 @@ terraform -chdir=repo-terraform show -json \
 
 このスクリプトでは、それぞれのホスト名をグループ名にした、単一のIPアドレスからなるグループ群に加え、すべてのホストが入っているALLというグループを作っています。
 
+====[/column]
+
 === 継続的デプロイ ConcourseCI
 ここまででコードをもとにTerraformでサーバーインスタンスを建て、Ansibleでミドルウェア等を自動でインストール・設定する術を手に入れました。
 次は、これを継続的に自動で実行できるようにしたいですよね。具体的には、Github等に構成管理用のレポジトリを設置し、そこに新たなインスタンス用のコードを追加したら、それをトリガーに自動でレポジトリをPullし、TerraformやAnsibleを自動で実行してほしいです。
@@ -318,29 +321,34 @@ terraform -chdir=repo-terraform show -json \
 
 CI/CDツールはjenkinsを始め、今となってはたくさん種類がありますが、今回はConcourseCIというものを用いてみました。
 理由は見た目がカワイイからです。
-以下の特徴があります。
+他にも次の特徴があります。
 
-* ワーカーがdockerコンテナで動作する
-* 構成がyamlで書ける
-* 構成をgitで管理することができる
-* gitやs3とのやり取りなど幅広い範囲の入出力がプラグインとして公開されている
+ * ワーカーがdockerコンテナで動作する
+ * 構成がyamlで書ける
+ * 構成をgitで管理することができる
+ * gitやs3とのやり取りなど幅広い範囲の入出力がプラグインとして公開されている
 
 concourseはdocker-composeファイルが公開されており、それだけで使い始めることができます。
-'https://concourse-ci.org/getting-started.html'
+@<code>{https://concourse-ci.org/getting-started.html}
 
-Concourseは様々な種類のプラグインが'resource'として公式・コミュニティ共に多く開発され、公開されており、中にはなんとterraformが動作するものもあります。
+Concourseは様々な種類のプラグインが@<code>{resource}として公式・コミュニティ共に多く開発され、公開されており、中にはなんとterraformが動作するものもあります。
 
-筆者も初めはこれを利用していたのですが、esxiでovaイメージを扱うにはovf-toolが必要で、このresourceには含まれていなかったので自分で作成します。
+筆者も初めはこれを利用していたのですが、esxiでovaイメージを扱うにはovf-toolが必要で、このresourceには含まれていません。
+
+仕方がないのでresourceではなくスクリプト本体でterraformを実行しようと思いますが、毎度ワーカーにterraformをインストールしていては実行が遅くなってしまうので、
+先に今回タスクを実行するためのdockerファイルを手元で作成し、レジストリに登録しておきます。
 
 //list[tote-dockerfile][Dockerfile][dockerfile]{
 FROM ubuntu:focal
 
 RUN apt update \
  && apt upgrade -y \
- && apt install -y ca-certificates git bash openssh-client curl gpg wget libncursesw5 ansible jq\
+ && apt install -y ca-certificates git bash openssh-client \
+                   curl gpg wget libncursesw5 ansible jq\
  && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | \
         tee /usr/share/keyrings/hashicorp-archive-keyring.gpg \
- && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com focal main" | \
+ && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+              https://apt.releases.hashicorp.com focal main" | \
         tee /etc/apt/sources.list.d/hashicorp.list \
  && apt update \
  && apt install -y terraform
@@ -355,7 +363,7 @@ RUN chmod +x /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle \
  && /VMware-ovftool-4.3.0-7948156-lin.x86_64.bundle --console --eulas-agreed --required
 //}
 
-concourseのファイルの、terraformを実行する箇所は次のとおりです。
+では、作成したdocker imageを使いつつ、terraformを実行するconcourseのjobファイルを作成しましょう。
 //list[tote-concourse-yaml][concourse-task.yaml][yaml]{
 resource_types:
   - name: githubapps-content
@@ -429,11 +437,13 @@ jobs:
 ovaファイルは500MBくらいあるので正直に毎回構築するたびにs3からダウンロードするとちょっとoutgressでお金がかかりそうですが、
 Concourseはリソースをいい感じにローカルにキャッシュしてくれるので、恐れず使うことができます。
 
-s3は公式リソースであり、特別な設定なしで利用することができますが、repo-terraformはgithubapps-contentという有志(手前味噌で恐縮ですが筆者です)が作成したリソースを利用しているため、コードの最初の方にあるresource_typesブロックで定義が必要です。
+s3は公式リソースであり、特別な設定なしで利用することができますが、repo-terraformはgithubapps-contentという有志(手前味噌で恐縮ですが筆者です)が作成したリソースを利用しているため@<fn>{tote-githubapp-content}、コードの最初の方にあるresource_typesブロックで定義が必要です。
 
 一番見るべきはコードの最後の方で、terraformを実際にconcourseで実行していることが読み取れると思います。
 
 次に、この処理が完了した後にansibleを実行するようにしましょう。
+
+//footnote[tote-githubapp-content][concourseには標準でgitリソースが存在しているのですが、これは個人のssh鍵を利用するする必要があります。筆者は特定のOrganizationに限ってcloneできる鍵を作りたかったため、GithubAppsの認証情報を用いてcloneできるようにしたリソース、githubapp-contentを作成したという背景があります。個人的にもおすすめしています。 https://github.com/totegamma/githubapps-content-resource]
 
 //list[tote-concourse-yaml2][ansible実行箇所][yaml]{
 - name: ansible
@@ -463,11 +473,13 @@ s3は公式リソースであり、特別な設定なしで利用することが
             cd repo-ansible
             echo "$ANSIBLE_KEY" > ansible_key
             chmod 700 ansible_key
-            TARGETS=$(cat host | yq '.all.children.All.children | keys | join(" ")')
+            TARGETS=$(cat host | yq '.all.children.All.children \
+                               | keys | join(" ")')
             for TARGET in $TARGETS; do
                 echo $TARGET
                 if [ -d $TARGET ]; then
-                  ansible-playbook -i host --private-key ansible_key $TARGET/playbook.yaml
+                  ansible-playbook -i host \
+                        --private-key ansible_key $TARGET/playbook.yaml
                 else
                   cp common/default.yaml $TARGET.yaml
                   sed -i -e "s/<TARGET>/$TARGET/g" $TARGET.yaml
@@ -482,11 +494,13 @@ s3は公式リソースであり、特別な設定なしで利用することが
 この辺はつくる人それぞれのカスタマイズが生きる箇所だと思いますが、筆者は「自動構築で管理するサーバーはそれはそれとして、ちょっと特定のミドルウェアの検証だけで作るサーバーはも基本的な設定を施した上で自動構築したい。」という気持ちがあったのでこのようなスクリプトを書きました。
 
 ====[column]
+
 筆者は上記のterraformを実行するjob、ansibleを実行するjobに加え、Discordコマンドをイベントとして受け取り、特定のリソースをtaint状態にするjobを追加しています。
 taint状態はterraformのリソースが取りうる状態の一つで、この状態に指定されたリソースは、次のapply時に強制的にreplaceがかかります。
 
 taint状態などはgit上のファイルに直接記述するようなものではなく、イベント的に発生する事項なのでこのような実装にしています。
 詳しくは、筆者のブログ( https://gammalab.net/blog/pdjvbkb94na2p/ )も併せて御覧ください。
+
 ====[/column]
 
 それはそれとして、実はこのconcourseのyamlファイルは、そのままは読み込むことができません。というのも、コード中のいたるところに((こんな感じの))記法があるのにお気づきだと思いますが、これは機密情報をファイルの外から読み込んでいる部分です。そして、concourseはその本体に機密情報を使う仕組みを持っていないため、他のシークレットマネージャーを用いる必要があります。この設定が行われるまではエラーになっちゃうということです。
@@ -543,8 +557,8 @@ Success! Enabled the kv secrets engine at: concourse/
 //cmd{
 concourse/チーム名/パイプライン名/パラメータ名
 //}
-となっています。んで、若干頭がこんがらがりますが、vaultのkv型ではこの場所にいくつでもkvを定義することができます。
-すなわち、concourse/main/test-pipeline/test-parameterに、[{user: hoge}, {pass: piyo}, {shell: bash}...]というふうなデータを入れられるということです。
+となっています。そして、vaultのkv型ではこの空間に複数のkvを定義することができます。
+すなわち、concourse/main/test-pipeline/test-parameterに、@<code>{[{user: hoge}, {pass: piyo}, {shell: bash}...]}というなデータを入れられるということです。
 
 concourseで((variable))と書いた場合、concourse/<teamname>/<pipelinename>/variableにある、valueという名前のキーが取得されます。 value以外のキー例えばuserを取得したい場合は、((variable.user))と書けばOKです。
 
