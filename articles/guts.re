@@ -2,19 +2,25 @@
 = GitHub Actions でシェルとエディタのベンチマークを取ろう
 
 == はじめに
-TODO: ほぼメモ書きなので後で編集する
+みなさんは、お気に入りのエディタやシェルはありますか？
+普段使っているシェルやエディタを自分好みにカスタマイズしている人も多いのではないでしょうか。
+私も zsh や Neovim を自分好みにカスタマイズしており、その設定ファイルは日々複雑化しています。
 
-みなさんは、普段使っているシェルやエディタの起動速度が遅くなってしまった経験はないでしょうか？
-私は、普段から CLI で作業をすることが多いです。
-CLI で作業する際に、特に使用頻度の高いツールがシェルとエディタです。
-私の場合、シェルは zsh、エディタは Neovim を使っています。
+ところで、みなさんは、シェルやエディタの起動がいつの間にか遅くなってしまった経験はないでしょうか？
+シェルやエディタを便利にするために、env 系のツールやプラグインなどを導入し、起動時間に悪影響を与えてしまうことも少なくありません。
+複雑化した設定では、どの設定が起動を遅くしているのか見つけるのも一苦労です。
 
-本章は、dotfiles を GitHub で管理していることを前提としています。
+そこで、おすすめなのが、シェルやエディタの起動時間を定期的に計測することです。
+これにより、起動が遅くなってしまった原因を見つけやすくすることができます。
+本章では、dotfiles @<fn>{guts-dotfiles} を GitHub で管理していることを前提とし、定期的な計測の一手法として GitHub Actions でコミット毎に zsh と Neovim のベンチマークを取る方法を紹介します。
 
 == hyperfine でコマンドのベンチマークを取る
 
+コマンドの起動時間を計測するために、hyperfine というツールを紹介します。
+
 === hyperfine とは？
 hyperfine @<fn>{guts-hyperfine} は Rust で書かれたコマンドのベンチマークツールです。
+任意のシェルコマンドの実行時間を計測することができ、複数のコマンドを比較する機能や予めコマンドを実行しておくウォームアップ機能などがあります。
 
 === hyperfine の使い方
 
@@ -24,29 +30,26 @@ hyperfine の基本的な使い方は下記の通りです。
 hyperfine 'sleep 0.3'
 //}
 
-オプションで、ウォームアップの回数や実行回数などを指定することもできます。
+オプションで、ウォームアップ回数や実行回数などを指定することもできます。
 
-//list[guts-hyperfine-command-warm-up-and-runs][hyperfine のコマンド例 ( ウォームアップ回数と実行回数を指定 )][bash]{
-hyperfine 'sleep 0.3' -warmup 3 --runs 5
-//}
-
-@<list>{guts-hyperfine-command-warm-up-and-runs} の実行例は下記のようになります。
-
-//list[guts-hyperfine-result-warm-up-and-runs][hyperfine の実行例 ( ウォームアップ回数と実行回数を指定 )][bash]{
+//list[guts-hyperfine-result-warm-up-and-runs][hyperfine の実行例 ( ウォームアップ回数: 3, 実行回数: 5 )][bash]{
 $ hyperfine 'sleep 0.3' --warmup 3 --runs 5
 Benchmark 1: sleep 0.3
   Time (mean ± σ):     310.8 ms ±   0.7 ms    [User: 1.4 ms, System: 2.1 ms]
   Range (min … max):   310.0 ms … 312.0 ms    5 runs
 //}
 
-実行結果をファイルに出力することもできます。
+また、実行結果を JSON ファイルに出力することもできます。
 
-//list[guts-hyperfine-command-export-json][hyperfine のコマンド例 ( json に結果を出力 )][bash]{
-hyperfine 'sleep 0.3' --warmup 3 --runs 5 --export-json bench.json
+//list[guts-hyperfine-result-export-json][hyperfine の実行例 ( JSON ファイルに結果を出力 )][bash]{
+$ hyperfine 'sleep 0.3' --warmup 3 --runs 5 --export-json bench.json
+Benchmark 1: sleep 0.3
+  Time (mean ± σ):     309.8 ms ±   2.3 ms    [User: 1.5 ms, System: 2.2 ms]
+  Range (min … max):   305.9 ms … 311.6 ms    5 runs
+
 //}
 
-
-//list[guts-hyperfine-command-export-json][@<list>{guts-hyperfine-command-export-json} で出力される json ファイルの例][json]{
+//list[guts-hyperfine-command-export-json][@<list>{guts-hyperfine-result-export-json} の実行で出力される JSON ファイルの例][json]{
 {
   "results": [
     {
@@ -77,14 +80,14 @@ hyperfine 'sleep 0.3' --warmup 3 --runs 5 --export-json bench.json
 }
 //}
 
-=== zsh の起動時間を計る
-zsh の起動時間を計るために、下記のコマンドを使用します。
+=== zsh の起動時間の計測
+zsh の起動時間を計測するために、下記のコマンドを使用します。
 //list[guts-zsh-command][起動時間を計測するための zsh のコマンド][bash]{
 zsh -i -c exit
 //}
 -i でインタラクティブモードで起動し、-c exit で起動後すぐに exit コマンドを実行するようにします。
 
-//list[guts-zsh-result][][bash]{
+//list[guts-zsh-result][zsh の起動時間を計測する例][bash]{
 $ hyperfine 'zsh -i -c exit' --warmup 3 --runs 5 --export-json bench.json
 Benchmark 1: zsh -i -c exit
   Time (mean ± σ):      30.1 ms ±   0.2 ms    [User: 19.6 ms, System: 9.2 ms]
@@ -92,15 +95,15 @@ Benchmark 1: zsh -i -c exit
 
 //}
 
-=== Neovim の起動時間を計る
-Neovim の起動時間を計るために、下記のコマンドを使用します。
-//list[guts-nvim-command][起動時間を計測するための neovim のコマンド][bash]{
+=== Neovim の起動時間の計測
+Neovim の起動時間を計測するために、下記のコマンドを使用します。
+//list[guts-nvim-command][起動時間を計測するための Neovim のコマンド][bash]{
 nvim --headless -c q
 //}
 
 --headless で UI を起動しないようにし、-c q で設定ファイルを読んだ後に q コマンドを実行するようにします。
 
-//list[guts-nvim-help][][bash]{
+//list[guts-nvim-result][Neovim の起動時間を計測する例][bash]{
 $ hyperfine 'nvim --headless -c q' --warmup 3 --runs 5 --export-json bench.json
 Benchmark 1: nvim --headless -c q
   Time (mean ± σ):      95.0 ms ±   1.9 ms    [User: 44.0 ms, System: 50.0 ms]
@@ -109,26 +112,26 @@ Benchmark 1: nvim --headless -c q
 //}
 
 == GitHub Actions でコミットごとのベンチマークを取る
-前節で、zsh と Neovim の起動時間が計測できるようになりました。
-いよいよ GitHub Actions でコミットごとのベンチマークを取っていきましょう。
-最終的に、ベンチマーク結果は、下記のようなグラフを gh-pages に表示します。
+前節で、zsh と Neovim の起動時間を計測できるようになりました。
+いよいよ GitHub Actions でコミット毎のベンチマークを取っていきましょう。
+最終的には @<img>{guts_benchmark_example} に示すようなベンチマークグラフを GitHub Pages に表示します。
 
-//image[guts_benchmark_example][ベンチマークのグラフ]{
+//image[guts_benchmark_example][ベンチマークグラフの例]{
 //}
 
 === github-action-benchmark
-ベンチマーク結果をグラフとして出力するために、github-action-benchmark @<fn>{guts-github-action-benchmark} を使用します。
+ベンチマークグラフを GitHub Pages に出力するために、github-action-benchmark @<fn>{guts-github-action-benchmark} を使用します。
 
-gh-pages を使用するので、gh-pages ブランチをリモートリポジトリに作成しておきます。
+GitHub Pages を使用するので、dotfiles を管理しているリポジトリに gh-pages ブランチを作成しておきます。
 //list[guts-o][][bash]{
 git checkout -b --orphan gh-pages
 git commit -m 'Initial commit' --allow-empty
 git push origin gh-pages
 //}
 
-=== ベンチマーク結果を出力するスクリプト
-
-ベンチマーク結果を JSON として出力するため、下記のようなシェルスクリプトを用意します。
+=== ベンチマーク結果を JSON ファイルとして出力
+github-action-benchmark の入力は、JSON ファイルにする必要があります。
+ベンチマーク結果を JSON ファイルとして出力するために、@<list>{guts-benchmark-script} に示すシェルスクリプトを用意します。
 
 //list[guts-benchmark-script][benchmark.sh][bash]{
 #!/bin/bash
@@ -171,7 +174,7 @@ cat<<EOF
 EOF
 //}
 
-実際に上記のスクリプトを実行した結果は、下記のようになります。
+@<list>{guts-benchmark-script} のスクリプトの実行例は、@<list>{guts-benchmark-script-result} のようになります。
 
 //list[guts-benchmark-script-result][benchmark.sh の実行例][bash]{
 $ ./benchmark.sh 'zsh -i -c exit' 'zsh load time'
@@ -184,9 +187,9 @@ $ ./benchmark.sh 'zsh -i -c exit' 'zsh load time'
 ]
 //}
 
-上記のような JSON ファイルを github-action-benchmark の入力として渡します。
-
 === GitHub Actions のワークフロー
+
+今回使用する GitHub Actions のワークフローファイルは @<list>{guts-github-workflow} のようになります。
 
 //list[guts-github-workflow][.github/workflows/test.yaml][yaml]{
 name: test
@@ -271,7 +274,7 @@ r.os }})' > nvim-benchmark-result.json
       - name: Install dotfiles
         run: make init
 //}
-筆者の場合、このステップで、~/.zshrc や ~/.vim/init.vim といったdotfiles のシンボリックリンクを生成しています。また、同時に Neovim のインストールも行っています。
+私の場合、このステップで、~/.zshrc や ~/.vim/init.vim といったdotfiles のシンボリックリンクを生成しています。また、同時に Neovim を含むコマンドラインツールのインストールも行っています。
 
 //list[guts-github-workflow-run-benchmark][Run zsh/neovim benchmark][yaml]{
       - name: Run zsh benchmark
@@ -286,7 +289,7 @@ r.os }})' > nvim-benchmark-result.json
 er.os }})' > nvim-benchmark-result.json
           cat nvim-benchmark-result.json
 //}
-benchmark.sh を使用し、zsh と neovim のそれぞれのベンチマーク結果を JSON として出力しています。各 OS ごとのベンチマーク結果を生成しており、${{ runner.os }} で現在実行中の OS を取得しています。
+benchmark.sh を使用し、zsh と neovim のそれぞれのベンチマーク結果を JSON として出力しています。各 OS ごとにベンチマーク結果を生成しており、${{ runner.os }} で現在実行中の OS を取得しています。
 
 //list[guts-github-workflow-store-benchmark][Store zsh/neovim benchmark result][yaml]{
       - name: Store zsh benchmark result
@@ -307,7 +310,7 @@ benchmark.sh を使用し、zsh と neovim のそれぞれのベンチマーク�
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
 //}
-benchmark.sh で生成したベンチマーク結果の JSON ファイルを github-action-benchmark に渡し、gh-pages にグラフを出力します。
+benchmark.sh で生成したベンチマーク結果の JSON ファイルを github-action-benchmark に渡し、gh-pages にベンチマークグラフを出力します。
 
 === ベンチマークグラフ
 適当にコミットして、GitHub Actions を実行しましょう。
@@ -320,15 +323,10 @@ benchmark.sh で生成したベンチマーク結果の JSON ファイルを git
 //}
 
 == おわりに
-TODO: ほぼメモ書きなので後で編集する
+本章では、GitHub Actions でコミット毎に zsh と Neovim のベンチマークを取る方法を紹介しました。
+みなさんも、お気に入りのシェルやエディタのベンチマークを取ってみてはいかがでしょうか。
+筆者の dotfiles は、@<href>{https://github.com/yuta1402/dotfiles} に置いてありますので、参考にしてみてください。
 
-私の場合、シェルやエディタに env 系のツールを導入したり、プラグインを入れることでその設定ファイルは日々複雑化しています。
-複雑化されたシェルやエディタは、いつの間にか起動速度が遅くなってしまいます。
-
-env 系のツールを入れたり、たくさんのプラグインを入れたりすることで、
-anyenv や大量のプラグインによって、シェルやエディタは日々複雑化しています。
-
-使用頻度の高いコマンドはその起動時間を短くすることで、日々の時間に少し余裕ができるのではないでしょうか。
-
-//footnote[guts-hyperfine][https://github.com/sharkdp/hyperfine]
-//footnote[guts-github-action-benchmark][https://github.com/benchmark-action/github-action-benchmark]
+//footnote[guts-dotfiles][.bashrc や .vimrc といったコマンドラインツールの設定ファイルのこと]
+//footnote[guts-hyperfine][@<href>{https://github.com/sharkdp/hyperfine}]
+//footnote[guts-github-action-benchmark][@<href>{https://github.com/benchmark-action/github-action-benchmark}]
