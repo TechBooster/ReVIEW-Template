@@ -339,7 +339,8 @@ terraform -chdir=repo-terraform show -json \
 CI/CDツールはjenkinsを始め、今となってはたくさん種類がありますが、今回はConcourseCIというものを用いてみました。
 理由は見た目がカワイイからです。
 
-@<img>{tote-concourse}
+//image[tote-concourse] {
+//}
 
 他にも次の特徴があります。
 
