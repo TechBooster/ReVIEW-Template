@@ -131,7 +131,13 @@ GitHubでPull Requestを作ると、GitHub Actionsでテストが回るように
 まず、BigQueryへの編集権限のあるサービスアカウントを作成します。
 それをGitHubに設定して、Actionsからsecrets.GCP_SERVICE_ACCOUNTで取得できるようにします。
 
+GitHubの対象リポジトリを表示し、Settingタブをクリックします。
+@<img>{higuchi_01}が表示されるので、左メニューからSecrets/Actionsをクリックします。
+
 //indepimage[higuchi_01]
+
+@<img>{higuchi_02}が表示されるので、NameにGCP_SERVICE_ACCOUNT、Valueに発行したサービスアカウントを貼り付けます。
+
 //indepimage[higuchi_02]
 
 次にActionsの設定ファイルを変更します。
