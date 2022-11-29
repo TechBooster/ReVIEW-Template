@@ -1,5 +1,5 @@
 {
-	"image": "vvakame/review:5.3",
+	"image": "vvakame/review:5.5",
 	"settings": {
 		"editor.wordWrap": "on"
 	},
