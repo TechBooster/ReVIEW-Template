@@ -40,7 +40,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewPreproc} -r --tabwidth=2 *.re`
+				command: `${reviewPreproc} -r --tabwidth=2 **/*.re`
 			},
 			compile2text: {
 				options: {
