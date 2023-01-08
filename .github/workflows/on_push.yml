@@ -4,19 +4,18 @@ on: [push]
 
 jobs:
   build:
-    name: 
     runs-on: ubuntu-latest
     steps:
-    # uses v2 Stable version
+    # uses v3 Stable version
     # https://github.com/actions/checkout
     - name: checkout source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     # Build Artifacts
     - name: Build distribution file
       uses: TechBooster/ReVIEW-build-artifact-action@master
     # Upload Distribution file
     - name: Upload distribution file to github artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Output documents
         path: ./articles/*.pdf
