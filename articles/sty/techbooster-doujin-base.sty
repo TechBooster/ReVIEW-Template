@@ -92,7 +92,7 @@
 
 \renewcommand{\reviewsourcecaption}[1]{%
   {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
-   \medskip{\listcaption#1\relax}\vspace*{-1.3zw}}}
+   \medskip{\buildcaption{}{}{#1}\relax}\vspace*{-1.3zw}}}
 
 \renewcommand{\reviewemlistcaption}[1]{%
   {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
@@ -100,7 +100,7 @@
 
 \renewcommand{\reviewcmdcaption}[1]{%
   {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}
-   \medskip{\listcaption#1\relax}\vspace*{-1.3zw}}}
+   \medskip{\buildcaption{}{}{#1}\relax}\vspace*{-1.3zw}}}
 
 \renewcommand{\reviewindepimagecaption}[1]{%
   \begin{center}#1\end{center}}
