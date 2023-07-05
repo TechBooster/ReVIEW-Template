@@ -11,7 +11,7 @@ executors:
   vvakame-executor:
     working_directory: ~/review
     docker:
-      - image: vvakame/review:5.7
+      - image: vvakame/review:5.8
 
 # -------------------------
 # COMMANDS
