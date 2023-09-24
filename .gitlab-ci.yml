@@ -1,4 +1,4 @@
-image: vvakame/review:5.7
+image: vvakame/review:5.8
 
 build-pdf:
   script: # build-in-docker.sh の終盤と同じもの
