@@ -18,6 +18,8 @@ const reviewTextMaker = `${reviewPrefix}rake text ${reviewPostfix}`;
 const reviewIDGXMLMaker = `${reviewPrefix}rake idgxml ${reviewPostfix}`;
 const reviewVivliostyle = `${reviewPrefix}rake vivliostyle ${reviewPostfix}`;
 
+const reviewContentDir = bookConfig.contentdir || '.'
+
 module.exports = grunt => {
 	grunt.initConfig({
 		clean: {
@@ -40,7 +42,7 @@ module.exports = grunt => {
 						cwd: articles,
 					}
 				},
-				command: `${reviewPreproc} -r --tabwidth=2 *.re`
+				command: `${reviewPreproc} -r --tabwidth=2 ${reviewContentDir}/*.re`
 			},
 			compile2text: {
 				options: {
