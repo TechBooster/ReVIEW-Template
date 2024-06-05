@@ -3,19 +3,19 @@
   "version": "0.0.2",
   "private": true,
   "description": "",
-  "main": "Gruntfile.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TechBooster/ReVIEW-Template.git"
   },
-  "author": "",
+  "author": "TechBooster",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/TechBooster/ReVIEW-Template/issues"
   },
   "homepage": "https://github.com/TechBooster/ReVIEW-Template#readme",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.8.0"
   },
   "scripts": {
     "global-bundler": "gem install bundler",
@@ -32,11 +32,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "grunt": "^1.5.3",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-shell": "^3.0.1",
-    "js-yaml": "^3.13.1",
-    "load-grunt-tasks": "^4.0.0"
+    "grunt": "^1.6.1",
+    "grunt-cli": "^1.4.3",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-shell": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "load-grunt-tasks": "^5.1.0"
   }
 }
