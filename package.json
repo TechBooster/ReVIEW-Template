@@ -33,7 +33,7 @@
   "dependencies": {},
   "devDependencies": {
     "grunt": "^1.5.3",
-    "grunt-cli": "^1.2.0",
+    "grunt-cli": "^1.4.3",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-shell": "^3.0.1",
     "js-yaml": "^3.13.1",
