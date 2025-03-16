@@ -9,13 +9,13 @@ jobs:
     # uses v3 Stable version
     # https://github.com/actions/checkout
     - name: checkout source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.2.2
     # Build Artifacts
     - name: Build distribution file
       uses: TechBooster/ReVIEW-build-artifact-action@master
     # Upload Distribution file
     - name: Upload distribution file to github artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.1
       with:
         name: Output documents
         path: ./articles/*.pdf
