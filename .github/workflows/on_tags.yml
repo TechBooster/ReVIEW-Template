@@ -1,0 +1,168 @@
+name: Build Re:VIEW to make distribution files and create Release
+# The workflow is triggered on push to tags or manual trigger
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create release for'
+        required: true
+        type: string
+
+# Set permissions to allow creating releases
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # build two different configuration files in parallel
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Paper: PDF only; eBook: all formats <= fewer artifacts
+        # NOTE:
+        # TechBooster/ReVIEW-build-artifact-action does not yet support config/format parameters.
+        # These matrix fields are reserved for future compatibility.
+        include:
+          - label: "paper"
+            config: "config.yml"
+            format: "pdf"
+          # - label: "ebook"
+          #   config: "config-ebook.yml"
+          #   format: "pdf"
+          # - label: "ebook"
+          #   config: "config-ebook.yml"
+          #   format: "epub"
+          # - label: "ebook"
+          #   config: "config-ebook.yml"
+          #   format: "html"
+    steps:
+    # uses v3 Stable version
+    # https://github.com/actions/checkout
+    - name: checkout source
+      uses: actions/checkout@v4.2.2
+    # Build Artifacts
+    - name: Build distribution file
+      uses: TechBooster/ReVIEW-build-artifact-action@master
+      # with:
+      #   config_file: ${{ matrix.config }}
+      #   format: ${{ matrix.format }}
+    # Rename output files to include label
+    # Intentionally rename all generated PDFs to avoid name conflicts
+    - name: Rename output files
+      if: matrix.format == 'pdf'
+      shell: bash
+      run: |
+        set -euo pipefail
+        shopt -s nullglob
+        for OLD_FILE in ./articles/*.${{ matrix.format }}; do
+          BASE_PATH="${OLD_FILE%.*}"
+          FILENAME=$(basename "$BASE_PATH")
+          
+          # Check if the filename contains the label anywhere in the name (e.g., "book-paper" or "paper-book" or "my-paper-book")
+          if [[ "$FILENAME" == *"${{ matrix.label }}"* ]]; then
+            # Skip renaming if label already exists anywhere in filename
+            echo "File already contains label '${{ matrix.label }}': $OLD_FILE (skipping rename)"
+          else
+            # Append label to filename to distinguish between different build configurations
+            NEW_FILE="${BASE_PATH}-${{ matrix.label }}.${{ matrix.format }}"
+            echo "Renaming $OLD_FILE to $NEW_FILE"
+            mv "$OLD_FILE" "$NEW_FILE"
+          fi
+        done
+    # Compress html output files
+    - name: Compress output files
+      if: matrix.format == 'html'
+      shell: bash
+      run: |
+        set -euo pipefail
+        shopt -s nullglob
+        cd ./articles/
+        for OUT_FILE in *.${{ matrix.format }}; do
+          BASE_PATH="${OUT_FILE%.*}"
+          
+          # Check if the basename contains the label anywhere in the name
+          if [[ "$BASE_PATH" == *"${{ matrix.label }}"* ]]; then
+            ZIP_PATH="${BASE_PATH}.html.zip"
+          else
+            ZIP_PATH="${BASE_PATH}-${{ matrix.label }}.html.zip"
+          fi
+          
+          echo "Compressing $BASE_PATH into $ZIP_PATH..."
+          
+          # Include the main HTML file and related directories in the archive
+          ZIP_ARGS=("$BASE_PATH.html")
+          [ -d assets ] && ZIP_ARGS+=("assets")  # Include assets directory if exists
+          [ -d "$BASE_PATH" ] && ZIP_ARGS+=("$BASE_PATH")  # Include book-specific directory if exists
+          zip -r "$ZIP_PATH" "${ZIP_ARGS[@]}"
+        done
+    - name: Collect output files
+      shell: bash
+      run: |
+        set -euo pipefail
+        shopt -s nullglob
+        mkdir -p dist
+        
+        # Determine which files to collect based on the output format
+        if [ "${{ matrix.format }}" = "html" ]; then
+          files=(./articles/*.html.zip)
+        else
+          files=(./articles/*.${{ matrix.format }})
+        fi
+        
+        # Verify that at least one artifact was generated
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "ERROR: No artifacts found for format '${{ matrix.format }}'" >&2
+          exit 1
+        fi
+        
+        # Copy artifacts to dist directory for upload
+        cp "${files[@]}" dist/
+        echo "Collected artifacts:"
+        ls -l dist/
+    # Upload Distribution files
+    - name: Upload distribution files to github artifacts
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: artifacts-${{ matrix.label }}-${{ matrix.format }}
+        path: dist/*
+
+
+  create-release:
+    # Create a GitHub release with the built artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    # Download all artifacts from the build job
+    - name: Download and merge
+      uses: actions/download-artifact@v4.3.0
+      with:
+        pattern: artifacts-*
+        merge-multiple: true
+        path: artifacts
+    # Verify artifacts exist
+    - name: Verify artifacts
+      run: |
+        ls -l artifacts
+        test -n "$(ls artifacts/*.pdf 2>/dev/null)"
+        # test -n "$(ls artifacts/*.epub 2>/dev/null)"
+        # test -n "$(ls artifacts/*.html.zip 2>/dev/null)"
+    # Create GitHub Release
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        # Use manual input tag if provided, otherwise use the pushed tag name
+        tag_name: ${{ inputs.tag || github.ref_name }}
+        name: Release ${{ inputs.tag || github.ref_name }}
+        generate_release_notes: true
+        fail_on_unmatched_files: true
+        draft: true
+        files: ./artifacts/*.pdf
+        # Future: Add more file types when supported
+        # files: |
+        #   ./artifacts/*.pdf
+        #   ./artifacts/*.epub
+        #   ./artifacts/*.html.zip
