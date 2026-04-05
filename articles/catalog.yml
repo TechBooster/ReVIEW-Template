@@ -2,6 +2,7 @@ PREDEF:
   - preface.re
 
 CHAPS:
+  - lazzbook.re
   - article.re
 
 APPENDIX:
