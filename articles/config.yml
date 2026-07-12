@@ -23,6 +23,7 @@ language: ja
 
 # 書名
 booktitle: {name: "Re:VIEWテンプレート", file-as: "reviewテンプレート"}
+# subtitle: 副題
 
 # 著者名。「, 」で区切って複数指定できる
 aut: [{name: "TechBooster編", file-as: "techboosterヘン"}]
