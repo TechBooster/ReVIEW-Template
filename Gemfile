@@ -1,7 +1,7 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-gem 'review', '5.9.0'
+gem 'review', '5.11.0'
 gem 'pandoc2review'
 gem 'playwright-runner'
 gem 'rake'
